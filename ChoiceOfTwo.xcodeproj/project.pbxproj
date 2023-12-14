@@ -36,6 +36,9 @@
 		D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */; };
 		D1C9C8472B28B40A00E9DE4C /* AnimePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8462B28B40A00E9DE4C /* AnimePreviewCell.swift */; };
 		D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */; };
+		D1C9C8502B2A093D00E9DE4C /* BlackGradientForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */; };
+		D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8552B2B53C200E9DE4C /* Season.swift */; };
+		D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +101,9 @@
 		D1C9C8462B28B40A00E9DE4C /* AnimePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimePreviewCell.swift; sourceTree = "<group>"; };
 		D1C9C84C2B28D44C00E9DE4C /* SavedQueries.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SavedQueries.md; sourceTree = "<group>"; };
 		D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynImageFetching.swift; sourceTree = "<group>"; };
+		D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackGradientForImage.swift; sourceTree = "<group>"; };
+		D1C9C8552B2B53C200E9DE4C /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
+		D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +159,8 @@
 		D17DDAA72B24D6910082B4D7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D1C9C8552B2B53C200E9DE4C /* Season.swift */,
+				D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -274,6 +282,7 @@
 			children = (
 				D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */,
 				D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */,
+				D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -434,9 +443,12 @@
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomButton.swift in Sources */,
+				D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* AnimePreviewCell.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
+				D1C9C8502B2A093D00E9DE4C /* BlackGradientForImage.swift in Sources */,
 				D1B89D9E2B24C493007447A5 /* SceneDelegate.swift in Sources */,
+				D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */,
 				D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

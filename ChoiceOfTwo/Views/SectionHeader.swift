@@ -13,7 +13,7 @@ class SectionHeader: UILabel {
         super.init(frame: .zero)
         
         self.text = text
-        self.font = UIFont().JosefinSans(font: .medium, size: 16)
+        self.font = UIFont().JosefinSans(font: .bold, size: 17)
         self.textColor = .white
     }
     

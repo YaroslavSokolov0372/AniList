@@ -11,38 +11,40 @@ import AnilistApi
 class AnimePreviewCell: UICollectionViewCell {
     
     //MARK: - Variables
-    private var animeData: GetAnimeByQuery.Data.Page.MediaList!
+//    private var animeData: GetAnimeBySortQuery.Data.Page.Medium!
+    private var animeData: AnimeType!
     
+    
+    //MARK: - UI Components
     private let releaseDate: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = UIFont().JosefinSans(font: .regular, size: 14)
-        label.text = "error"
-        return label
-    }()
-    
-    //MARK: - UI Components
-    private let name: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont().JosefinSans(font: .regular, size: 14)
+        label.font = UIFont().JosefinSans(font: .regular, size: 12)
         label.text = "error"
         return label
     }()
     
     private let coverImage: UIImageView = {
         let iv = UIImageView()
-        iv.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
-//        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFill
+        iv.layer.masksToBounds = true
+        iv.layer.cornerRadius = 12
         return iv
     }()
     
+    private let name: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .left
+        label.numberOfLines = 2
+        label.font = UIFont().JosefinSans(font: .regular, size: 14)
+        label.text = "error"
+        return label
+    }()
     
     //MARK: - lifecycle
-//    init(animeData: GetAnimeByQuery.Data.Page.MediaList) {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.layer.cornerRadius = self.frame.width / 2
         self.setupUI()
     }
     
@@ -51,13 +53,14 @@ class AnimePreviewCell: UICollectionViewCell {
     }
     
     //MARK: - Setup UI
-    public func configure(with animeData: GetAnimeByQuery.Data.Page.MediaList) {
-        self.animeData = animeData
-        self.releaseDate.text = String(describing: self.animeData.media?.startDate?.year)
-        self.name.text = self.animeData.media?.title?.english
-        
-        self.coverImage.setImageFromStringrURL(stringUrl: self.animeData.media?.coverImage?.medium ?? "")
-    }
+
+    
+//    public func configure1(with animeData: GetAnimeBySeasonQuery.Data.Page.Medium) {
+//        self.animeData = animeData
+//        self.releaseDate.text = String(describing: self.animeData.startDate?.year)
+//        self.name.text = self.animeData.title?.english ?? self.animeData.title?.native
+//        self.coverImage.setImageFromStringrURL(stringUrl: self.animeData.coverImage?.extraLarge ?? "")
+//    }
     
     private func setupUI() {
         self.addSubview(coverImage)
@@ -66,22 +69,48 @@ class AnimePreviewCell: UICollectionViewCell {
         
         self.coverImage.translatesAutoresizingMaskIntoConstraints = false
         self.name.translatesAutoresizingMaskIntoConstraints = false
-        self.releaseDate.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-//            coverImage.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1),
-//            coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 1)
+            self.coverImage.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1),
+            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
+            self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
+            
+            
+            self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
+//            self.name.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+//            self.name.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -15),
+//            self.name.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            self.name.topAnchor.constraint(equalTo: self.coverImage.bottomAnchor, constant: 10),
         ])
     }
 }
 
 
 
-//        DispatchQueue.main.async {
-//            let imageData = try? Data(contentsOf: URL(string: self.animeData.media?.coverImage?.medium ?? "")!)
-//            if let imageData {
-//                DispatchQueue.main.async { [weak self] in
-//                    self?.coverImage.image = UIImage(data: imageData)
-//                }
-//            }
-//        }
+
+
+extension AnimePreviewCell {
+    
+//    public func configure(with animeData: GetAnimeBySortQuery.Data.Page.Medium) {
+    public func configure(with animeData: AnimeType) {
+        self.animeData = animeData
+        
+        switch self.animeData {
+        case .curentSeasonPopular(let data):
+            self.releaseDate.text = String(describing: data.startDate?.year)
+            self.name.text = data.title?.english ?? data.title?.native
+            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
+        case .popularAllTime(let data):
+            self.releaseDate.text = String(describing: data.startDate?.year)
+            self.name.text = data.title?.english ?? data.title?.native
+            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
+        case .trendingNow(let data):
+            self.releaseDate.text = String(describing: data.startDate?.year)
+            self.name.text = data.title?.english ?? data.title?.native
+            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
+        case .none:
+            return
+        }
+
+    }
+}

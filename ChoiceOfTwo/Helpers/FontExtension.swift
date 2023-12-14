@@ -10,7 +10,7 @@ import UIKit
 
 extension UIFont {
     
-    enum JosefinSans: String {
+     enum JosefinSans: String {
         case bold = "JosefinSans-Bold"
         case semiBold = "JosefinSans-SemiBold"
         case extraLight = "JosefinSans-ExtraLight"

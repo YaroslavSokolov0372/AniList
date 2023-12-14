@@ -11,31 +11,68 @@ query getMedia($id: Int) {
   }
 }
 
-query getAnimeBy($sort: [MediaListSort], $page: Int, $perPage: Int) {
+query getAnimeBySort($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
   Page(page: $page, perPage: $perPage) {
-    mediaList(sort: $sort) {
-      media {
-        title {
-          english
-          native
-          userPreferred
-        }
-        coverImage {
-          color
-          large
-          medium
-        }
-        bannerImage
-        duration
-        startDate {
-          year
-          month
-          day
-        }
+    media(sort: $sort, type: $type) {
+      bannerImage
+      chapters
+      coverImage {
+        medium
+        large
+        color
+        extraLarge
       }
-      mediaId
-      score
-      status
+      description
+      duration
+      genres
+      episodes
+      meanScore
+      seasonYear
+      startDate {
+        year
+        month
+        day
+      }
+      title {
+        userPreferred
+        native
+        english
+      }
+      source
+      averageScore
+    }
+  }
+}
+
+query getAnimeBySeason($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int) {
+  Page(page: $page, perPage: $perPage) {
+    media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear) {
+      bannerImage
+      chapters
+      coverImage {
+        medium
+        large
+        color
+        extraLarge
+      }
+      description
+      duration
+      genres
+      episodes
+      meanScore
+      seasonYear
+      startDate {
+        year
+        month
+        day
+      }
+      title {
+        userPreferred
+        native
+        english
+      }
+      source
+      averageScore
     }
   }
 }
