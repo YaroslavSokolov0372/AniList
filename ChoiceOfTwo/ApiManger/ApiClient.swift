@@ -18,8 +18,8 @@ class ApiClient {
         return []
     }
     
-    public func getAnimeBySorting(escaping: @escaping (GraphQLResult<GetAnimeBySortQuery.Data>) -> ()) {
-        self.appolo.fetch(query: GetAnimeBySortQuery(page: 1, perPage: 20, sort: [.case(.popularityDesc)], type: .some(.case(.anime)))) { result in
+    public func getAnimeBySort(_ sorting: GraphQLNullable<[GraphQLEnum<MediaSort>?]>, escaping: @escaping (GraphQLResult<PopularAllTimeQuery.Data>) -> ()) async {
+        self.appolo.fetch(query: PopularAllTimeQuery(page: 1, perPage: 20, sort: sorting, type: .some(.case(.anime)))) { result in
             switch result {
             case .success(let data):
                 escaping(data)
@@ -29,7 +29,7 @@ class ApiClient {
         }
     }
     
-    public func getAnimeBySeason(page: GraphQLNullable<Int>, perPage: GraphQLNullable<Int>, sort: GraphQLNullable<[GraphQLEnum<MediaSort>?]>, type: GraphQLNullable<GraphQLEnum<MediaType>>, season: GraphQLNullable<GraphQLEnum<MediaSeason>>, seasonYear: GraphQLNullable<Int>, escaping: @escaping (GraphQLResult<GetAnimeBySeasonQuery.Data>) -> ()) {
+    public func getAnimeBySeason(page: GraphQLNullable<Int>, perPage: GraphQLNullable<Int>, sort: GraphQLNullable<[GraphQLEnum<MediaSort>?]>, type: GraphQLNullable<GraphQLEnum<MediaType>>, season: GraphQLNullable<GraphQLEnum<MediaSeason>>, seasonYear: GraphQLNullable<Int>, escaping: @escaping (GraphQLResult<GetAnimeBySeasonQuery.Data>) -> ()) async {
         self.appolo.fetch(query: GetAnimeBySeasonQuery(page: page, perPage: perPage, sort: sort, type: type, season: season, seasonYear: seasonYear)) { result in
             switch result {
             case .success(let data):

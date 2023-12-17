@@ -11,10 +11,8 @@ import AnilistApi
 class AnimePreviewCell: UICollectionViewCell {
     
     //MARK: - Variables
-//    private var animeData: GetAnimeBySortQuery.Data.Page.Medium!
     private var animeData: AnimeType!
-    
-    
+
     //MARK: - UI Components
     private let releaseDate: UILabel = {
         let label = UILabel()
@@ -52,16 +50,8 @@ class AnimePreviewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     //MARK: - Setup UI
-
-    
-//    public func configure1(with animeData: GetAnimeBySeasonQuery.Data.Page.Medium) {
-//        self.animeData = animeData
-//        self.releaseDate.text = String(describing: self.animeData.startDate?.year)
-//        self.name.text = self.animeData.title?.english ?? self.animeData.title?.native
-//        self.coverImage.setImageFromStringrURL(stringUrl: self.animeData.coverImage?.extraLarge ?? "")
-//    }
-    
     private func setupUI() {
         self.addSubview(coverImage)
         self.addSubview(name)
@@ -77,9 +67,6 @@ class AnimePreviewCell: UICollectionViewCell {
             
             
             self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
-//            self.name.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-//            self.name.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -15),
-//            self.name.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             self.name.topAnchor.constraint(equalTo: self.coverImage.bottomAnchor, constant: 10),
         ])
     }
@@ -91,7 +78,6 @@ class AnimePreviewCell: UICollectionViewCell {
 
 extension AnimePreviewCell {
     
-//    public func configure(with animeData: GetAnimeBySortQuery.Data.Page.Medium) {
     public func configure(with animeData: AnimeType) {
         self.animeData = animeData
         

@@ -3,11 +3,11 @@
 
 @_exported import ApolloAPI
 
-public class GetAnimeBySortQuery: GraphQLQuery {
-  public static let operationName: String = "getAnimeBySort"
+public class PopularAllTimeQuery: GraphQLQuery {
+  public static let operationName: String = "popularAllTime"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query getAnimeBySort($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) { Page(page: $page, perPage: $perPage) { __typename media(sort: $sort, type: $type) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore } } }"#
+      #"query popularAllTime($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) { Page(page: $page, perPage: $perPage) { __typename media(sort: $sort, type: $type) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore } } }"#
     ))
 
   public var page: GraphQLNullable<Int>

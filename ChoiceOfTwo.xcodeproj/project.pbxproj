@@ -39,6 +39,7 @@
 		D1C9C8502B2A093D00E9DE4C /* BlackGradientForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */; };
 		D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8552B2B53C200E9DE4C /* Season.swift */; };
 		D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */; };
+		D1C9C85A2B2CB73B00E9DE4C /* CustomSeatchToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,11 +100,11 @@
 		D1C9C8332B2882D400E9DE4C /* JosefinSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "JosefinSans-Light.ttf"; sourceTree = "<group>"; };
 		D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
 		D1C9C8462B28B40A00E9DE4C /* AnimePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimePreviewCell.swift; sourceTree = "<group>"; };
-		D1C9C84C2B28D44C00E9DE4C /* SavedQueries.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SavedQueries.md; sourceTree = "<group>"; };
 		D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynImageFetching.swift; sourceTree = "<group>"; };
 		D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackGradientForImage.swift; sourceTree = "<group>"; };
 		D1C9C8552B2B53C200E9DE4C /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeType.swift; sourceTree = "<group>"; };
+		D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSeatchToolsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +145,7 @@
 				D1C9C8272B2875DA00E9DE4C /* CustomButton.swift */,
 				D1C9C82A2B287F5800E9DE4C /* SectionHeader.swift */,
 				D1C9C8462B28B40A00E9DE4C /* AnimePreviewCell.swift */,
+				D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -243,7 +245,6 @@
 			children = (
 				D1C9C8192B27713900E9DE4C /* shema.json */,
 				D1C9C8162B27632400E9DE4C /* query.graphql */,
-				D1C9C84C2B28D44C00E9DE4C /* SavedQueries.md */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -443,6 +444,7 @@
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomButton.swift in Sources */,
+				D1C9C85A2B2CB73B00E9DE4C /* CustomSeatchToolsView.swift in Sources */,
 				D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* AnimePreviewCell.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
@@ -629,6 +631,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -655,6 +658,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
