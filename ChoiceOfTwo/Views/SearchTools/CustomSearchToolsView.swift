@@ -7,8 +7,8 @@
 
 import UIKit
 
-class CustomSeatchToolsView: UIView {
-
+class CustomSearchToolsView: UIView {
+    
     
     //MARK: UI Components
     private let title: UILabel = {
@@ -18,16 +18,16 @@ class CustomSeatchToolsView: UIView {
         label.font = UIFont().JosefinSans(font: .regular, size: 17)
         return label
     }()
+    
     private let image: UIImageView = {
-      
         let iv = UIImageView()
         iv.image = UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate)
         iv.contentMode = .scaleToFill
         iv.tintColor = UIColor(named: "Gray")
         iv.transform = iv.transform.rotated(by: .pi / 2)
         return iv
-        
     }()
+    
     private let moreButton: UIButton = {
         let button = UIButton()
         button.setTitle("Any", for: .normal)
@@ -39,10 +39,12 @@ class CustomSeatchToolsView: UIView {
     }()
     
     
+    
     //MARK: - Lifecycle
     init(title: String) {
         super.init(frame: .zero)
         self.backgroundColor = UIColor(named: "Black")
+        self.title.text = title
         setupUI()
     }
     
@@ -56,13 +58,15 @@ class CustomSeatchToolsView: UIView {
         
         self.addSubview(title)
         self.addSubview(moreButton)
-        moreButton.addSubview(image)
+        self.moreButton.addSubview(image)
+        
         
         title.translatesAutoresizingMaskIntoConstraints = false
         moreButton.translatesAutoresizingMaskIntoConstraints = false
         image.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            
             self.title.widthAnchor.constraint(equalTo: self.widthAnchor),
             self.title.heightAnchor.constraint(equalToConstant: 35),
             self.title.topAnchor.constraint(equalTo: self.topAnchor),
@@ -78,5 +82,17 @@ class CustomSeatchToolsView: UIView {
             self.image.widthAnchor.constraint(equalToConstant: 15),
             self.image.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
         ])
+    }
+    
+    
+    //MARK: - Local func
+    func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
+        self.moreButton.addTarget(target, action: selector, for: .touchUpInside)
+    }
+}
+
+extension CustomSearchToolsView {
+    func configure(with tool: searchTools) {
+        self.title.text = tool.rawValue
     }
 }

@@ -8,10 +8,18 @@
 import UIKit
 import AnilistApi
 
+ protocol AnimePreviewProtocol {
+//    func didTapCell(_ cell: AnimePreviewCell)
+     func didTapCell(with type: AnimeType?)
+}
+
+
 class AnimePreviewCell: UICollectionViewCell {
     
     //MARK: - Variables
     private var animeData: AnimeType!
+    private var gesture: UITapGestureRecognizer?
+    public var delegate: AnimePreviewProtocol?
 
     //MARK: - UI Components
     private let releaseDate: UILabel = {
@@ -40,10 +48,14 @@ class AnimePreviewCell: UICollectionViewCell {
         return label
     }()
     
-    //MARK: - lifecycle
+    //MARK: - Lifecycle
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupUI()
+        self.isUserInteractionEnabled = true
+        gesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        self.addGestureRecognizer(gesture!)
     }
     
     required init?(coder: NSCoder) {
@@ -65,16 +77,16 @@ class AnimePreviewCell: UICollectionViewCell {
             self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
             self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
             
-            
             self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
             self.name.topAnchor.constraint(equalTo: self.coverImage.bottomAnchor, constant: 10),
         ])
     }
+    
+    //MARK: - Local func
+     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
+         self.delegate?.didTapCell(with: self.animeData)
+    }
 }
-
-
-
-
 
 extension AnimePreviewCell {
     

@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D16742C42B2F729E00C9F033 /* SearchTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C32B2F729E00C9F033 /* SearchTools.swift */; };
+		D16742C82B321BE300C9F033 /* SearchTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */; };
+		D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C92B3228FE00C9F033 /* LeftImageTexField.swift */; };
+		D16742CC2B330E1500C9F033 /* SearchToolsScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */; };
+		D16742D12B33387300C9F033 /* DetailInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D02B33387300C9F033 /* DetailInfoController.swift */; };
+		D16742D32B33388C00C9F033 /* MoreAnimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D22B33388C00C9F033 /* MoreAnimeController.swift */; };
+		D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */; };
+		D16742D92B34A41700C9F033 /* ImageShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D82B34A41700C9F033 /* ImageShape.swift */; };
 		D17DDAA92B24D7600082B4D7 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17DDAA82B24D7600082B4D7 /* MenuController.swift */; };
 		D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B89D9B2B24C493007447A5 /* AppDelegate.swift */; };
 		D1B89D9E2B24C493007447A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B89D9D2B24C493007447A5 /* SceneDelegate.swift */; };
@@ -39,7 +47,7 @@
 		D1C9C8502B2A093D00E9DE4C /* BlackGradientForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */; };
 		D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8552B2B53C200E9DE4C /* Season.swift */; };
 		D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */; };
-		D1C9C85A2B2CB73B00E9DE4C /* CustomSeatchToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */; };
+		D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +82,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D16742C32B2F729E00C9F033 /* SearchTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTools.swift; sourceTree = "<group>"; };
+		D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextFieldView.swift; sourceTree = "<group>"; };
+		D16742C92B3228FE00C9F033 /* LeftImageTexField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftImageTexField.swift; sourceTree = "<group>"; };
+		D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchToolsScrollView.swift; sourceTree = "<group>"; };
+		D16742D02B33387300C9F033 /* DetailInfoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInfoController.swift; sourceTree = "<group>"; };
+		D16742D22B33388C00C9F033 /* MoreAnimeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreAnimeController.swift; sourceTree = "<group>"; };
+		D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomShapeForImage.swift; sourceTree = "<group>"; };
+		D16742D82B34A41700C9F033 /* ImageShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageShape.swift; sourceTree = "<group>"; };
 		D17DDAA82B24D7600082B4D7 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		D1B89D982B24C493007447A5 /* ChoiceOfTwo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChoiceOfTwo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B89D9B2B24C493007447A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -104,7 +120,7 @@
 		D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackGradientForImage.swift; sourceTree = "<group>"; };
 		D1C9C8552B2B53C200E9DE4C /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeType.swift; sourceTree = "<group>"; };
-		D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSeatchToolsView.swift; sourceTree = "<group>"; };
+		D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchToolsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,13 +155,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D16742CD2B330E1E00C9F033 /* SearchTools */ = {
+			isa = PBXGroup;
+			children = (
+				D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */,
+				D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */,
+				D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */,
+			);
+			path = SearchTools;
+			sourceTree = "<group>";
+		};
 		D17DDAA52B24D6810082B4D7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				D16742CD2B330E1E00C9F033 /* SearchTools */,
 				D1C9C8272B2875DA00E9DE4C /* CustomButton.swift */,
 				D1C9C82A2B287F5800E9DE4C /* SectionHeader.swift */,
 				D1C9C8462B28B40A00E9DE4C /* AnimePreviewCell.swift */,
-				D1C9C8592B2CB73B00E9DE4C /* CustomSeatchToolsView.swift */,
+				D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -154,6 +181,8 @@
 			isa = PBXGroup;
 			children = (
 				D17DDAA82B24D7600082B4D7 /* MenuController.swift */,
+				D16742D02B33387300C9F033 /* DetailInfoController.swift */,
+				D16742D22B33388C00C9F033 /* MoreAnimeController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -163,6 +192,7 @@
 			children = (
 				D1C9C8552B2B53C200E9DE4C /* Season.swift */,
 				D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */,
+				D16742C32B2F729E00C9F033 /* SearchTools.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -284,6 +314,8 @@
 				D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */,
 				D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */,
 				D1C9C84F2B2A093D00E9DE4C /* BlackGradientForImage.swift */,
+				D16742C92B3228FE00C9F033 /* LeftImageTexField.swift */,
+				D16742D82B34A41700C9F033 /* ImageShape.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -441,16 +473,24 @@
 			files = (
 				D17DDAA92B24D7600082B4D7 /* MenuController.swift in Sources */,
 				D1C9C82B2B287F5800E9DE4C /* SectionHeader.swift in Sources */,
+				D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */,
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomButton.swift in Sources */,
-				D1C9C85A2B2CB73B00E9DE4C /* CustomSeatchToolsView.swift in Sources */,
+				D16742D92B34A41700C9F033 /* ImageShape.swift in Sources */,
+				D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */,
+				D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolsView.swift in Sources */,
 				D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* AnimePreviewCell.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
+				D16742D12B33387300C9F033 /* DetailInfoController.swift in Sources */,
+				D16742CC2B330E1500C9F033 /* SearchToolsScrollView.swift in Sources */,
+				D16742C42B2F729E00C9F033 /* SearchTools.swift in Sources */,
+				D16742C82B321BE300C9F033 /* SearchTextFieldView.swift in Sources */,
 				D1C9C8502B2A093D00E9DE4C /* BlackGradientForImage.swift in Sources */,
 				D1B89D9E2B24C493007447A5 /* SceneDelegate.swift in Sources */,
 				D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */,
+				D16742D32B33388C00C9F033 /* MoreAnimeController.swift in Sources */,
 				D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

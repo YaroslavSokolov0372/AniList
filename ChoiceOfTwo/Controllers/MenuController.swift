@@ -8,7 +8,8 @@
 import UIKit
 import AnilistApi
 
-class MenuController: UIViewController {
+class MenuController: UIViewController, AnimePreviewProtocol {
+    
     
     //MARK: - Variables
     private let apiClient = ApiClient()
@@ -17,7 +18,7 @@ class MenuController: UIViewController {
             DispatchQueue.main.async {
                 self.allTimePopularAnimeColl.reloadData()
                 self.allTimePopularAnimeColl.setNeedsDisplay()
-                print("All time Popular dispatch worked")
+//                print("All time Popular dispatch worked")
             }
         }
     }
@@ -26,7 +27,7 @@ class MenuController: UIViewController {
             DispatchQueue.main.async {
                 self.currentSeasonPopularColl.reloadData()
                 self.currentSeasonPopularColl.setNeedsDisplay()
-                print("Current season dispatch worked")
+//                print("Current season dispatch worked")
             }
         }
     }
@@ -35,29 +36,31 @@ class MenuController: UIViewController {
             DispatchQueue.main.async {
                 self.trendingNowColl.reloadData()
                 self.trendingNowColl.setNeedsDisplay()
-                print("Trending now dispatch worked")
+//                print("Trending now dispatch worked")
             }
         }
     }
 
     //MARK: - UI Components
-    private let scrollView: UIScrollView = {
+    private let mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = UIColor(named: "Black")
 //        view.backgroundColor = .yellow
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view.showsVerticalScrollIndicator = false
         return view
     }()
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Black")
 //        view.backgroundColor = .red
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-    private let searchTools = CustomSeatchToolsView(title: "Genres")
-    private let choiceOfTwoButton = CustomButton(title: "Choice of Two", hasCustomTint: false, customTint: nil, systemTintColor: .white)
+    private let searchToolsScrollView = SearchToolsScrollView()
+    private let choiceOfTwoButton = CustomButton(
+        title: "Choice of Two",
+        hasCustomTint: false,
+        customTint: nil,
+        systemTintColor: .white)
     private let allTimePopularHeader = SectionHeader(text: "ALL TIME POPULAR")
     private let allTimePopularAnimeColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -82,7 +85,7 @@ class MenuController: UIViewController {
         
         return collectionView
     }()
-    private let trendingNow = SectionHeader(text: "TRENDING NOW")
+    private let trendingNowHeader = SectionHeader(text: "TRENDING NOW")
     private let trendingNowColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -95,29 +98,14 @@ class MenuController: UIViewController {
         return collectionView
     }()
     
-    
-    
-    
-    
-    
     //MARK: - Lifecycle
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = UIColor(named: "Black")
         
-        
-        
         Task {
-//            await self.apiClient.trendingNowAnimes(
-//                page: 1,
-//                perPage: 20,
-//                sort: nil) { result in
-//                    self.trendingNowAnime = result.data?.page?.mediaTrends?.compactMap({ $0 }) ?? []
-//                    print(self.currentSeasonPopularAnime.count)
-////                    self.trendingNowColl.reloadData()
-//                }
-            
             await self.apiClient.getAnimeBySeason(
                 page: 1,
                 perPage: 20,
@@ -126,19 +114,21 @@ class MenuController: UIViewController {
                 season: .some(.case(.fall)),
                 seasonYear: 2023) { result in
                     self.currentSeasonPopularAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-                    print(self.currentSeasonPopularAnime.count)
-//                    self.currentSeasonPopularColl.reloadData()
+//                    print(self.currentSeasonPopularAnime.count)
                 }
-            
             await self.apiClient.getAnimeBySort([.case(.popularityDesc)]) { result in
                 self.allTimePopularAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-                print(self.allTimePopularAnime.count)
+//                print(self.allTimePopularAnime.count)
             }
             await self.apiClient.getAnimeBySort([.case(.trendingDesc)]) { result in
                 self.trendingNowAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-                print(self.currentSeasonPopularAnime.count)
+//                print(self.currentSeasonPopularAnime.count)
             }
         }
+        
+        self.allTimePopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
+        self.currentSeasonPopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
+        self.trendingNowHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
@@ -146,42 +136,36 @@ class MenuController: UIViewController {
         self.allTimePopularAnimeColl.dataSource = self
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
-        
         self.setupUI()
-        
     }
-    
     
     //MARK: - Setup UI
     private func setupUI() {
         
-
-        self.view.addSubview(scrollView)
-        self.scrollView.addSubview(contentView)
+        self.view.addSubview(mainScrollView)
+        mainScrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(choiceOfTwoButton)
-        self.contentView.addSubview(searchTools)
-        self.contentView.addSubview(allTimePopularHeader)
-        self.contentView.addSubview(allTimePopularAnimeColl)
-        self.contentView.addSubview(currentSeasonPopularHeader)
-        self.contentView.addSubview(currentSeasonPopularColl)
-        self.contentView.addSubview(trendingNow)
-        self.contentView.addSubview(trendingNowColl)
+        self.mainScrollView.addSubview(contentView)
+        searchToolsScrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        
-        
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(searchToolsScrollView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        searchTools.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(choiceOfTwoButton)
         choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
-        allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
-        allTimePopularAnimeColl.translatesAutoresizingMaskIntoConstraints = false
-        currentSeasonPopularHeader.translatesAutoresizingMaskIntoConstraints = false
-        currentSeasonPopularColl.translatesAutoresizingMaskIntoConstraints = false
-        trendingNow.translatesAutoresizingMaskIntoConstraints = false
-        trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
         
+        self.contentView.addSubview(allTimePopularHeader)
+        allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(allTimePopularAnimeColl)
+        allTimePopularAnimeColl.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(currentSeasonPopularHeader)
+        currentSeasonPopularHeader.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(currentSeasonPopularColl)
+        currentSeasonPopularColl.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(trendingNowHeader)
+        trendingNowHeader.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(trendingNowColl)
+        trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
@@ -189,56 +173,81 @@ class MenuController: UIViewController {
             self.choiceOfTwoButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1),
             self.choiceOfTwoButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
         
+            mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            mainScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
+            contentView.topAnchor.constraint(equalTo: mainScrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: mainScrollView.leadingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: mainScrollView.bottomAnchor),
+            contentView.trailingAnchor.constraint(equalTo: mainScrollView.trailingAnchor),
+            contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
+            contentView.heightAnchor.constraint(equalToConstant: 2000),
             
-            self.scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            self.scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            self.scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            self.scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            searchToolsScrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            searchToolsScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            searchToolsScrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            searchToolsScrollView.widthAnchor.constraint(equalToConstant: 800),
+            searchToolsScrollView.heightAnchor.constraint(equalToConstant: 80),
             
-            self.contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            self.contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            self.contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            self.contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            self.contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            self.contentView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1.5),
+            allTimePopularHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
+            allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            self.searchTools.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-            self.searchTools.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
-            self.searchTools.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            self.searchTools.heightAnchor.constraint(equalToConstant: 75),
-            
-//            self.allTimePopularHeader.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-//            self.allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            self.allTimePopularHeader.topAnchor.constraint(equalTo: searchTools.bottomAnchor, constant: 30),
-            self.allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            
-            self.allTimePopularAnimeColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.allTimePopularAnimeColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
-            self.allTimePopularAnimeColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            self.allTimePopularAnimeColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            
-            self.currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularAnimeColl.bottomAnchor, constant: 30),
-            self.currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
-            
-            self.currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
-            self.currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            self.currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            
-            self.trendingNow.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-            self.trendingNow.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
+            allTimePopularAnimeColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            allTimePopularAnimeColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
+            allTimePopularAnimeColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            allTimePopularAnimeColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
 
-            self.trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.trendingNowColl.topAnchor.constraint(equalTo: self.trendingNow.bottomAnchor, constant: 15),
-            self.trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            self.trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            
+            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularAnimeColl.bottomAnchor, constant: 30),
+            currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
+            currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+            currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            
+            
+            currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
+            currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            
+            trendingNowHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
+            trendingNowHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+
+            trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
+            trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
         ])
     }
+    
+    
+    //MARK: - Local func
+//    func didTapCell(_ cell: AnimePreviewCell) {
+//        print("DEBUG:", "Tapped Anime Cell")
+//
+//        let vc = DetailInfoController()
+//        self.navigationController?.pushViewController(vc, animated: true)
+//    }
+    
+    func didTapCell(with type: AnimeType?) {
+        print("DEBUG:", "Tapped Anime Cell")
+        let vc = DetailInfoController()
+        vc.configure(with: type!)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc private func didTappedMoreButton() {
+        print("DEBUG:", "Tapped more anime button")
+        let vc = MoreAnimeController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
 }
-
-
 
 extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
@@ -265,14 +274,12 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         if collectionView == self.allTimePopularAnimeColl {
             return self.allTimePopularAnime.count
         } else if collectionView == self.currentSeasonPopularColl {
-            print("working with current season popular")
             return self.currentSeasonPopularAnime.count
         } else {
-            print("working with trending now")
             return self.trendingNowAnime.count
         }
     }
-
+    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
@@ -281,7 +288,8 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
             }
             let preview = self.allTimePopularAnime[indexPath.row]
-        cell.configure(with: AnimeType.popularAllTime(preview))
+            cell.configure(with: AnimeType.popularAllTime(preview))
+            cell.delegate = self
             return cell
         } else if collectionView == self.currentSeasonPopularColl {
             guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? AnimePreviewCell else {
@@ -290,6 +298,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
             
             let preview = self.currentSeasonPopularAnime[indexPath.row]
             cell.configure(with: AnimeType.curentSeasonPopular(preview))
+            cell.delegate = self
             return cell
         } else {
             guard let cell = allTimePopularAnimeColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? AnimePreviewCell else {
@@ -298,6 +307,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
             
             let preview = self.trendingNowAnime[indexPath.row]
             cell.configure(with: AnimeType.trendingNow(preview))
+            cell.delegate = self
             return cell
         }
     }
