@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CustomButton: UIButton {
+class CustomMenuButtonSections: UIButton {
 
     init(title: String, hasCustomTint: Bool, customTint: String?, systemTintColor: UIColor?) {
         super.init(frame: .zero)

@@ -39,4 +39,38 @@ class ApiClient {
             }
         }
     }
+    
+    
+    public func getAnimeBy(
+        page: GraphQLNullable<Int>,
+        perPage: GraphQLNullable<Int>,
+        sort: GraphQLNullable<[GraphQLEnum<MediaSort>?]>,
+        type: GraphQLNullable<GraphQLEnum<MediaType>>,
+        season: GraphQLNullable<GraphQLEnum<MediaSeason>>,
+        seasonYear: GraphQLNullable<Int>,
+        format: GraphQLNullable<GraphQLEnum<MediaFormat>>,
+        genre: GraphQLNullable<String>,
+        search: GraphQLNullable<String>,
+        escaping: @escaping (GraphQLResult<GetAnimeByQuery.Data>) -> ()) {
+            
+        self.appolo.fetch(query: GetAnimeByQuery(
+            page: page,
+            perPage: perPage,
+            sort: sort,
+            type: type,
+            season: season,
+            seasonYear: seasonYear,
+            format: format,
+            genre: genre,
+            search: search,
+            asHtml: false)) { result in
+                
+            switch result {
+            case .success(let data):
+                escaping(data)
+            case .failure(let error):
+                debugPrint(error)
+            }
+        }
+    }
 }

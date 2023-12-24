@@ -9,15 +9,14 @@ import UIKit
 import AnilistApi
 
  protocol AnimePreviewProtocol {
-//    func didTapCell(_ cell: AnimePreviewCell)
-     func didTapCell(with type: AnimeType?)
+     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium)
 }
 
 
-class AnimePreviewCell: UICollectionViewCell {
+class MenuAnimePreviewCell: UICollectionViewCell {
     
     //MARK: - Variables
-    private var animeData: AnimeType!
+    private var animeData: GetAnimeByQuery.Data.Page.Medium!
     private var gesture: UITapGestureRecognizer?
     public var delegate: AnimePreviewProtocol?
 
@@ -88,27 +87,14 @@ class AnimePreviewCell: UICollectionViewCell {
     }
 }
 
-extension AnimePreviewCell {
+extension MenuAnimePreviewCell {
     
-    public func configure(with animeData: AnimeType) {
+    
+    public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
         
-        switch self.animeData {
-        case .curentSeasonPopular(let data):
-            self.releaseDate.text = String(describing: data.startDate?.year)
-            self.name.text = data.title?.english ?? data.title?.native
-            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
-        case .popularAllTime(let data):
-            self.releaseDate.text = String(describing: data.startDate?.year)
-            self.name.text = data.title?.english ?? data.title?.native
-            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
-        case .trendingNow(let data):
-            self.releaseDate.text = String(describing: data.startDate?.year)
-            self.name.text = data.title?.english ?? data.title?.native
-            self.coverImage.setImageFromStringrURL(stringUrl: data.coverImage?.extraLarge ?? "")
-        case .none:
-            return
-        }
-
+        self.releaseDate.text = String(describing: animeData.startDate?.year)
+        self.name.text = animeData.title?.english ?? animeData.title?.native
+        self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
     }
 }

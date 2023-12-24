@@ -23,12 +23,13 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
   public static func objectType(forTypename typename: String) -> ApolloAPI.Object? {
     switch typename {
     case "Query": return AnilistApi.Objects.Query
-    case "Media": return AnilistApi.Objects.Media
-    case "MediaTitle": return AnilistApi.Objects.MediaTitle
     case "Page": return AnilistApi.Objects.Page
+    case "Media": return AnilistApi.Objects.Media
     case "MediaCoverImage": return AnilistApi.Objects.MediaCoverImage
     case "FuzzyDate": return AnilistApi.Objects.FuzzyDate
+    case "MediaTitle": return AnilistApi.Objects.MediaTitle
     case "MediaTrend": return AnilistApi.Objects.MediaTrend
+    case "PageInfo": return AnilistApi.Objects.PageInfo
     default: return nil
     }
   }

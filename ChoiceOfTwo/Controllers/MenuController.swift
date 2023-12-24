@@ -9,34 +9,64 @@ import UIKit
 import AnilistApi
 
 class MenuController: UIViewController, AnimePreviewProtocol {
+
+    
     
     
     //MARK: - Variables
     private let apiClient = ApiClient()
-    private var allTimePopularAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
+//    private var allTimePopularAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
+//        didSet {
+//            DispatchQueue.main.async {
+//                self.allTimePopularAnimeColl.reloadData()
+//                self.allTimePopularAnimeColl.setNeedsDisplay()
+////                print("All time Popular dispatch worked")
+//            }
+//        }
+//    }
+//    private var currentSeasonPopularAnime: [GetAnimeBySeasonQuery.Data.Page.Medium] = [] {
+//        didSet {
+//            DispatchQueue.main.async {
+//                self.currentSeasonPopularColl.reloadData()
+//                self.currentSeasonPopularColl.setNeedsDisplay()
+////                print("Current season dispatch worked")
+//            }
+//        }
+//    }
+//    private var trendingNowAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
+//        didSet {
+//            DispatchQueue.main.async {
+//                self.trendingNowColl.reloadData()
+//                self.trendingNowColl.setNeedsDisplay()
+////                print("Trending now dispatch worked")
+//            }
+//        }
+//    }
+    
+    private var allTimePopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
             DispatchQueue.main.async {
-                self.allTimePopularAnimeColl.reloadData()
-                self.allTimePopularAnimeColl.setNeedsDisplay()
-//                print("All time Popular dispatch worked")
+                self.allTimePopularColl.reloadData()
+                self.allTimePopularColl.setNeedsDisplay()
+                print("All Time Puppular dispatch worked")
             }
         }
     }
-    private var currentSeasonPopularAnime: [GetAnimeBySeasonQuery.Data.Page.Medium] = [] {
+    private var currentSeasonPopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
             DispatchQueue.main.async {
                 self.currentSeasonPopularColl.reloadData()
                 self.currentSeasonPopularColl.setNeedsDisplay()
-//                print("Current season dispatch worked")
+                print("Current season dispatch worked")
             }
         }
     }
-    private var trendingNowAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
+    private var trendingNowAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
             DispatchQueue.main.async {
                 self.trendingNowColl.reloadData()
                 self.trendingNowColl.setNeedsDisplay()
-//                print("Trending now dispatch worked")
+                print("Trending now dispatch worked")
             }
         }
     }
@@ -56,20 +86,20 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         return view
     }()
     private let searchToolsScrollView = SearchToolsScrollView()
-    private let choiceOfTwoButton = CustomButton(
+    private let choiceOfTwoButton = CustomMenuButtonSections(
         title: "Choice of Two",
         hasCustomTint: false,
         customTint: nil,
         systemTintColor: .white)
     private let allTimePopularHeader = SectionHeader(text: "ALL TIME POPULAR")
-    private let allTimePopularAnimeColl: UICollectionView = {
+    private let allTimePopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(AnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(MenuAnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         
         return collectionView
     }()
@@ -81,7 +111,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(AnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(MenuAnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         
         return collectionView
     }()
@@ -93,7 +123,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(AnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(MenuAnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         
         return collectionView
     }()
@@ -106,24 +136,48 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.view.backgroundColor = UIColor(named: "Black")
         
         Task {
-            await self.apiClient.getAnimeBySeason(
+            
+            self.apiClient.getAnimeBy(
                 page: 1,
                 perPage: 20,
                 sort: [.case(.favouritesDesc)],
                 type: .some(.case(.anime)),
                 season: .some(.case(.fall)),
-                seasonYear: 2023) { result in
-                    self.currentSeasonPopularAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-//                    print(self.currentSeasonPopularAnime.count)
+                seasonYear: 2023,
+                format: nil,
+                genre: nil,
+                search: nil) { result in
+                    self.currentSeasonPopularAnimes = result.data?.page?.media?.compactMap({ $0 }) ?? []
+                    print(self.currentSeasonPopularAnimes.count)
                 }
-            await self.apiClient.getAnimeBySort([.case(.popularityDesc)]) { result in
-                self.allTimePopularAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-//                print(self.allTimePopularAnime.count)
-            }
-            await self.apiClient.getAnimeBySort([.case(.trendingDesc)]) { result in
-                self.trendingNowAnime = result.data?.page?.media?.compactMap({ $0 }) ?? []
-//                print(self.currentSeasonPopularAnime.count)
-            }
+            
+            self.apiClient.getAnimeBy(
+                page: 1,
+                perPage: 20,
+                sort: [.case(.popularityDesc)],
+                type: .some(.case(.anime)),
+                season: nil,
+                seasonYear: nil,
+                format: nil,
+                genre: nil,
+                search: nil) { result in
+                    self.allTimePopularAnimes = result.data?.page?.media?.compactMap({ $0 }) ?? []
+                    print(self.allTimePopularAnimes.count)
+                }
+            
+            self.apiClient.getAnimeBy(
+                page: 1,
+                perPage: 20,
+                sort: [.case(.trendingDesc)],
+                type: .some(.case(.anime)),
+                season: nil,
+                seasonYear: nil,
+                format: nil,
+                genre: nil,
+                search: nil) { result in
+                    self.trendingNowAnimes = result.data?.page?.media?.compactMap({ $0 }) ?? []
+                    print(self.trendingNowAnimes.count)
+                }
         }
         
         self.allTimePopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
@@ -132,8 +186,8 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
-        self.allTimePopularAnimeColl.delegate = self
-        self.allTimePopularAnimeColl.dataSource = self
+        self.allTimePopularColl.delegate = self
+        self.allTimePopularColl.dataSource = self
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
         self.setupUI()
@@ -154,16 +208,23 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.view.addSubview(choiceOfTwoButton)
         choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
         
+
+        
         self.contentView.addSubview(allTimePopularHeader)
         allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(allTimePopularAnimeColl)
-        allTimePopularAnimeColl.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.contentView.addSubview(allTimePopularColl)
+        allTimePopularColl.translatesAutoresizingMaskIntoConstraints = false
+        
         self.contentView.addSubview(currentSeasonPopularHeader)
         currentSeasonPopularHeader.translatesAutoresizingMaskIntoConstraints = false
+        
         self.contentView.addSubview(currentSeasonPopularColl)
         currentSeasonPopularColl.translatesAutoresizingMaskIntoConstraints = false
+        
         self.contentView.addSubview(trendingNowHeader)
         trendingNowHeader.translatesAutoresizingMaskIntoConstraints = false
+        
         self.contentView.addSubview(trendingNowColl)
         trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
         
@@ -196,13 +257,13 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            allTimePopularAnimeColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            allTimePopularAnimeColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
-            allTimePopularAnimeColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            allTimePopularAnimeColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
+            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
 
             
-            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularAnimeColl.bottomAnchor, constant: 30),
+            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
             currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -228,17 +289,10 @@ class MenuController: UIViewController, AnimePreviewProtocol {
     
     
     //MARK: - Local func
-//    func didTapCell(_ cell: AnimePreviewCell) {
-//        print("DEBUG:", "Tapped Anime Cell")
-//
-//        let vc = DetailInfoController()
-//        self.navigationController?.pushViewController(vc, animated: true)
-//    }
-    
-    func didTapCell(with type: AnimeType?) {
+    func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
         print("DEBUG:", "Tapped Anime Cell")
         let vc = DetailInfoController()
-        vc.configure(with: type!)
+        vc.configure(with: type)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -271,44 +325,47 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        if collectionView == self.allTimePopularAnimeColl {
-            return self.allTimePopularAnime.count
+        if collectionView == self.allTimePopularColl {
+            return self.allTimePopularAnimes.count
         } else if collectionView == self.currentSeasonPopularColl {
-            return self.currentSeasonPopularAnime.count
+            return self.currentSeasonPopularAnimes.count
         } else {
-            return self.trendingNowAnime.count
+            return self.trendingNowAnimes.count
         }
     }
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if collectionView == self.allTimePopularAnimeColl {
-            guard let cell = allTimePopularAnimeColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? AnimePreviewCell else {
+        if collectionView == self.allTimePopularColl {
+            guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                 fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
             }
-            let preview = self.allTimePopularAnime[indexPath.row]
-            cell.configure(with: AnimeType.popularAllTime(preview))
+            let preview = self.allTimePopularAnimes[indexPath.row]
+            cell.configure(with: preview)
             cell.delegate = self
             return cell
+            
         } else if collectionView == self.currentSeasonPopularColl {
-            guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? AnimePreviewCell else {
+            guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                 fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
             }
             
-            let preview = self.currentSeasonPopularAnime[indexPath.row]
-            cell.configure(with: AnimeType.curentSeasonPopular(preview))
+            let preview = self.currentSeasonPopularAnimes[indexPath.row]
+            cell.configure(with: preview)
             cell.delegate = self
             return cell
         } else {
-            guard let cell = allTimePopularAnimeColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? AnimePreviewCell else {
+            guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                 fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
             }
             
-            let preview = self.trendingNowAnime[indexPath.row]
-            cell.configure(with: AnimeType.trendingNow(preview))
+            let preview = self.trendingNowAnimes[indexPath.row]
+            cell.configure(with: preview)
             cell.delegate = self
             return cell
         }
+        
+        
     }
 }

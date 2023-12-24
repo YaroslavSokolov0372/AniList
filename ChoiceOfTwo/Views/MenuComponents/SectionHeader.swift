@@ -20,14 +20,14 @@ class SectionHeader: UIView {
         return label
     }()
 
-    private let image: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate)
-        iv.contentMode = .scaleToFill
-        iv.tintColor = UIColor(named: "Gray")
-        iv.transform = iv.transform.rotated(by: .pi / 2)
-        return iv
-    }()
+//    private let image: UIImageView = {
+//        let iv = UIImageView()
+//        iv.image = UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate)
+//        iv.contentMode = .scaleToFill
+//        iv.tintColor = UIColor(named: "Gray")
+//        iv.transform = iv.transform.rotated(by: .pi / 2)
+//        return iv
+//    }()
     
     private let moreButton: UIButton = {
       let button = UIButton()

@@ -1,16 +1,4 @@
 
-
-query getMedia($id: Int) {
-  Media (id: $id, type: ANIME) {
-    id
-    title {
-      romaji
-      english
-      native
-    }
-  }
-}
-
 query popularAllTime($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType) {
   Page(page: $page, perPage: $perPage) {
     media(sort: $sort, type: $type) {
@@ -117,3 +105,45 @@ query trendingNow($page: Int, $perPage: Int, $sort: [MediaTrendSort]) {
 
 
 
+query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) {
+  Page(page: $page, perPage: $perPage) {
+    media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear, format: $format, genre: $genre, search: $search) {
+      bannerImage
+      chapters
+      coverImage {
+        medium
+        large
+        color
+        extraLarge
+      }
+      description(asHtml: $asHtml)
+      duration
+      genres
+      episodes
+      meanScore
+      seasonYear
+      startDate {
+        year
+        month
+        day
+      }
+      title {
+        userPreferred
+        native
+        english
+      }
+      source
+      averageScore
+      countryOfOrigin
+      format
+      status
+    }
+    pageInfo {
+      total
+      perPage
+      lastPage
+      hasNextPage
+      currentPage
+    }
+  }
+}

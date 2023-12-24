@@ -8,8 +8,9 @@
 import Foundation
 import AnilistApi
 
-public enum AnimeType {
-    case popularAllTime(PopularAllTimeQuery.Data.Page.Medium)
-    case curentSeasonPopular(GetAnimeBySeasonQuery.Data.Page.Medium)
-    case trendingNow(PopularAllTimeQuery.Data.Page.Medium)
-}
+//public enum AnimeType {
+//    case popularAllTime(PopularAllTimeQuery.Data.Page.Medium)
+//    case curentSeasonPopular(GetAnimeBySeasonQuery.Data.Page.Medium)
+//    case trendingNow(PopularAllTimeQuery.Data.Page.Medium)
+//    case anime(GetAnimeByQuery.Data.Page.Medium)
+//}

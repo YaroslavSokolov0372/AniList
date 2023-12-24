@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+
 extension UITextField {
     func leftImage(_ image: UIImage?, imageSize: CGSize, padding: CGFloat) {
         let imageView = UIImageView(image: image)
