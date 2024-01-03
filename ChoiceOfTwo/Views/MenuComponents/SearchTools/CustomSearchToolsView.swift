@@ -84,9 +84,8 @@ class CustomSearchToolsView: UIView {
         ])
     }
     
-    
     //MARK: - Local func
-    func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
+    public func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
         self.moreButton.addTarget(target, action: selector, for: .touchUpInside)
     }
 }

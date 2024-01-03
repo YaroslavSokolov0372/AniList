@@ -70,7 +70,7 @@ class SectionHeader: UIView {
         ])
     }
     
-    //MARK: - Local func
+    //MARK: - Func
     public func addDidTappedMoreButtonTarget(_ target: Any?, action: Selector) {
         moreButton.addTarget(target, action: action, for: .touchUpInside)
     }

@@ -105,6 +105,9 @@ query trendingNow($page: Int, $perPage: Int, $sort: [MediaTrendSort]) {
 
 
 
+
+
+
 query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) {
   Page(page: $page, perPage: $perPage) {
     media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear, format: $format, genre: $genre, search: $search) {
@@ -137,6 +140,11 @@ query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType
       countryOfOrigin
       format
       status
+      endDate {
+        day
+        month
+        year
+      }
     }
     pageInfo {
       total

@@ -7,7 +7,7 @@ public class GetAnimeByQuery: GraphQLQuery {
   public static let operationName: String = "getAnimeBy"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear format: $format genre: $genre search: $search ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
+      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear format: $format genre: $genre search: $search ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status endDate { __typename day month year } } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
     ))
 
   public var page: GraphQLNullable<Int>
@@ -124,6 +124,7 @@ public class GetAnimeByQuery: GraphQLQuery {
           .field("countryOfOrigin", AnilistApi.CountryCode?.self),
           .field("format", GraphQLEnum<AnilistApi.MediaFormat>?.self),
           .field("status", GraphQLEnum<AnilistApi.MediaStatus>?.self),
+          .field("endDate", EndDate?.self),
         ] }
 
         /// The banner image of the media
@@ -158,6 +159,8 @@ public class GetAnimeByQuery: GraphQLQuery {
         public var format: GraphQLEnum<AnilistApi.MediaFormat>? { __data["format"] }
         /// The current releasing status of the media
         public var status: GraphQLEnum<AnilistApi.MediaStatus>? { __data["status"] }
+        /// The last official release date of the media
+        public var endDate: EndDate? { __data["endDate"] }
 
         /// Page.Medium.CoverImage
         ///
@@ -229,6 +232,29 @@ public class GetAnimeByQuery: GraphQLQuery {
           public var native: String? { __data["native"] }
           /// The official english title
           public var english: String? { __data["english"] }
+        }
+
+        /// Page.Medium.EndDate
+        ///
+        /// Parent Type: `FuzzyDate`
+        public struct EndDate: AnilistApi.SelectionSet {
+          public let __data: DataDict
+          public init(_dataDict: DataDict) { __data = _dataDict }
+
+          public static var __parentType: ApolloAPI.ParentType { AnilistApi.Objects.FuzzyDate }
+          public static var __selections: [ApolloAPI.Selection] { [
+            .field("__typename", String.self),
+            .field("day", Int?.self),
+            .field("month", Int?.self),
+            .field("year", Int?.self),
+          ] }
+
+          /// Numeric Day (24)
+          public var day: Int? { __data["day"] }
+          /// Numeric Month (3)
+          public var month: Int? { __data["month"] }
+          /// Numeric Year (2017)
+          public var year: Int? { __data["year"] }
         }
       }
 

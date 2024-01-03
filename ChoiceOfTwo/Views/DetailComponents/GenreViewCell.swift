@@ -16,10 +16,15 @@ class GenreViewCell: UICollectionViewCell {
         label.text = ""
         label.textColor = .white
         label.textAlignment = .center
-        label.layer.borderColor = UIColor.red.cgColor
-        label.layer.borderWidth = 10
-        label.layer.cornerRadius = 10
-        label.font = UIFont().JosefinSans(font: .regular, size: 12)
+        
+//        label.layer.borderWidth = 12
+        //        label.layer.borderColor = UIColor.red.cgColor
+//                label.layer.cornerRadius = 12
+        //        label.layer.borderWidth = 10
+//                label.layer.cornerRadius = 10
+        //        label.font = UIFont().JosefinSans(font: .regular, size: 12)
+        
+        label.font = UIFont().JosefinSans(font: .regular, size: 15)
         return label
     }()
     
@@ -29,10 +34,6 @@ class GenreViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setup()
     }
-//    init() {
-//        super.init(frame: .zero)
-//        setup()
-//    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -59,10 +60,21 @@ class GenreViewCell: UICollectionViewCell {
 
 
 extension GenreViewCell {
-    public func configure(genreName: String, borderColor: UIColor, borderWidth: CGFloat) {
+    public func configure(genreName: String, borderWidth: CGFloat, backgroundColor: String?) {
+        if let hexStr = backgroundColor {
+//            self.genreLabel.layer.borderColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)?.cgColor
+//            self.genreLabel.layer.cornerRadius = 30
+            self.genreLabel.layer.cornerRadius = 30
+            self.genreLabel.backgroundColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
+        } else {
+            self.genreLabel.backgroundColor = UIColor(.white.opacity(0.5))
+//            self.genreLabel.layer.cornerRadius = 12
+//            self.genreLabel.layer.borderColor = UIColor(.white.opacity(0.5)).cgColor
+        }
+        self.genreLabel.layer.cornerRadius = 12
         self.genreLabel.text = genreName
-        self.genreLabel.layer.borderColor = borderColor.cgColor
-        self.genreLabel.layer.borderWidth = borderWidth
+//        self.genreLabel.layer.borderColor = borderColor.cgColor
+//        self.genreLabel.layer.borderWidth = borderWidth
     }
 }
 

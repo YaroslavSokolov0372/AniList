@@ -79,19 +79,33 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         view.showsVerticalScrollIndicator = false
         return view
     }()
+    
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Black")
 //        view.backgroundColor = .red
         return view
     }()
+    
     private let searchToolsScrollView = SearchToolsScrollView()
+    
     private let choiceOfTwoButton = CustomMenuButtonSections(
         title: "Choice of Two",
         hasCustomTint: false,
         customTint: nil,
         systemTintColor: .white)
+    
+    private let menuButton: UIButton = {
+        
+        
+        let button = UIButton()
+        button.setImage(UIImage(named: "Menu")!.resized(to: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), for: .normal)
+        button.imageView?.tintColor = .white
+        return button
+    }()
+    
     private let allTimePopularHeader = SectionHeader(text: "ALL TIME POPULAR")
+    
     private let allTimePopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -103,7 +117,9 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         
         return collectionView
     }()
+    
     private let currentSeasonPopularHeader = SectionHeader(text: "POPULAR THIS SEASON")
+    
     private let currentSeasonPopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -115,7 +131,9 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         
         return collectionView
     }()
+    
     private let trendingNowHeader = SectionHeader(text: "TRENDING NOW")
+    
     private let trendingNowColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -179,10 +197,10 @@ class MenuController: UIViewController, AnimePreviewProtocol {
                     print(self.trendingNowAnimes.count)
                 }
         }
-        
         self.allTimePopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
         self.currentSeasonPopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
         self.trendingNowHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
+        self.searchToolsScrollView.addDidTappedSortTargets(self, selector: #selector(didTappedSortButton))
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
@@ -191,6 +209,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
         self.setupUI()
+        
     }
     
     //MARK: - Setup UI
@@ -300,6 +319,10 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         print("DEBUG:", "Tapped more anime button")
         let vc = MoreAnimeController()
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc private func didTappedSortButton(_ sender: CustomSearchToolsView) {
+        print(sender.frame)
     }
 }
 
