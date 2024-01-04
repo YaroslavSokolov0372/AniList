@@ -12,29 +12,29 @@ class SearchToolsScrollView: UIView {
     //MARK: - Variables
     private let searchToolsViews: [UIView] = {
         var newSearchTools = [UIView]()
-        for tool in searchTools.allCases {
-            if tool == .search {
-//                newSearchTools.append(SearchTextFieldView(title: tool.rawValue))
-            } else {
-                newSearchTools.append(CustomSearchToolsView(title: tool.rawValue))
-            }
+        for tool in SearchTools.allCases {
+            let searchTool = CustomSearchToolView()
+            searchTool.configure(with: tool)
+//                newSearchTools.append(CustomSearchToolsView(title: tool.rawValue))
+            newSearchTools.append(searchTool)
+            
         }
         return newSearchTools
     }()
     
     private let textField = SearchTextFieldView(title: "Search")
+    
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = UIColor(named: "Black")
-//        view.backgroundColor = .blue
         view.alwaysBounceHorizontal = true
         view.showsHorizontalScrollIndicator = false
         return view
     }()
+    
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Black")
-//        view.backgroundColor = .orange
         return view
     }()
     
@@ -120,11 +120,19 @@ class SearchToolsScrollView: UIView {
     
     //MARK: - Func
     
-    public func addDidTappedSortTargets(_ target: Any?, selector: Selector) {
-        
-        for sortView in searchToolsViews {
-            let searchToolView = sortView as! CustomSearchToolsView
-            searchToolView.addDidTappedSortTarget(target, selector: selector)
+    public func configureDelegate(_ controller: UIViewController) {
+        for toolView in searchToolsViews {
+            let view = toolView as! CustomSearchToolView
+            
+            view.delegate = controller as? SearchToolButton
         }
     }
+    
+//    public func addDidTappedSortTargets(_ target: Any?, selector: Selector) {
+//        
+//        for sortView in searchToolsViews {
+//            let searchToolView = sortView as! CustomSearchToolView
+//            searchToolView.addDidTappedSortTarget(target, selector: selector)
+//        }
+//    }
 }

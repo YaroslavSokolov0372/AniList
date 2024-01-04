@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D1197C842B45E58F00B7174D /* ToolsOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */; };
 		D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3362B38B2B30021F92F /* hexStringToColor.swift */; };
 		D160B3392B3C4D240021F92F /* UILabelHeightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3382B3C4D240021F92F /* UILabelHeightText.swift */; };
 		D160B33B2B3C559A0021F92F /* SideInfoEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */; };
@@ -52,8 +53,7 @@
 		D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8462B28B40A00E9DE4C /* MenuAnimePreviewCell.swift */; };
 		D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */; };
 		D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8552B2B53C200E9DE4C /* Season.swift */; };
-		D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */; };
-		D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */; };
+		D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */; };
 		D1CDF75F2B3C5D74001C3668 /* SideInfoViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */; };
 		D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */; };
 		D1CDF7632B3C856D001C3668 /* UIColorLighter&Darker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */; };
@@ -91,6 +91,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsOptionsCell.swift; sourceTree = "<group>"; };
 		D160B3362B38B2B30021F92F /* hexStringToColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexStringToColor.swift; sourceTree = "<group>"; };
 		D160B3382B3C4D240021F92F /* UILabelHeightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelHeightText.swift; sourceTree = "<group>"; };
 		D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoEnum.swift; sourceTree = "<group>"; };
@@ -134,8 +135,7 @@
 		D1C9C8462B28B40A00E9DE4C /* MenuAnimePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAnimePreviewCell.swift; sourceTree = "<group>"; };
 		D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynImageFetching.swift; sourceTree = "<group>"; };
 		D1C9C8552B2B53C200E9DE4C /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
-		D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeType.swift; sourceTree = "<group>"; };
-		D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchToolsView.swift; sourceTree = "<group>"; };
+		D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchToolView.swift; sourceTree = "<group>"; };
 		D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoViewCell.swift; sourceTree = "<group>"; };
 		D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringToDateConverter.swift; sourceTree = "<group>"; };
 		D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColorLighter&Darker.swift"; sourceTree = "<group>"; };
@@ -178,7 +178,8 @@
 			children = (
 				D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */,
 				D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */,
-				D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolsView.swift */,
+				D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */,
+				D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */,
 			);
 			path = SearchTools;
 			sourceTree = "<group>";
@@ -229,7 +230,6 @@
 			isa = PBXGroup;
 			children = (
 				D1C9C8552B2B53C200E9DE4C /* Season.swift */,
-				D1C9C8572B2B71B900E9DE4C /* AnimeType.swift */,
 				D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */,
 				D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */,
 			);
@@ -521,10 +521,11 @@
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomMenuButtonSections.swift in Sources */,
+				D1197C842B45E58F00B7174D /* ToolsOptionsCell.swift in Sources */,
 				D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */,
 				D16742D92B34A41700C9F033 /* ImageShape.swift in Sources */,
 				D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */,
-				D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolsView.swift in Sources */,
+				D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolView.swift in Sources */,
 				D1C54FD02B3873EC000182E2 /* ResizeImage.swift in Sources */,
 				D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */,
@@ -541,7 +542,6 @@
 				D16742DB2B35D53900C9F033 /* DetailAnimePreviewImage.swift in Sources */,
 				D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */,
 				D1B89D9E2B24C493007447A5 /* SceneDelegate.swift in Sources */,
-				D1C9C8582B2B71B900E9DE4C /* AnimeType.swift in Sources */,
 				D16742D32B33388C00C9F033 /* MoreAnimeController.swift in Sources */,
 				D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */,
 			);

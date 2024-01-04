@@ -8,40 +8,10 @@
 import UIKit
 import AnilistApi
 
-class MenuController: UIViewController, AnimePreviewProtocol {
-
-    
-    
+class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
     
     //MARK: - Variables
     private let apiClient = ApiClient()
-//    private var allTimePopularAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
-//        didSet {
-//            DispatchQueue.main.async {
-//                self.allTimePopularAnimeColl.reloadData()
-//                self.allTimePopularAnimeColl.setNeedsDisplay()
-////                print("All time Popular dispatch worked")
-//            }
-//        }
-//    }
-//    private var currentSeasonPopularAnime: [GetAnimeBySeasonQuery.Data.Page.Medium] = [] {
-//        didSet {
-//            DispatchQueue.main.async {
-//                self.currentSeasonPopularColl.reloadData()
-//                self.currentSeasonPopularColl.setNeedsDisplay()
-////                print("Current season dispatch worked")
-//            }
-//        }
-//    }
-//    private var trendingNowAnime: [PopularAllTimeQuery.Data.Page.Medium] = [] {
-//        didSet {
-//            DispatchQueue.main.async {
-//                self.trendingNowColl.reloadData()
-//                self.trendingNowColl.setNeedsDisplay()
-////                print("Trending now dispatch worked")
-//            }
-//        }
-//    }
     
     private var allTimePopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
@@ -52,6 +22,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             }
         }
     }
+    
     private var currentSeasonPopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
             DispatchQueue.main.async {
@@ -61,6 +32,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             }
         }
     }
+    
     private var trendingNowAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
             DispatchQueue.main.async {
@@ -70,12 +42,16 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             }
         }
     }
-
+    
+    private var isChoosedOpened: Bool = false
+    
+    private var choosedTool: SearchTools?
+    
     //MARK: - UI Components
     private let mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = UIColor(named: "Black")
-//        view.backgroundColor = .yellow
+        //        view.backgroundColor = .yellow
         view.showsVerticalScrollIndicator = false
         return view
     }()
@@ -83,11 +59,18 @@ class MenuController: UIViewController, AnimePreviewProtocol {
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Black")
-//        view.backgroundColor = .red
+        //        view.backgroundColor = .red
         return view
     }()
     
     private let searchToolsScrollView = SearchToolsScrollView()
+    
+    private let choosedToolTableView: UITableView = {
+        let tableView = UITableView(frame: .zero)
+        tableView.backgroundColor = .clear
+        tableView.register(ToolsOptionsCell.self, forCellReuseIdentifier: "Cell")
+        return tableView
+    }()
     
     private let choiceOfTwoButton = CustomMenuButtonSections(
         title: "Choice of Two",
@@ -154,7 +137,6 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.view.backgroundColor = UIColor(named: "Black")
         
         Task {
-            
             self.apiClient.getAnimeBy(
                 page: 1,
                 perPage: 20,
@@ -197,10 +179,11 @@ class MenuController: UIViewController, AnimePreviewProtocol {
                     print(self.trendingNowAnimes.count)
                 }
         }
+        
         self.allTimePopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
         self.currentSeasonPopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
         self.trendingNowHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
-        self.searchToolsScrollView.addDidTappedSortTargets(self, selector: #selector(didTappedSortButton))
+        //        self.searchToolsScrollView.addDidTappedSortTargets(self, selector: #selector(didTappedSortButton))
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
@@ -208,6 +191,11 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.allTimePopularColl.dataSource = self
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
+        self.choosedToolTableView.delegate = self
+        self.choosedToolTableView.dataSource = self
+        
+        searchToolsScrollView.configureDelegate(self)
+        
         self.setupUI()
         
     }
@@ -227,7 +215,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.view.addSubview(choiceOfTwoButton)
         choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
         
-
+        
         
         self.contentView.addSubview(allTimePopularHeader)
         allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
@@ -247,12 +235,13 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.contentView.addSubview(trendingNowColl)
         trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
         
+        
         NSLayoutConstraint.activate([
             
             self.choiceOfTwoButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             self.choiceOfTwoButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1),
             self.choiceOfTwoButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-        
+            
             mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
             mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mainScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -280,7 +269,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
             allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
             allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-
+            
             
             currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
@@ -297,7 +286,7 @@ class MenuController: UIViewController, AnimePreviewProtocol {
             trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
             trendingNowHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-
+            
             trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
             trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
@@ -321,8 +310,103 @@ class MenuController: UIViewController, AnimePreviewProtocol {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    @objc private func didTappedSortButton(_ sender: CustomSearchToolsView) {
-        print(sender.frame)
+    func getToolType(_ toolType: SearchTools, sender: UIButton) {
+        
+        let coordinats = sender.superview?.convert(sender.frame.origin, to: nil)
+        
+        if isChoosedOpened {
+            
+            UIView.animate(withDuration: 0.3) {
+                self.choosedToolTableView.frame = CGRect(
+                    x: coordinats!.x,
+                    y: coordinats!.y,
+                    width: CGFloat(self.choosedToolTableView.numberOfSections * 150),
+                    height: CGFloat(self.choosedToolTableView.numberOfSections * 75))
+                
+                self.choosedToolTableView.alpha = 0.0
+            }
+            
+            self.isChoosedOpened = false
+            
+        } else {
+            
+            self.choosedTool = toolType
+            self.isChoosedOpened = true
+            
+            self.view.addSubview(choosedToolTableView)
+            self.choosedToolTableView.alpha = 0.0
+            
+            choosedToolTableView.frame = CGRect(
+                x: coordinats!.x,
+                y: coordinats!.y,
+                width: CGFloat(choosedToolTableView.numberOfSections * 150),
+                height: CGFloat(choosedToolTableView.numberOfSections * 75))
+            
+            UIView.animate(withDuration: 0.3) {
+                self.choosedToolTableView.frame = CGRect(
+                    x: self.choosedToolTableView.frame.minX,
+                    y: 150,
+                    width: self.choosedToolTableView.frame.width,
+                    height: self.choosedToolTableView.frame.height)
+                
+                self.choosedToolTableView.alpha = 1.0
+                print(toolType.rawValue)
+            }
+        }
+    }
+    
+    @objc private func didTappedSortButton(_ sender: UIButton) {
+        //        print(sender.frame)
+        
+        
+        
+        let coordinats = sender.superview?.convert(sender.frame.origin, to: nil)
+        
+        //        print("Sender type - \(sender.toolType)")
+        //        switch sender.type {
+        //        case .genre:
+        //            self.choosedTool = .genre
+        //        case .year:
+        //            self.choosedTool = .year
+        //        case .season:
+        //            self.choosedTool = .season
+        //        case .format:
+        //            self.choosedTool = .format
+        //        case .none:
+        //            return
+        //        }
+        
+        guard let tool = sender.title(for: .normal) else {
+            print("DEBUG:", "ChoosedToolOption is nil")
+            return
+        }
+        print(tool)
+        //        self.choosedTool = sender.type
+        //        choosedToolTableView.frame = CGRect(
+        //            x: coordinats!.x,
+        //            y: coordinats!.x,
+        //            width: CGFloat(choosedToolTableView.numberOfSections * 100),
+        //            height: CGFloat(choosedToolTableView.numberOfSections * 100))
+        //        self.view.addSubview(choosedToolTableView)
+        //        print(sender.superview?.convert(sender.frame.origin, to: nil))
+        //        let tab = AdditionalSearchToolsCell(frame:
+        //                                                CGRect(
+        //                                                    x: coordinats!.x,
+        //                                                    y: coordinats!.y + 40,
+        //                                                    width: 160,
+        //                                                    height: 40))
+        //
+        //        self.view.addSubview(tab)
+        //        let label: UILabel = {
+        //            let label = UILabel()
+        //            label.frame = CGRect(x: coordinats!.x, y: coordinats!.y, width: 10, height: 10)
+        //            label.text = "H"
+        //            label.font = UIFont().JosefinSans(font: .medium, size: 15)
+        //            label.textColor = .white
+        //
+        //            return label
+        //        }()
+        //        self.view.addSubview(label)
     }
 }
 
@@ -356,7 +440,6 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
             return self.trendingNowAnimes.count
         }
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
@@ -392,3 +475,34 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         
     }
 }
+
+
+extension MenuController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch choosedTool {
+        case .format:
+            return GraphQLEnum<MediaFormat>.allCases.count
+        case .season:
+            return GraphQLEnum<MediaSeason>.allCases.count
+        case .genre:
+            return 13
+        case .year:
+            return 24
+        case .none:
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? ToolsOptionsCell else {
+            fatalError("Unenable to dequeue AdditionalSearchToolsCell in MenuController")
+        }
+        cell.configure()
+        
+        return cell
+    }
+}
+
+
+

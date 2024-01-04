@@ -6,12 +6,21 @@
 //
 
 import Foundation
+import AnilistApi
 
-
-enum searchTools: String, CaseIterable {
-    case search = "Search"
+enum SearchTools: String, CaseIterable {
+//    case search = "Search"
     case genre = "Genres"
     case year = "Year"
     case season = "Season"
     case format = "Format"
+}
+
+
+enum ToolsOptions {
+    case search(GraphQLNullable<String>)
+    case genre(GraphQLNullable<String>)
+    case year(GraphQLNullable<Int>)
+    case season(GraphQLNullable<GraphQLEnum<MediaSeason>>)
+    case format(GraphQLNullable<GraphQLEnum<MediaFormat>>)
 }

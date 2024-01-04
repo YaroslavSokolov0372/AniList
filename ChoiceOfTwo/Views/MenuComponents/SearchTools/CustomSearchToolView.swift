@@ -7,11 +7,19 @@
 
 import UIKit
 
-class CustomSearchToolsView: UIView {
+protocol SearchToolButton {
     
+    func getToolType(_ toolType: SearchTools, sender: UIButton)
+    
+}
+
+class CustomSearchToolView: UIView {
+    
+    private  var toolType: SearchTools!
+    public var delegate: SearchToolButton?
     
     //MARK: UI Components
-    private let title: UILabel = {
+    public let title: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.text = "Genres"
@@ -41,11 +49,15 @@ class CustomSearchToolsView: UIView {
     
     
     //MARK: - Lifecycle
-    init(title: String) {
+//    init(title: String) {
+    init() {
         super.init(frame: .zero)
         self.backgroundColor = UIColor(named: "Black")
-        self.title.text = title
+//        self.title.text = title
+        
+        
         setupUI()
+        self.moreButton.addTarget(self, action: #selector(getToolType), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -85,13 +97,18 @@ class CustomSearchToolsView: UIView {
     }
     
     //MARK: - Local func
-    public func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
-        self.moreButton.addTarget(target, action: selector, for: .touchUpInside)
+//    public func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
+//        self.moreButton.addTarget(target, action: selector, for: .touchUpInside)
+//    }
+    
+    @objc private func getToolType() {
+        self.delegate?.getToolType(toolType, sender: moreButton)
     }
 }
 
-extension CustomSearchToolsView {
-    func configure(with tool: searchTools) {
+extension CustomSearchToolView {
+    func configure(with tool: SearchTools) {
         self.title.text = tool.rawValue
+        self.toolType = tool
     }
 }
