@@ -8,9 +8,31 @@
 import UIKit
 import AnilistApi
 
-class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
+class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol {
+
     
+
     //MARK: - Variables
+    private var choosedGenres: [Genre] = []
+    
+    private var choosedYear: Int?
+    
+    private var choosedSeason: MediaSeason?
+    
+    private var choosedFormats: [MediaFormat] = []
+    
+    private var searchStringAnime: String?
+    
+    private var isChoosedOpened: Bool = false
+    
+    private var choosedTool: SearchTool?
+    
+    private var scrollViewX: CGFloat = .zero
+    
+    private var xChoosedTool: CGFloat = .zero
+    
+    private var shouldDetectScrollStart = false
+    
     private let apiClient = ApiClient()
     
     private var allTimePopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
@@ -43,10 +65,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
         }
     }
     
-    private var isChoosedOpened: Bool = false
-    
-    private var choosedTool: SearchTools?
-    
     //MARK: - UI Components
     private let mainScrollView: UIScrollView = {
         let view = UIScrollView()
@@ -65,11 +83,18 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
     
     private let searchToolsScrollView = SearchToolsScrollView()
     
-    private let choosedToolTableView: UITableView = {
-        let tableView = UITableView(frame: .zero)
-        tableView.backgroundColor = .clear
-        tableView.register(ToolsOptionsCell.self, forCellReuseIdentifier: "Cell")
-        return tableView
+    private let choosedToolCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.headerReferenceSize = CGSize(width: 0, height: 0)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        collectionView.backgroundColor = .red
+        collectionView.backgroundColor = UIColor(named: "DarkBlack")
+        collectionView.register(ToolsOptionsCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.verticalScrollIndicatorInsets.top = .zero
+        collectionView.layer.cornerRadius = 12
+        return collectionView
     }()
     
     private let choiceOfTwoButton = CustomMenuButtonSections(
@@ -79,8 +104,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
         systemTintColor: .white)
     
     private let menuButton: UIButton = {
-        
-        
         let button = UIButton()
         button.setImage(UIImage(named: "Menu")!.resized(to: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .white
@@ -135,6 +158,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = UIColor(named: "Black")
+        
         
         Task {
             self.apiClient.getAnimeBy(
@@ -191,15 +215,30 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
         self.allTimePopularColl.dataSource = self
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
-        self.choosedToolTableView.delegate = self
-        self.choosedToolTableView.dataSource = self
+        self.choosedToolCollectionView.delegate = self
+        self.choosedToolCollectionView.dataSource = self
         
-        searchToolsScrollView.configureDelegate(self)
+        self.searchToolsScrollView.configureDelegate(self)
         
         self.setupUI()
         
     }
     
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
+            if shouldDetectScrollStart {
+                scrollViewX = scrollView.contentOffset.x
+            }
+            shouldDetectScrollStart = false
+        
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == searchToolsScrollView.getScrollView() {
+            self.choosedToolCollectionView.frame.origin.x = self.xChoosedTool - scrollView.contentOffset.x
+            choosedToolCollectionView.frame.origin.x = xChoosedTool - (scrollView.contentOffset.x - scrollViewX)
+        }
+    }
     //MARK: - Setup UI
     private func setupUI() {
         
@@ -297,6 +336,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
     
     
     //MARK: - Local func
+    @objc private func didTappedMoreButton() {
+        print("DEBUG:", "Tapped more anime button")
+        let vc = MoreAnimeController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
         print("DEBUG:", "Tapped Anime Cell")
         let vc = DetailInfoController()
@@ -304,203 +349,260 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButton {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    @objc private func didTappedMoreButton() {
-        print("DEBUG:", "Tapped more anime button")
-        let vc = MoreAnimeController()
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    func getToolType(_ toolType: SearchTools, sender: UIButton) {
+    func toolTapped(_ toolType: SearchTool, sender: UIButton) {
         
         let coordinats = sender.superview?.convert(sender.frame.origin, to: nil)
+        self.xChoosedTool = coordinats!.x
+        self.shouldDetectScrollStart = true
+        
         
         if isChoosedOpened {
-            
             UIView.animate(withDuration: 0.3) {
-                self.choosedToolTableView.frame = CGRect(
-                    x: coordinats!.x,
-                    y: coordinats!.y,
-                    width: CGFloat(self.choosedToolTableView.numberOfSections * 150),
-                    height: CGFloat(self.choosedToolTableView.numberOfSections * 75))
+                self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y - 10
+                self.choosedToolCollectionView.alpha = 0.0
+            } completion: { _ in
+                self.isChoosedOpened = false
                 
-                self.choosedToolTableView.alpha = 0.0
+                if toolType != self.choosedTool {
+                    self.toolTapped(toolType, sender: sender)
+                }
+                self.choosedToolCollectionView.reloadData()
             }
-            
-            self.isChoosedOpened = false
-            
         } else {
             
             self.choosedTool = toolType
             self.isChoosedOpened = true
+            self.contentView.addSubview(choosedToolCollectionView)
+            choosedToolCollectionView.translatesAutoresizingMaskIntoConstraints = false
             
-            self.view.addSubview(choosedToolTableView)
-            self.choosedToolTableView.alpha = 0.0
+            self.choosedToolCollectionView.alpha = 0.0
             
-            choosedToolTableView.frame = CGRect(
+            choosedToolCollectionView.frame = CGRect(
                 x: coordinats!.x,
-                y: coordinats!.y,
-                width: CGFloat(choosedToolTableView.numberOfSections * 150),
-                height: CGFloat(choosedToolTableView.numberOfSections * 75))
+                y: 80,
+                width: 150,
+                height: choosedTool == .season ? 160 : 320
+                )
             
             UIView.animate(withDuration: 0.3) {
-                self.choosedToolTableView.frame = CGRect(
-                    x: self.choosedToolTableView.frame.minX,
-                    y: 150,
-                    width: self.choosedToolTableView.frame.width,
-                    height: self.choosedToolTableView.frame.height)
-                
-                self.choosedToolTableView.alpha = 1.0
-                print(toolType.rawValue)
+                self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y + 10
+                self.choosedToolCollectionView.alpha = 1.0
             }
+            
+            choosedToolCollectionView.reloadData()
+            choosedToolCollectionView.setNeedsLayout()
+            choosedToolCollectionView.setNeedsDisplay()
         }
     }
     
-    @objc private func didTappedSortButton(_ sender: UIButton) {
-        //        print(sender.frame)
-        
-        
-        
-        let coordinats = sender.superview?.convert(sender.frame.origin, to: nil)
-        
-        //        print("Sender type - \(sender.toolType)")
-        //        switch sender.type {
-        //        case .genre:
-        //            self.choosedTool = .genre
-        //        case .year:
-        //            self.choosedTool = .year
-        //        case .season:
-        //            self.choosedTool = .season
-        //        case .format:
-        //            self.choosedTool = .format
-        //        case .none:
-        //            return
-        //        }
-        
-        guard let tool = sender.title(for: .normal) else {
-            print("DEBUG:", "ChoosedToolOption is nil")
-            return
+    func removeButtonTapped(_ toolType: SearchTool) {
+        switch toolType {
+        case .genre:
+            self.choosedGenres = []
+            self.searchToolsScrollView.addOption(toolType: toolType, text: "", tool: toolType, option: choosedGenres)
+        case .year:
+            self.choosedYear = nil
+        case .season:
+            self.choosedSeason = nil
+        case .format:
+            self.choosedFormats = []
         }
-        print(tool)
-        //        self.choosedTool = sender.type
-        //        choosedToolTableView.frame = CGRect(
-        //            x: coordinats!.x,
-        //            y: coordinats!.x,
-        //            width: CGFloat(choosedToolTableView.numberOfSections * 100),
-        //            height: CGFloat(choosedToolTableView.numberOfSections * 100))
-        //        self.view.addSubview(choosedToolTableView)
-        //        print(sender.superview?.convert(sender.frame.origin, to: nil))
-        //        let tab = AdditionalSearchToolsCell(frame:
-        //                                                CGRect(
-        //                                                    x: coordinats!.x,
-        //                                                    y: coordinats!.y + 40,
-        //                                                    width: 160,
-        //                                                    height: 40))
-        //
-        //        self.view.addSubview(tab)
-        //        let label: UILabel = {
-        //            let label = UILabel()
-        //            label.frame = CGRect(x: coordinats!.x, y: coordinats!.y, width: 10, height: 10)
-        //            label.text = "H"
-        //            label.font = UIFont().JosefinSans(font: .medium, size: 15)
-        //            label.textColor = .white
-        //
-        //            return label
-        //        }()
-        //        self.view.addSubview(label)
+        self.choosedToolCollectionView.reloadData()
+    }
+    
+    func optionTapped(sender: UIButton, text: String, tool: SearchTool, choosedOption: Any) {
+        let cell = sender.superview as! ToolsOptionsCell
+        switch tool {
+        case .genre:
+            
+            
+            let choosedGenre = choosedOption as! Genre
+            if self.choosedGenres.contains(choosedGenre) {
+                self.choosedGenres.remove(at: self.choosedGenres.firstIndex(of: choosedGenre)!)
+                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedGenres)
+                cell.markAsUnchoosed()
+            } else {
+                self.choosedGenres.append(choosedGenre)
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedGenres)
+                cell.markAsChoosed()
+                
+//                let cell = sender.superview as! ToolsOptionsCell
+//                let index = choosedToolCollectionView.indexPath(for: cell)
+//                if self.choosedGenres.contains(Genre.allCases[index!.row]) {
+//                    choosedToolCollectionView.cellForItem(at: index!)
+//                    cell.markAsChoosed()
+//                } else {
+//                    cell.markAsUnchoosed()
+//                }
+            }
+            
+        case .year:
+            if self.choosedYear == (choosedOption as! Int) {
+                
+            } else {
+                self.choosedYear = (choosedOption as! Int)
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedYear!)
+            }
+            return
+        case .season:
+            
+            if choosedSeason == (choosedOption as! MediaSeason) {
+                
+            } else {
+                self.choosedSeason = (choosedOption as! MediaSeason)
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedSeason!)
+            }
+            return
+        case .format:
+                let choosedFormat = choosedOption as! MediaFormat
+                if self.choosedFormats.contains(choosedFormat) {
+                    self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedFormat)
+                    cell.markAsUnchoosed()
+                } else {
+                    self.choosedFormats.append(choosedFormat)
+                    self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedFormats)
+                    cell.markAsUnchoosed()
+                    
+                }
+        }
     }
 }
 
-extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout  {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width * 0.44, height: collectionView.frame.height * 1)
+        if collectionView != choosedToolCollectionView {
+            return CGSize(width: collectionView.frame.width * 0.44, height: collectionView.frame.height * 1)
+        } else {
+            return CGSize(width: 150, height: 40)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
+        if collectionView != choosedToolCollectionView {
+            return UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
+        } else {
+            return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
+        }
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+        if collectionView != choosedToolCollectionView {
+            return 10
+        } else {
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 25
+        if collectionView != choosedToolCollectionView {
+            return 25
+        } else {
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if collectionView == self.allTimePopularColl {
-            return self.allTimePopularAnimes.count
-        } else if collectionView == self.currentSeasonPopularColl {
-            return self.currentSeasonPopularAnimes.count
+        if collectionView != choosedToolCollectionView {
+            if collectionView == self.allTimePopularColl {
+                return self.allTimePopularAnimes.count
+            } else if collectionView == self.currentSeasonPopularColl {
+                return self.currentSeasonPopularAnimes.count
+            } else {
+                return self.trendingNowAnimes.count
+            }
         } else {
-            return self.trendingNowAnimes.count
+            switch choosedTool {
+                case .format:
+                    return GraphQLEnum<MediaFormat>.allCases.count
+                case .season:
+                    return GraphQLEnum<MediaSeason>.allCases.count
+                case .genre:
+                return Genre.allCases.count
+                case .year:
+                return choosedTool!.yearCount
+                case .none:
+                    return 0
+            }
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if collectionView == self.allTimePopularColl {
-            guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
-                fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                
+        if collectionView != choosedToolCollectionView {
+            if collectionView == self.allTimePopularColl {
+                guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
+                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                }
+                let preview = self.allTimePopularAnimes[indexPath.row]
+                cell.configure(with: preview)
+                cell.delegate = self
+                return cell
+                
+            } else if collectionView == self.currentSeasonPopularColl {
+                guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
+                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                }
+                
+                let preview = self.currentSeasonPopularAnimes[indexPath.row]
+                cell.configure(with: preview)
+                cell.delegate = self
+                return cell
+            } else {
+                guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
+                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                }
+                
+                let preview = self.trendingNowAnimes[indexPath.row]
+                cell.configure(with: preview)
+                cell.delegate = self
+                return cell
             }
-            let preview = self.allTimePopularAnimes[indexPath.row]
-            cell.configure(with: preview)
-            cell.delegate = self
-            return cell
-            
-        } else if collectionView == self.currentSeasonPopularColl {
-            guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
-                fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
-            }
-            
-            let preview = self.currentSeasonPopularAnimes[indexPath.row]
-            cell.configure(with: preview)
-            cell.delegate = self
-            return cell
         } else {
-            guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
-                fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+            guard let cell = choosedToolCollectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? ToolsOptionsCell else {
+                fatalError("Unenable to dequeue AdditionalSearchToolsCell in MenuController")
             }
             
-            let preview = self.trendingNowAnimes[indexPath.row]
-            cell.configure(with: preview)
+            switch choosedTool {
+            case .format:
+                let formatByIndex = MediaFormat.allCases[indexPath.row]
+                if choosedFormats.first(where: { $0 == formatByIndex }) != nil {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsChoosed()
+                } else {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsUnchoosed()
+                }
+            case .genre:
+                let genreByIndex = Genre.allCases[indexPath.row]
+                if choosedGenres.first(where: { $0 == genreByIndex}) != nil {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsChoosed()
+                } else {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsUnchoosed()
+                }
+            case .season:
+                let season = MediaSeason.allCases[indexPath.row]
+                if choosedSeason == season {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsChoosed()
+                } else {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsUnchoosed()
+                }
+            case .year:
+                cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+            case .none:
+                cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+            }
+            
             cell.delegate = self
             return cell
         }
-        
-        
-    }
-}
-
-
-extension MenuController: UITableViewDataSource, UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch choosedTool {
-        case .format:
-            return GraphQLEnum<MediaFormat>.allCases.count
-        case .season:
-            return GraphQLEnum<MediaSeason>.allCases.count
-        case .genre:
-            return 13
-        case .year:
-            return 24
-        case .none:
-            return 0
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? ToolsOptionsCell else {
-            fatalError("Unenable to dequeue AdditionalSearchToolsCell in MenuController")
-        }
-        cell.configure()
-        
-        return cell
     }
 }
 

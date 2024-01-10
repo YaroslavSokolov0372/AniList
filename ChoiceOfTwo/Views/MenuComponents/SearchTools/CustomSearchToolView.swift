@@ -6,17 +6,20 @@
 //
 
 import UIKit
+import AnilistApi
 
-protocol SearchToolButton {
+protocol SearchToolButtonProtocol {
+    func toolTapped(_ toolType: SearchTool, sender: UIButton)
     
-    func getToolType(_ toolType: SearchTools, sender: UIButton)
-    
+    func removeButtonTapped(_ toolType: SearchTool)
 }
 
 class CustomSearchToolView: UIView {
     
-    private  var toolType: SearchTools!
-    public var delegate: SearchToolButton?
+    //MARK: - Variables
+    private  var toolType: SearchTool!
+    
+    public var delegate: SearchToolButtonProtocol?
     
     //MARK: UI Components
     public let title: UILabel = {
@@ -46,18 +49,46 @@ class CustomSearchToolView: UIView {
         return button
     }()
     
+    private var choosedFirstOption: UILabel = {
+      let label = UILabel()
+        label.font = UIFont().JosefinSans(font: .regular, size: 10)
+        label.layer.masksToBounds = true
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor(named: "Orange")
+        label.layer.cornerRadius = 6
+        return label
+    }()
+    
+    private var choosedMoreOptions: UILabel = {
+      let label = UILabel()
+        label.font = UIFont().JosefinSans(font: .regular, size: 10)
+        label.layer.masksToBounds = true
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor(named: "Orange")
+        label.layer.cornerRadius = 6
+        return label
+    }()
+    
+    private var removeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "Cross")?.withRenderingMode(.alwaysTemplate), for: .normal)
+//        button.imageView?.tintColor = UIColor(named: "Gray")
+        button.backgroundColor = UIColor(named: "DarkBlack")
+        button.imageView?.tintColor = .white
+        button.imageView?.contentMode = .scaleToFill
+        return button
+    }()
     
     
     //MARK: - Lifecycle
-//    init(title: String) {
     init() {
         super.init(frame: .zero)
         self.backgroundColor = UIColor(named: "Black")
-//        self.title.text = title
-        
-        
+        self.moreButton.addTarget(self, action: #selector(toolTapped), for: .touchUpInside)
+        self.removeButton.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)
         setupUI()
-        self.moreButton.addTarget(self, action: #selector(getToolType), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -65,7 +96,6 @@ class CustomSearchToolView: UIView {
     }
     
     //MARK: SetupUI
-
     private func setupUI() {
         
         self.addSubview(title)
@@ -94,20 +124,154 @@ class CustomSearchToolView: UIView {
             self.image.widthAnchor.constraint(equalToConstant: 15),
             self.image.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
         ])
+        
     }
     
-    //MARK: - Local func
-//    public func addDidTappedSortTarget(_ target: Any?, selector: Selector) {
-//        self.moreButton.addTarget(target, action: selector, for: .touchUpInside)
-//    }
-    
-    @objc private func getToolType() {
-        self.delegate?.getToolType(toolType, sender: moreButton)
+    private func setupFirstOption(text: String) {
+        
+        let textWidth = text.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 10)!]).width + 10
+//        print(textWidth)
+        
+        self.choosedFirstOption.translatesAutoresizingMaskIntoConstraints = false
+        self.moreButton.addSubview(choosedFirstOption)
+        
+        //MARK: - Option, maybe should remove it
+        choosedFirstOption.removeConstraints(choosedFirstOption.constraints)
+        
+        NSLayoutConstraint.activate([
+            choosedFirstOption.leadingAnchor.constraint(equalTo: moreButton.leadingAnchor, constant: 10),
+            choosedFirstOption.topAnchor.constraint(equalTo: moreButton.topAnchor, constant: 10),
+            choosedFirstOption.widthAnchor.constraint(equalToConstant: textWidth),
+            choosedFirstOption.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
+        ])
+        
     }
-}
-
-extension CustomSearchToolView {
-    func configure(with tool: SearchTools) {
+    
+    private func setupChoosedMoreOptions(text: String) {
+        
+        let textWidth = text.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 10)!]).width + 10
+        
+        self.choosedMoreOptions.translatesAutoresizingMaskIntoConstraints = false
+        self.moreButton.addSubview(choosedMoreOptions)
+        
+        choosedMoreOptions.removeConstraints(choosedMoreOptions.constraints)
+        
+        NSLayoutConstraint.activate([
+            choosedMoreOptions.leadingAnchor.constraint(equalTo: choosedFirstOption.trailingAnchor, constant: 7),
+            choosedMoreOptions.topAnchor.constraint(equalTo: moreButton.topAnchor, constant: 10),
+            choosedMoreOptions.widthAnchor.constraint(equalToConstant: textWidth),
+            choosedMoreOptions.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
+        ])
+    }
+    
+    private func setupRemoveButton() {
+        self.moreButton.addSubview(removeButton)
+        self.removeButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            self.removeButton.trailingAnchor.constraint(equalTo: moreButton.trailingAnchor, constant: -15),
+            self.removeButton.heightAnchor.constraint(equalToConstant: 15),
+            self.removeButton.widthAnchor.constraint(equalToConstant: 15),
+            self.removeButton.centerYAnchor.constraint(equalTo: moreButton.centerYAnchor),
+        ])
+    }
+    
+    //MARK: - Func
+    @objc private func toolTapped() {
+        self.delegate?.toolTapped(toolType, sender: moreButton)
+    }
+    
+    @objc private func removeButtonTapped() {
+        self.delegate?.removeButtonTapped(self.toolType)
+//        self.choosedFirstOption.removeConstraints(choosedFirstOption.constraints)
+//        self.choosedMoreOptions.removeConstraints(choosedMoreOptions.constraints)
+//        self.removeButton.removeConstraints(removeButton.constraints)
+        
+        self.choosedFirstOption.removeFromSuperview()
+        self.choosedMoreOptions.removeFromSuperview()
+        self.removeButton.removeFromSuperview()
+        print("DEBUG:", "removeButtonTapped")
+    }
+    
+    public func removeOption(text: String, toolType: SearchTool, option: Any) {
+        switch toolType {
+        case .genre:
+            let genresArray = option as! [Genre]
+            
+            if genresArray.isEmpty {
+                self.choosedFirstOption.removeFromSuperview()
+                self.removeButton.removeFromSuperview()
+            } else if genresArray.count == 1 {
+                self.choosedFirstOption.text = genresArray.first!.rawValue
+                setupFirstOption(text: genresArray.first!.rawValue)
+                self.choosedMoreOptions.removeFromSuperview()
+            }
+            else if genresArray.count > 1 {
+                self.choosedFirstOption.text = genresArray.first!.rawValue
+                setupFirstOption(text: genresArray.first!.rawValue)
+                self.choosedMoreOptions.text = String("\(genresArray.count - 1)+")
+                setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
+            }//
+        case .year:
+            return
+        case .season:
+            return
+        case .format:
+            return
+        }
+    }
+    
+    public func addOption(text: String, toolType: SearchTool, option: Any) {
+        
+        switch toolType {
+        case .genre:
+            let genresArray = option as! [Genre]
+            if genresArray.isEmpty {
+            } else if genresArray.count == 1  {
+                self.choosedFirstOption.text = genresArray.first!.rawValue
+                setupFirstOption(text: text)
+                setupRemoveButton()
+            } else if genresArray.count > 1 {
+                self.choosedMoreOptions.text = String("\(genresArray.count - 1)+")
+                setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
+                
+            }
+        case .year:
+            let year = option as! Int
+            self.choosedFirstOption.text = String(year)
+            setupFirstOption(text: choosedFirstOption.text!)
+            setupRemoveButton()
+        case .season:
+            let season = option as! MediaSeason
+            self.choosedFirstOption.text = season.rawValue
+            setupFirstOption(text: choosedFirstOption.text!)
+            setupRemoveButton()
+        case .format:
+            let formatArray = option as! [MediaFormat]
+            if formatArray.isEmpty {
+                
+            } else if formatArray.count > 1 {
+                self.choosedFirstOption.text = formatArray.first!.rawValue
+                setupFirstOption(text: choosedFirstOption.text!)
+                setupRemoveButton()
+            } else if formatArray.count > 1 {
+                self.choosedMoreOptions.text = String("\(formatArray.count - 1)+")
+                setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
+            }
+        
+        }
+    }
+    
+    public func getViewByTool(_ toolType: SearchTool) -> CustomSearchToolView? {
+        if self.toolType == toolType {
+            print(toolType.rawValue)
+            return self
+        } else {
+            return nil
+        }
+    }
+    
+    public func configure(with tool: SearchTool) {
         self.title.text = tool.rawValue
         self.toolType = tool
     }

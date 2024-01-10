@@ -16,7 +16,7 @@ class GenreViewCell: UICollectionViewCell {
         label.text = ""
         label.textColor = .white
         label.textAlignment = .center
-        
+        label.layer.masksToBounds = true
 //        label.layer.borderWidth = 12
         //        label.layer.borderColor = UIColor.red.cgColor
 //                label.layer.cornerRadius = 12

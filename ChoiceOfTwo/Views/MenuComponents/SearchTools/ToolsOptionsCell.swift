@@ -6,14 +6,25 @@
 //
 
 import UIKit
+import AnilistApi
+
+protocol ToolsOptionsProtocol {
+    func optionTapped(sender: UIButton, text: String, tool: SearchTool, choosedOption: Any)
+}
 
 
-class ToolsOptionsCell: UITableViewCell {
+class ToolsOptionsCell: UICollectionViewCell {
+    
+    
+    //MARK: - Variables
+    var delegate: ToolsOptionsProtocol?
+    private var tool: SearchTool!
+    private var index: Int!
     
     //MARK: - UI Components
     private let image: UIImageView = {
         let iv = UIImageView()
-        iv.image = UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate)
+        iv.image = UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate)
         iv.contentMode = .scaleToFill
         iv.tintColor = UIColor(named: "Gray")
         iv.transform = iv.transform.rotated(by: .pi / 2)
@@ -26,15 +37,15 @@ class ToolsOptionsCell: UITableViewCell {
         button.setTitleColor(UIColor(named: "Gray"), for: .normal)
         button.titleLabel?.font = UIFont().JosefinSans(font: .regular, size: 14)
         button.backgroundColor = UIColor(named: "DarkBlack")
-        button.layer.cornerRadius = 12
+//        button.layer.cornerRadius = 12
         return button
     }()
 
     
     //MARK: - Lifecycle
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = UIColor(named: "DarkBlack")
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.plusButton.addTarget(self, action: #selector(optionTapped), for: .touchUpInside)
         setup()
     }
     
@@ -53,8 +64,10 @@ class ToolsOptionsCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             
+            self.plusButton.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.plusButton.topAnchor.constraint(equalTo: self.bottomAnchor),
             self.plusButton.widthAnchor.constraint(equalTo: self.widthAnchor),
+            self.plusButton.topAnchor.constraint(equalTo: self.topAnchor),
             self.plusButton.heightAnchor.constraint(equalToConstant: 40),
             self.plusButton.titleLabel!.leadingAnchor.constraint(equalTo: plusButton.leadingAnchor, constant: 15),
             
@@ -63,12 +76,63 @@ class ToolsOptionsCell: UITableViewCell {
             self.image.widthAnchor.constraint(equalToConstant: 15),
             self.image.centerYAnchor.constraint(equalTo: plusButton.centerYAnchor),
         ])
+        
+    }
+    
+    //MARK: - Func
+    public func markAsChoosed() {
+        self.plusButton.imageView?.tintColor = .white
+        self.plusButton.setTitleColor(.white, for: .normal)
+        self.image.image = UIImage(named: "Checkmark")?.withRenderingMode(.alwaysTemplate)
+        self.image.transform = transform.rotated(by: 0)
+        self.image.tintColor = .white
+    }
+    
+    public func markAsUnchoosed() {
+        self.plusButton.imageView?.tintColor = UIColor(named: "Gray")
+        self.plusButton.setTitleColor(UIColor(named: "Gray"), for: .normal)
+        self.image.image = UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate)
+        self.image.tintColor = UIColor(named: "Gray")
+        self.image.transform = transform.rotated(by: .pi / 2)
+    }
+    
+    @objc private func optionTapped(_ sender: UIButton) {
+        switch tool {
+        case .genre:
+            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: Genre.allCases[index])
+        case .year:
+            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: tool.currentYear - index)
+        case .season:
+            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: MediaSeason.allCases[index])
+        case .format:
+            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: MediaFormat.allCases[index])
+        case .none:
+            return
+        }
     }
 }
 
 extension ToolsOptionsCell {
-    
-    public func configure() {
-        
+    public func configure(choosedTool: SearchTool, index: Int) {
+        switch choosedTool {
+        case .format:
+            let formats = MediaFormat.allCases
+            self.index = index
+            self.tool = choosedTool
+            self.plusButton.setTitle(formats[index].rawValue, for: .normal)
+        case .season:
+            self.index = index
+            self.tool = choosedTool
+            let season = MediaSeason.allCases
+            self.plusButton.setTitle(season[index].rawValue, for: .normal)
+        case .genre: 
+            self.index = index
+            self.tool = choosedTool
+            self.plusButton.setTitle(Genre.allCases[index].rawValue, for: .normal)
+        case .year:
+            self.index = index
+            self.tool = choosedTool
+            self.plusButton.setTitle(String("\(choosedTool.currentYear - index)"), for: .normal)
+        }
     }
 }

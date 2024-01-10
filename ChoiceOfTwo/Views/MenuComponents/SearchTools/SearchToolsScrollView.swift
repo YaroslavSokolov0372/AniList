@@ -12,12 +12,10 @@ class SearchToolsScrollView: UIView {
     //MARK: - Variables
     private let searchToolsViews: [UIView] = {
         var newSearchTools = [UIView]()
-        for tool in SearchTools.allCases {
+        for tool in SearchTool.allCases {
             let searchTool = CustomSearchToolView()
             searchTool.configure(with: tool)
-//                newSearchTools.append(CustomSearchToolsView(title: tool.rawValue))
             newSearchTools.append(searchTool)
-            
         }
         return newSearchTools
     }()
@@ -61,7 +59,6 @@ class SearchToolsScrollView: UIView {
         self.contentView.addSubview(searchToolsViews[1])
         self.contentView.addSubview(searchToolsViews[2])
         self.contentView.addSubview(searchToolsViews[3])
-//        self.contentView.addSubview(searchToolsViews[4])
         
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +68,6 @@ class SearchToolsScrollView: UIView {
         searchToolsViews[1].translatesAutoresizingMaskIntoConstraints = false
         searchToolsViews[2].translatesAutoresizingMaskIntoConstraints = false
         searchToolsViews[3].translatesAutoresizingMaskIntoConstraints = false
-//        searchToolsViews[4].translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             self.scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
@@ -119,20 +115,39 @@ class SearchToolsScrollView: UIView {
     
     
     //MARK: - Func
-    
     public func configureDelegate(_ controller: UIViewController) {
         for toolView in searchToolsViews {
             let view = toolView as! CustomSearchToolView
-            
-            view.delegate = controller as? SearchToolButton
+            view.delegate = controller as? SearchToolButtonProtocol
+            scrollView.delegate = controller as? UIScrollViewDelegate
         }
     }
     
-//    public func addDidTappedSortTargets(_ target: Any?, selector: Selector) {
-//        
-//        for sortView in searchToolsViews {
-//            let searchToolView = sortView as! CustomSearchToolView
-//            searchToolView.addDidTappedSortTarget(target, selector: selector)
-//        }
-//    }
+    public func getScrollView() -> UIScrollView {
+        return self.scrollView
+    }
+    
+    public func addOption(toolType: SearchTool, text: String, tool: SearchTool, option: Any) {
+        for view in self.searchToolsViews {
+            guard let view = view as? CustomSearchToolView else {
+                print("DEBUG:", "Didn't recognize view")
+                return
+            }
+            if let view = view.getViewByTool(toolType) {
+                view.addOption(text: text, toolType: toolType, option: option)
+            }
+        }
+    }
+    
+    public func removeOption(toolType: SearchTool, text: String, tool: SearchTool, option: Any) {
+        for view in self.searchToolsViews {
+            guard let view = view as? CustomSearchToolView else {
+                print("DEBUG:", "Didn't recognize view")
+                return
+            }
+            if let view = view.getViewByTool(toolType) {
+                view.removeOption(text: text, toolType: toolType, option: option)
+            }
+        }
+    }
 }
