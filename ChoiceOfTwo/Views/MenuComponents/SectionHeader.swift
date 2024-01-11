@@ -7,8 +7,15 @@
 
 import UIKit
 
+protocol HeaderMoreButtonProtocol {
+    func moreButtonTapped(_ sender: UIButton)
+}
+
 class SectionHeader: UIView {
     
+    
+    //MARK: - Variables
+    var delegate: HeaderMoreButtonProtocol?
     
     //MARK: - UI Components
     private let title: UILabel = {
@@ -19,19 +26,10 @@ class SectionHeader: UIView {
         
         return label
     }()
-
-//    private let image: UIImageView = {
-//        let iv = UIImageView()
-//        iv.image = UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate)
-//        iv.contentMode = .scaleToFill
-//        iv.tintColor = UIColor(named: "Gray")
-//        iv.transform = iv.transform.rotated(by: .pi / 2)
-//        return iv
-//    }()
     
     private let moreButton: UIButton = {
       let button = UIButton()
-        button.setImage(UIImage(named: "Arrow")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView!.contentMode = .scaleToFill
         button.imageView!.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         button.imageView!.tintColor = .white
@@ -43,6 +41,7 @@ class SectionHeader: UIView {
     init(text: String) {
         super.init(frame: .zero)
         title.text = text
+        self.moreButton.addTarget(self, action: #selector(moreButtonTapped), for: .touchUpInside)
         setup()
     }
     
@@ -71,7 +70,7 @@ class SectionHeader: UIView {
     }
     
     //MARK: - Func
-    public func addDidTappedMoreButtonTarget(_ target: Any?, action: Selector) {
-        moreButton.addTarget(target, action: action, for: .touchUpInside)
+    @objc private func moreButtonTapped(_ sender: UIButton) {
+        self.delegate?.moreButtonTapped(sender)
     }
 }

@@ -19,7 +19,7 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     private var animeData: GetAnimeByQuery.Data.Page.Medium!
     private var gesture: UITapGestureRecognizer?
     public var delegate: AnimePreviewProtocol?
-
+    
     //MARK: - UI Components
     private let releaseDate: UILabel = {
         let label = UILabel()
@@ -81,9 +81,19 @@ class MenuAnimePreviewCell: UICollectionViewCell {
         ])
     }
     
-    //MARK: - Local func
-     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
-         self.delegate?.didTapCell(with: self.animeData)
+    //MARK: - Func
+    @objc private func handleTap(_ sender: UITapGestureRecognizer) {
+        self.delegate?.didTapCell(with: self.animeData)
+    }
+    
+    public func shouldMakeLoadingState(_ bool: Bool) {
+        if bool {
+//            self.coverImage.image?.withTintColor(UIColor(named: "DarkBlack")!)
+            self.coverImage.backgroundColor = .white
+            self.coverImage.image = nil
+        } else {
+            
+        }
     }
 }
 
@@ -92,7 +102,6 @@ extension MenuAnimePreviewCell {
     
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
-        
         self.releaseDate.text = String(describing: animeData.startDate?.year)
         self.name.text = animeData.title?.english ?? animeData.title?.native
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")

@@ -127,26 +127,26 @@ class SearchToolsScrollView: UIView {
         return self.scrollView
     }
     
-    public func addOption(toolType: SearchTool, text: String, tool: SearchTool, option: Any) {
+    public func addOption(toolType: SearchTool, option: Any) {
         for view in self.searchToolsViews {
             guard let view = view as? CustomSearchToolView else {
                 print("DEBUG:", "Didn't recognize view")
                 return
             }
             if let view = view.getViewByTool(toolType) {
-                view.addOption(text: text, toolType: toolType, option: option)
+                view.addOption(toolType: toolType, option: option)
             }
         }
     }
     
-    public func removeOption(toolType: SearchTool, text: String, tool: SearchTool, option: Any) {
+    public func removeOption(toolType: SearchTool, tool: SearchTool, option: Any) {
         for view in self.searchToolsViews {
             guard let view = view as? CustomSearchToolView else {
                 print("DEBUG:", "Didn't recognize view")
                 return
             }
             if let view = view.getViewByTool(toolType) {
-                view.removeOption(text: text, toolType: toolType, option: option)
+                view.removeOption(toolType: toolType, option: option)
             }
         }
     }

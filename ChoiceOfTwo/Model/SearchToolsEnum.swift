@@ -62,3 +62,48 @@ enum ToolsOptions {
     case season(GraphQLNullable<GraphQLEnum<MediaSeason>>)
     case format(GraphQLNullable<GraphQLEnum<MediaFormat>>)
 }
+
+
+extension MediaSeason {
+    
+    func getName() -> String {
+        switch self {
+        case .fall:
+            return "Fall"
+        case .spring:
+            return "Spring"
+        case .summer:
+            return "Summer"
+        case .winter:
+            return "Winter"
+        }
+    }
+}
+
+
+extension MediaFormat {
+    func getName() -> String {
+        switch self {
+        case .tv:
+            return "TV"
+        case .tvShort:
+            return "TV Short"
+        case .movie:
+            return "Movie"
+        case .special:
+            return "Special"
+        case .ova:
+            return "OVA"
+        case .ona:
+            return "ONA"
+        case .music:
+            return "Music"
+        case .manga:
+            return "Manga"
+        case .novel:
+            return "Novel"
+        case .oneShot:
+            return "OneShot"
+        }
+    }
+}

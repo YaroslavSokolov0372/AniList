@@ -8,11 +8,11 @@
 import UIKit
 import AnilistApi
 
-class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol {
-
+class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol, HeaderMoreButtonProtocol {
+        
     
-
     //MARK: - Variables
+    
     private var choosedGenres: [Genre] = []
     
     private var choosedYear: Int?
@@ -32,6 +32,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private var xChoosedTool: CGFloat = .zero
     
     private var shouldDetectScrollStart = false
+    
+    private var isFetching = false
     
     private let apiClient = ApiClient()
     
@@ -87,7 +89,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         let layout = UICollectionViewFlowLayout()
         layout.headerReferenceSize = CGSize(width: 0, height: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collectionView.backgroundColor = .red
+        //        collectionView.backgroundColor = .red
         collectionView.backgroundColor = UIColor(named: "DarkBlack")
         collectionView.register(ToolsOptionsCell.self, forCellWithReuseIdentifier: "Cell")
         collectionView.showsHorizontalScrollIndicator = false
@@ -159,7 +161,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = UIColor(named: "Black")
         
-        
         Task {
             self.apiClient.getAnimeBy(
                 page: 1,
@@ -204,10 +205,9 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 }
         }
         
-        self.allTimePopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
-        self.currentSeasonPopularHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
-        self.trendingNowHeader.addDidTappedMoreButtonTarget(self, action: #selector(didTappedMoreButton))
-        //        self.searchToolsScrollView.addDidTappedSortTargets(self, selector: #selector(didTappedSortButton))
+        self.trendingNowHeader.delegate = self
+        self.allTimePopularHeader.delegate = self
+        self.currentSeasonPopularHeader.delegate = self
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
@@ -226,10 +226,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
-            if shouldDetectScrollStart {
-                scrollViewX = scrollView.contentOffset.x
-            }
-            shouldDetectScrollStart = false
+        if shouldDetectScrollStart {
+            scrollViewX = scrollView.contentOffset.x
+        }
+        shouldDetectScrollStart = false
         
     }
     
@@ -239,7 +239,9 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             choosedToolCollectionView.frame.origin.x = xChoosedTool - (scrollView.contentOffset.x - scrollViewX)
         }
     }
+    
     //MARK: - Setup UI
+    
     private func setupUI() {
         
         self.view.addSubview(mainScrollView)
@@ -251,9 +253,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.contentView.addSubview(searchToolsScrollView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(choiceOfTwoButton)
-        choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
-        
+//        self.view.addSubview(choiceOfTwoButton)
+//        choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
         
         
         self.contentView.addSubview(allTimePopularHeader)
@@ -277,9 +278,9 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         
         NSLayoutConstraint.activate([
             
-            self.choiceOfTwoButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.choiceOfTwoButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1),
-            self.choiceOfTwoButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+//            self.choiceOfTwoButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            self.choiceOfTwoButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1),
+//            self.choiceOfTwoButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
             
             mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
             mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -299,18 +300,18 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             searchToolsScrollView.widthAnchor.constraint(equalToConstant: 800),
             searchToolsScrollView.heightAnchor.constraint(equalToConstant: 80),
             
-            allTimePopularHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
-            allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            trendingNowHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
+            trendingNowHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
-            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
+            trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
             
-            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularColl.bottomAnchor, constant: 30),
+            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
             currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -321,25 +322,28 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
             currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
-            trendingNowHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
-            trendingNowHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
-            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
+            allTimePopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
-            trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
+            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            
+
             
         ])
     }
     
-    
-    //MARK: - Local func
-    @objc private func didTappedMoreButton() {
+    //MARK: - Func
+    func moreButtonTapped(_ sender: UIButton) {
         print("DEBUG:", "Tapped more anime button")
-        let vc = MoreAnimeController()
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.isFetching = true
+        self.allTimePopularColl.reloadData()
+//        self.allTimePopularColl.setNeedsDisplay()
+//        self.allTimePopularColl.setNeedsLayout()
     }
     
     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
@@ -382,7 +386,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 y: 80,
                 width: 150,
                 height: choosedTool == .season ? 160 : 320
-                )
+            )
             
             UIView.animate(withDuration: 0.3) {
                 self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y + 10
@@ -399,7 +403,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         switch toolType {
         case .genre:
             self.choosedGenres = []
-            self.searchToolsScrollView.addOption(toolType: toolType, text: "", tool: toolType, option: choosedGenres)
         case .year:
             self.choosedYear = nil
         case .season:
@@ -410,60 +413,68 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.choosedToolCollectionView.reloadData()
     }
     
-    func optionTapped(sender: UIButton, text: String, tool: SearchTool, choosedOption: Any) {
+    func optionTapped(sender: UIButton, tool: SearchTool, choosedOption: Any) {
         let cell = sender.superview as! ToolsOptionsCell
         switch tool {
         case .genre:
-            
-            
             let choosedGenre = choosedOption as! Genre
             if self.choosedGenres.contains(choosedGenre) {
                 self.choosedGenres.remove(at: self.choosedGenres.firstIndex(of: choosedGenre)!)
-                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedGenres)
+                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, tool: tool, option: choosedGenres)
                 cell.markAsUnchoosed()
             } else {
                 self.choosedGenres.append(choosedGenre)
-                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedGenres)
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, option: choosedGenres)
                 cell.markAsChoosed()
-                
-//                let cell = sender.superview as! ToolsOptionsCell
-//                let index = choosedToolCollectionView.indexPath(for: cell)
-//                if self.choosedGenres.contains(Genre.allCases[index!.row]) {
-//                    choosedToolCollectionView.cellForItem(at: index!)
-//                    cell.markAsChoosed()
-//                } else {
-//                    cell.markAsUnchoosed()
-//                }
             }
-            
         case .year:
-            if self.choosedYear == (choosedOption as! Int) {
-                
+            let choosedYear = choosedOption as! Int
+            if self.choosedYear == choosedYear {
+                self.choosedYear = nil
+                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, tool: tool, option: self.choosedYear as Any)
+                cell.markAsUnchoosed()
             } else {
-                self.choosedYear = (choosedOption as! Int)
-                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedYear!)
-            }
-            return
-        case .season:
-            
-            if choosedSeason == (choosedOption as! MediaSeason) {
-                
-            } else {
-                self.choosedSeason = (choosedOption as! MediaSeason)
-                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedSeason!)
-            }
-            return
-        case .format:
-                let choosedFormat = choosedOption as! MediaFormat
-                if self.choosedFormats.contains(choosedFormat) {
-                    self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedFormat)
-                    cell.markAsUnchoosed()
-                } else {
-                    self.choosedFormats.append(choosedFormat)
-                    self.searchToolsScrollView.addOption(toolType: self.choosedTool!, text: text, tool: tool, option: choosedFormats)
-                    cell.markAsUnchoosed()
-                    
+                if self.choosedYear != nil {
+                    for view in self.choosedToolCollectionView.visibleCells {
+                        let view = view as! ToolsOptionsCell
+                        if view.getYear() == self.choosedYear {
+                            view.markAsUnchoosed()
+                        }
+                    }
                 }
+                self.choosedYear = choosedYear
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, option: self.choosedYear!)
+                cell.markAsChoosed()
+            }
+            
+        case .season:
+            let choosedOption = choosedOption as! MediaSeason
+            if choosedSeason == choosedOption {
+                self.choosedSeason = nil
+                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, tool: tool, option: choosedSeason as Any)
+                cell.markAsUnchoosed()
+            } else {
+                if self.choosedSeason != nil {
+                    let index = MediaSeason.allCases.firstIndex(of: self.choosedSeason!)
+                    let previousCell = self.choosedToolCollectionView.visibleCells[index!]
+                    let previousCellView = previousCell as! ToolsOptionsCell
+                    previousCellView.markAsUnchoosed()
+                }
+                self.choosedSeason = choosedOption
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, option: choosedSeason!)
+                cell.markAsChoosed()
+            }
+        case .format:
+            let choosedFormat = choosedOption as! MediaFormat
+            if self.choosedFormats.contains(choosedFormat) {
+                self.choosedFormats.remove(at: self.choosedFormats.firstIndex(of: choosedFormat)!)
+                self.searchToolsScrollView.removeOption(toolType: self.choosedTool!, tool: tool, option: choosedFormats)
+                cell.markAsUnchoosed()
+            } else {
+                self.choosedFormats.append(choosedFormat)
+                self.searchToolsScrollView.addOption(toolType: self.choosedTool!, option: choosedFormats)
+                cell.markAsChoosed()
+            }
         }
     }
 }
@@ -531,16 +542,18 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-                
         if collectionView != choosedToolCollectionView {
             if collectionView == self.allTimePopularColl {
-                guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
-                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
-                }
-                let preview = self.allTimePopularAnimes[indexPath.row]
-                cell.configure(with: preview)
-                cell.delegate = self
-                return cell
+                    guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
+                        fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                    }
+//                switch self.apiClient.state {
+//                
+//                }
+                    let preview = self.allTimePopularAnimes[indexPath.row]
+                    cell.configure(with: preview)
+                    cell.delegate = self
+                    return cell
                 
             } else if collectionView == self.currentSeasonPopularColl {
                 guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
@@ -595,7 +608,15 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                     cell.markAsUnchoosed()
                 }
             case .year:
-                cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                let year = SearchTool.year.currentYear - indexPath.row
+                if choosedYear == year {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsChoosed()
+                } else {
+                    cell.configure(choosedTool: choosedTool!, index: indexPath.row)
+                    cell.markAsUnchoosed()
+                }
+                
             case .none:
                 cell.configure(choosedTool: choosedTool!, index: indexPath.row)
             }
@@ -608,3 +629,37 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
 
 
 
+
+//MARK: - old NSLayoutConstrait 
+
+//            allTimePopularHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+//            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
+//            allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+//            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+//
+//            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
+//            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+//            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//
+//
+//            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularColl.bottomAnchor, constant: 30),
+//            currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
+//            currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+//            currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+//
+//
+//            currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
+//            currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+//            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//
+//            trendingNowHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+//            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
+//            trendingNowHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
+//            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+//
+//            trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
+//            trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),

@@ -129,8 +129,8 @@ class CustomSearchToolView: UIView {
     
     private func setupFirstOption(text: String) {
         
-        let textWidth = text.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 10)!]).width + 10
-//        print(textWidth)
+//        let textWidth = text.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 10)!]).width + 10
+        let textWidth = text.size(withAttributes: [NSAttributedString.Key.font: self.choosedFirstOption.font!]).width + 10
         
         self.choosedFirstOption.translatesAutoresizingMaskIntoConstraints = false
         self.moreButton.addSubview(choosedFirstOption)
@@ -177,6 +177,31 @@ class CustomSearchToolView: UIView {
     }
     
     //MARK: - Func
+    private func configureFirstOption(tool: SearchTool) {
+        if tool == .format || tool == .genre {
+            self.choosedFirstOption.font = UIFont().JosefinSans(font: .regular, size: 10)
+            self.choosedFirstOption.layer.masksToBounds = true
+            self.choosedFirstOption.textColor = .white
+            self.choosedFirstOption.textAlignment = .center
+            self.choosedFirstOption.backgroundColor = UIColor(named: "Orange")
+            self.choosedFirstOption.layer.cornerRadius = 6
+        } else {
+            self.choosedFirstOption.font = UIFont().JosefinSans(font: .regular, size: 15)
+            self.choosedFirstOption.textColor = UIColor(named: "Orange")
+            self.choosedFirstOption.textAlignment = .center
+            self.choosedFirstOption.backgroundColor = .clear
+            self.choosedFirstOption.layer.cornerRadius = 0
+        }
+    }
+    
+    private func shouldHideButtonsLabel(_ bool: Bool) {
+        if bool {
+            self.moreButton.setTitle("", for: .normal)
+        } else {
+            self.moreButton.setTitle("Any", for: .normal)
+        }
+    }
+    
     @objc private func toolTapped() {
         self.delegate?.toolTapped(toolType, sender: moreButton)
     }
@@ -186,6 +211,7 @@ class CustomSearchToolView: UIView {
 //        self.choosedFirstOption.removeConstraints(choosedFirstOption.constraints)
 //        self.choosedMoreOptions.removeConstraints(choosedMoreOptions.constraints)
 //        self.removeButton.removeConstraints(removeButton.constraints)
+        self.shouldHideButtonsLabel(false)
         
         self.choosedFirstOption.removeFromSuperview()
         self.choosedMoreOptions.removeFromSuperview()
@@ -193,14 +219,14 @@ class CustomSearchToolView: UIView {
         print("DEBUG:", "removeButtonTapped")
     }
     
-    public func removeOption(text: String, toolType: SearchTool, option: Any) {
+    public func removeOption( toolType: SearchTool, option: Any) {
         switch toolType {
         case .genre:
             let genresArray = option as! [Genre]
-            
             if genresArray.isEmpty {
                 self.choosedFirstOption.removeFromSuperview()
                 self.removeButton.removeFromSuperview()
+                self.shouldHideButtonsLabel(false)
             } else if genresArray.count == 1 {
                 self.choosedFirstOption.text = genresArray.first!.rawValue
                 setupFirstOption(text: genresArray.first!.rawValue)
@@ -213,52 +239,76 @@ class CustomSearchToolView: UIView {
                 setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
             }//
         case .year:
-            return
+            self.choosedFirstOption.removeFromSuperview()
+            self.shouldHideButtonsLabel(false)
         case .season:
-            return
+            self.choosedFirstOption.removeFromSuperview()
+            self.shouldHideButtonsLabel(false)
         case .format:
-            return
+            let formatArray = option as! [MediaFormat]
+            
+            if formatArray.isEmpty {
+                self.choosedFirstOption.removeFromSuperview()
+                self.removeButton.removeFromSuperview()
+                self.shouldHideButtonsLabel(false)
+            } else if formatArray.count == 1 {
+                self.choosedFirstOption.text = formatArray.first!.rawValue
+                setupFirstOption(text: formatArray.first!.rawValue)
+                self.choosedMoreOptions.removeFromSuperview()
+            }
+            else if formatArray.count > 1 {
+                self.choosedFirstOption.text = formatArray.first!.rawValue
+                setupFirstOption(text: formatArray.first!.rawValue)
+                self.choosedMoreOptions.text = String("\(formatArray.count - 1)+")
+                setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
+            }
         }
     }
     
-    public func addOption(text: String, toolType: SearchTool, option: Any) {
+    public func addOption(toolType: SearchTool, option: Any) {
         
         switch toolType {
         case .genre:
+            configureFirstOption(tool: toolType)
             let genresArray = option as! [Genre]
             if genresArray.isEmpty {
             } else if genresArray.count == 1  {
+                self.shouldHideButtonsLabel(true)
                 self.choosedFirstOption.text = genresArray.first!.rawValue
-                setupFirstOption(text: text)
+                setupFirstOption(text: choosedFirstOption.text!)
                 setupRemoveButton()
             } else if genresArray.count > 1 {
                 self.choosedMoreOptions.text = String("\(genresArray.count - 1)+")
                 setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
-                
             }
         case .year:
+            self.shouldHideButtonsLabel(true)
+            configureFirstOption(tool: toolType)
             let year = option as! Int
             self.choosedFirstOption.text = String(year)
             setupFirstOption(text: choosedFirstOption.text!)
             setupRemoveButton()
         case .season:
+            self.shouldHideButtonsLabel(true)
+            configureFirstOption(tool: toolType)
             let season = option as! MediaSeason
-            self.choosedFirstOption.text = season.rawValue
+//            self.choosedFirstOption.text = season.rawValue
+            self.choosedFirstOption.text = season.getName()
             setupFirstOption(text: choosedFirstOption.text!)
             setupRemoveButton()
         case .format:
+            configureFirstOption(tool: toolType)
             let formatArray = option as! [MediaFormat]
             if formatArray.isEmpty {
-                
-            } else if formatArray.count > 1 {
-                self.choosedFirstOption.text = formatArray.first!.rawValue
+            } else if formatArray.count == 1 {
+                self.shouldHideButtonsLabel(true)
+                self.choosedFirstOption.text = formatArray.first!.getName()
                 setupFirstOption(text: choosedFirstOption.text!)
                 setupRemoveButton()
             } else if formatArray.count > 1 {
                 self.choosedMoreOptions.text = String("\(formatArray.count - 1)+")
                 setupChoosedMoreOptions(text: self.choosedMoreOptions.text!)
             }
-        
         }
     }
     

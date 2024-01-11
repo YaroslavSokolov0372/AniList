@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D1197C842B45E58F00B7174D /* ToolsOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */; };
+		D1197C872B504CFB00B7174D /* LoadingAnimePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C862B504CFB00B7174D /* LoadingAnimePreviewCell.swift */; };
 		D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3362B38B2B30021F92F /* hexStringToColor.swift */; };
 		D160B3392B3C4D240021F92F /* UILabelHeightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3382B3C4D240021F92F /* UILabelHeightText.swift */; };
 		D160B33B2B3C559A0021F92F /* SideInfoEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */; };
@@ -52,7 +53,6 @@
 		D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */; };
 		D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8462B28B40A00E9DE4C /* MenuAnimePreviewCell.swift */; };
 		D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */; };
-		D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8552B2B53C200E9DE4C /* Season.swift */; };
 		D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */; };
 		D1CDF75F2B3C5D74001C3668 /* SideInfoViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */; };
 		D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */; };
@@ -92,6 +92,7 @@
 
 /* Begin PBXFileReference section */
 		D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsOptionsCell.swift; sourceTree = "<group>"; };
+		D1197C862B504CFB00B7174D /* LoadingAnimePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingAnimePreviewCell.swift; sourceTree = "<group>"; };
 		D160B3362B38B2B30021F92F /* hexStringToColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexStringToColor.swift; sourceTree = "<group>"; };
 		D160B3382B3C4D240021F92F /* UILabelHeightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelHeightText.swift; sourceTree = "<group>"; };
 		D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoEnum.swift; sourceTree = "<group>"; };
@@ -134,7 +135,6 @@
 		D1C9C83C2B28838D00E9DE4C /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
 		D1C9C8462B28B40A00E9DE4C /* MenuAnimePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAnimePreviewCell.swift; sourceTree = "<group>"; };
 		D1C9C84D2B28E1BB00E9DE4C /* AsynImageFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsynImageFetching.swift; sourceTree = "<group>"; };
-		D1C9C8552B2B53C200E9DE4C /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchToolView.swift; sourceTree = "<group>"; };
 		D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoViewCell.swift; sourceTree = "<group>"; };
 		D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringToDateConverter.swift; sourceTree = "<group>"; };
@@ -173,17 +173,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D16742CD2B330E1E00C9F033 /* SearchTools */ = {
-			isa = PBXGroup;
-			children = (
-				D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */,
-				D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */,
-				D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */,
-				D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */,
-			);
-			path = SearchTools;
-			sourceTree = "<group>";
-		};
 		D16742DE2B36086300C9F033 /* DetailComponents */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,10 +187,14 @@
 		D16742DF2B36087600C9F033 /* MenuComponents */ = {
 			isa = PBXGroup;
 			children = (
-				D16742CD2B330E1E00C9F033 /* SearchTools */,
+				D16742CB2B330E1500C9F033 /* SearchToolsScrollView.swift */,
+				D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */,
+				D1C9C8592B2CB73B00E9DE4C /* CustomSearchToolView.swift */,
+				D1197C832B45E58F00B7174D /* ToolsOptionsCell.swift */,
 				D1C9C8462B28B40A00E9DE4C /* MenuAnimePreviewCell.swift */,
 				D1C9C82A2B287F5800E9DE4C /* SectionHeader.swift */,
 				D1C9C8272B2875DA00E9DE4C /* CustomMenuButtonSections.swift */,
+				D1197C862B504CFB00B7174D /* LoadingAnimePreviewCell.swift */,
 			);
 			path = MenuComponents;
 			sourceTree = "<group>";
@@ -229,7 +222,6 @@
 		D17DDAA72B24D6910082B4D7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				D1C9C8552B2B53C200E9DE4C /* Season.swift */,
 				D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */,
 				D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */,
 			);
@@ -527,7 +519,7 @@
 				D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */,
 				D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolView.swift in Sources */,
 				D1C54FD02B3873EC000182E2 /* ResizeImage.swift in Sources */,
-				D1C9C8562B2B53C200E9DE4C /* Season.swift in Sources */,
+				D1197C872B504CFB00B7174D /* LoadingAnimePreviewCell.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
 				D16742DD2B35ED3900C9F033 /* CustomSaveButton.swift in Sources */,

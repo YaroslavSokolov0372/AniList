@@ -9,12 +9,12 @@ import UIKit
 import AnilistApi
 
 protocol ToolsOptionsProtocol {
-    func optionTapped(sender: UIButton, text: String, tool: SearchTool, choosedOption: Any)
+    func optionTapped(sender: UIButton, tool: SearchTool, choosedOption: Any)
 }
 
 
+
 class ToolsOptionsCell: UICollectionViewCell {
-    
     
     //MARK: - Variables
     var delegate: ToolsOptionsProtocol?
@@ -96,16 +96,20 @@ class ToolsOptionsCell: UICollectionViewCell {
         self.image.transform = transform.rotated(by: .pi / 2)
     }
     
+    public func getYear() -> Int {
+        return (self.plusButton.titleLabel!.text! as NSString).integerValue
+    }
+    
     @objc private func optionTapped(_ sender: UIButton) {
         switch tool {
         case .genre:
-            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: Genre.allCases[index])
+            self.delegate?.optionTapped(sender: sender, tool: tool, choosedOption: Genre.allCases[index])
         case .year:
-            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: tool.currentYear - index)
+            self.delegate?.optionTapped(sender: sender, tool: tool, choosedOption: tool.currentYear - index)
         case .season:
-            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: MediaSeason.allCases[index])
+            self.delegate?.optionTapped(sender: sender, tool: tool, choosedOption: MediaSeason.allCases[index])
         case .format:
-            self.delegate?.optionTapped(sender: sender, text: self.plusButton.title(for: .normal)!, tool: self.tool, choosedOption: MediaFormat.allCases[index])
+            self.delegate?.optionTapped(sender: sender, tool: tool, choosedOption: MediaFormat.allCases[index])
         case .none:
             return
         }
@@ -119,13 +123,15 @@ extension ToolsOptionsCell {
             let formats = MediaFormat.allCases
             self.index = index
             self.tool = choosedTool
-            self.plusButton.setTitle(formats[index].rawValue, for: .normal)
+//            self.plusButton.setTitle(formats[index].rawValue, for: .normal)
+            self.plusButton.setTitle(formats[index].getName(), for: .normal)
         case .season:
             self.index = index
             self.tool = choosedTool
             let season = MediaSeason.allCases
-            self.plusButton.setTitle(season[index].rawValue, for: .normal)
-        case .genre: 
+//            self.plusButton.setTitle(season[index].rawValue, for: .normal)
+            self.plusButton.setTitle(season[index].getName(), for: .normal)
+        case .genre:
             self.index = index
             self.tool = choosedTool
             self.plusButton.setTitle(Genre.allCases[index].rawValue, for: .normal)
