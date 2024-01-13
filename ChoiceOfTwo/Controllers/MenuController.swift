@@ -12,6 +12,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         
     
     //MARK: - Variables
+    private var choosedHeader: SectionHeader?
     
     private var choosedGenres: [Genre] = []
     
@@ -36,6 +37,15 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private var isFetching = false
     
     private let apiClient = ApiClient()
+    
+    private var activeViewConstraints: [NSLayoutConstraint] = [] {
+      willSet {
+        NSLayoutConstraint.deactivate(activeViewConstraints)
+      }
+      didSet {
+        NSLayoutConstraint.activate(activeViewConstraints)
+      }
+    }
     
     private var allTimePopularAnimes: [GetAnimeByQuery.Data.Page.Medium] = [] {
         didSet {
@@ -127,6 +137,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     }()
     
     private let currentSeasonPopularHeader = SectionHeader(text: "POPULAR THIS SEASON")
+    
     
     private let currentSeasonPopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -241,6 +252,13 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     }
     
     //MARK: - Setup UI
+    private func configureDefaultContentSize() -> CGFloat {
+        let searchScrollView: CGFloat = 80
+        let headers: CGFloat = 20 * 3
+        let colls: CGFloat = (self.view.frame.height * 0.38) * 3
+        
+        return searchScrollView + headers + colls
+    }
     
     private func setupUI() {
         
@@ -292,7 +310,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             contentView.bottomAnchor.constraint(equalTo: mainScrollView.bottomAnchor),
             contentView.trailingAnchor.constraint(equalTo: mainScrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
-            contentView.heightAnchor.constraint(equalToConstant: 2000),
+//            contentView.heightAnchor.constraint(equalToConstant: 2000),
             
             searchToolsScrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
             searchToolsScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -308,10 +326,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
             trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
+//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
-            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
+//            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
             currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -320,9 +338,13 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
             currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
-            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            
+            
+//            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            
+//            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            
             allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
             allTimePopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -330,21 +352,131 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
             allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             
 
             
         ])
+        
+        self.activeViewConstraints = [
+            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
+            
+            contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
+            
+            
+            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+        ]
     }
+    
+    private func setupUIAfterMoreButton(view: UIView, backToNormal: Bool) {
+        
+        if backToNormal {
+            if view == self.allTimePopularHeader {
+                self.activeViewConstraints = [
+                    allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+                    currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
+                    
+                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize())
+                ]
+                
+            } else if view == self.currentSeasonPopularHeader {
+                self.activeViewConstraints = [
+                    allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+                    currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
+                    
+                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+                    
+                    contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize())
+
+                ]
+            }
+        } else {
+            if view == self.allTimePopularHeader {
+                self.activeViewConstraints = [
+                    view.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
+                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
+                ]
+            } else if view == self.currentSeasonPopularHeader {
+                self.activeViewConstraints = [
+                    view.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
+                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
+                ]
+            }
+        }
+    }
+    
     
     //MARK: - Func
     func moreButtonTapped(_ sender: UIButton) {
         print("DEBUG:", "Tapped more anime button")
         self.isFetching = true
-        self.allTimePopularColl.reloadData()
-//        self.allTimePopularColl.setNeedsDisplay()
-//        self.allTimePopularColl.setNeedsLayout()
+        
+        let superview = sender.superview as! SectionHeader
+        
+        UIView.animate(withDuration: 0.4) {
+            if superview != self.choosedHeader {
+                sender.transform = CGAffineTransform(rotationAngle: .pi/4)
+                
+                if superview == self.allTimePopularHeader {
+                    self.currentSeasonPopularHeader.alpha = 0.0
+                    self.currentSeasonPopularColl.alpha = 0.0
+                    self.trendingNowHeader.alpha = 0.0
+                    self.trendingNowColl.alpha = 0.0
+                } else if superview == self.currentSeasonPopularHeader {
+                    self.allTimePopularHeader.alpha = 0.0
+                    self.allTimePopularColl.alpha = 0.0
+                    self.trendingNowHeader.alpha = 0.0
+                    self.trendingNowColl.alpha = 0.0
+                } else if superview == self.trendingNowHeader {
+                    self.allTimePopularHeader.alpha = 0.0
+                    self.allTimePopularColl.alpha = 0.0
+                    self.currentSeasonPopularHeader.alpha = 0.0
+                    self.currentSeasonPopularColl.alpha = 0.0
+                }
+            } else {
+                self.setupUIAfterMoreButton(view: superview, backToNormal: true)
+                self.view.layoutIfNeeded()
+            }
+        } completion: { finish in
+            UIView.animate(withDuration: 0.4) {
+                if self.choosedHeader != superview {
+                    self.setupUIAfterMoreButton(view: superview, backToNormal: false)
+                    self.view.layoutIfNeeded()
+                    self.choosedHeader = superview
+                } else {
+                    sender.transform = CGAffineTransform(rotationAngle: .pi)
+                    if superview == self.allTimePopularHeader {
+                        self.currentSeasonPopularHeader.alpha = 1
+                        self.currentSeasonPopularColl.alpha = 1
+                        self.trendingNowHeader.alpha = 1
+                        self.trendingNowColl.alpha = 1
+                    } else if superview == self.currentSeasonPopularHeader {
+                        self.allTimePopularHeader.alpha = 1
+                        self.allTimePopularColl.alpha = 1
+                        self.trendingNowHeader.alpha = 1
+                        self.trendingNowColl.alpha = 1
+                    } else if superview == self.trendingNowHeader {
+                        self.allTimePopularHeader.alpha = 1
+                        self.allTimePopularColl.alpha = 1
+                        self.currentSeasonPopularHeader.alpha = 1
+                        self.currentSeasonPopularColl.alpha = 1
+                    }
+                    self.choosedHeader = nil
+                }
+            }
+        }
     }
+
     
     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
         print("DEBUG:", "Tapped Anime Cell")
@@ -626,40 +758,3 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         }
     }
 }
-
-
-
-
-//MARK: - old NSLayoutConstrait 
-
-//            allTimePopularHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-//            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
-//            allTimePopularHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-//            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//
-//            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
-//            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//
-//
-//            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.allTimePopularColl.bottomAnchor, constant: 30),
-//            currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
-//            currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
-//            currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//
-//
-//            currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
-//            currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//
-//            trendingNowHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-//            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
-//            trendingNowHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
-//            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//
-//            trendingNowColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
-//            trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),

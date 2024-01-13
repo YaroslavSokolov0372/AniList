@@ -85,21 +85,9 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
         self.delegate?.didTapCell(with: self.animeData)
     }
-    
-    public func shouldMakeLoadingState(_ bool: Bool) {
-        if bool {
-//            self.coverImage.image?.withTintColor(UIColor(named: "DarkBlack")!)
-            self.coverImage.backgroundColor = .white
-            self.coverImage.image = nil
-        } else {
-            
-        }
-    }
 }
 
 extension MenuAnimePreviewCell {
-    
-    
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
         self.releaseDate.text = String(describing: animeData.startDate?.year)

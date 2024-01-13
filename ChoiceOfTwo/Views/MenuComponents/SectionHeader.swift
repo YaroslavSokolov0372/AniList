@@ -31,10 +31,12 @@ class SectionHeader: UIView {
       let button = UIButton()
         button.setImage(UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView!.contentMode = .scaleToFill
+//        button.imageView!.layer.anchorPoint = CGPointMake(0.0, 0.0);
         button.imageView!.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         button.imageView!.tintColor = .white
         return button
     }()
+    
     
     
     //MARK: - Lifecycle
@@ -72,5 +74,28 @@ class SectionHeader: UIView {
     //MARK: - Func
     @objc private func moreButtonTapped(_ sender: UIButton) {
         self.delegate?.moreButtonTapped(sender)
+    }
+}
+
+
+extension UIView{
+    func setAnchorPoint(anchorPoint: CGPoint) {
+
+        var newPoint = CGPoint(x: self.bounds.size.width * anchorPoint.x, y: self.bounds.size.height * anchorPoint.y)
+        var oldPoint = CGPoint(x: self.bounds.size.width * self.layer.anchorPoint.x, y: self.bounds.size.height * self.layer.anchorPoint.y)
+
+        newPoint = newPoint.applying(self.transform)
+        oldPoint = oldPoint.applying(self.transform)
+
+        var position : CGPoint = self.layer.position
+
+        position.x -= oldPoint.x
+        position.x += newPoint.x;
+
+        position.y -= oldPoint.y;
+        position.y += newPoint.y;
+
+        self.layer.position = position;
+        self.layer.anchorPoint = anchorPoint;
     }
 }
