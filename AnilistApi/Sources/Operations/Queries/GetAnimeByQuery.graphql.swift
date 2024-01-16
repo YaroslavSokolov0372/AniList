@@ -7,7 +7,7 @@ public class GetAnimeByQuery: GraphQLQuery {
   public static let operationName: String = "getAnimeBy"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear format: $format genre: $genre search: $search ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status endDate { __typename day month year } } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
+      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $search: String, $asHtml: Boolean, $formatIn: [MediaFormat], $genreIn: [String]) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear search: $search format_in: $formatIn genre_in: $genreIn ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status endDate { __typename day month year } } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
     ))
 
   public var page: GraphQLNullable<Int>
@@ -16,10 +16,10 @@ public class GetAnimeByQuery: GraphQLQuery {
   public var type: GraphQLNullable<GraphQLEnum<MediaType>>
   public var season: GraphQLNullable<GraphQLEnum<MediaSeason>>
   public var seasonYear: GraphQLNullable<Int>
-  public var format: GraphQLNullable<GraphQLEnum<MediaFormat>>
-  public var genre: GraphQLNullable<String>
   public var search: GraphQLNullable<String>
   public var asHtml: GraphQLNullable<Bool>
+  public var formatIn: GraphQLNullable<[GraphQLEnum<MediaFormat>?]>
+  public var genreIn: GraphQLNullable<[String?]>
 
   public init(
     page: GraphQLNullable<Int>,
@@ -28,10 +28,10 @@ public class GetAnimeByQuery: GraphQLQuery {
     type: GraphQLNullable<GraphQLEnum<MediaType>>,
     season: GraphQLNullable<GraphQLEnum<MediaSeason>>,
     seasonYear: GraphQLNullable<Int>,
-    format: GraphQLNullable<GraphQLEnum<MediaFormat>>,
-    genre: GraphQLNullable<String>,
     search: GraphQLNullable<String>,
-    asHtml: GraphQLNullable<Bool>
+    asHtml: GraphQLNullable<Bool>,
+    formatIn: GraphQLNullable<[GraphQLEnum<MediaFormat>?]>,
+    genreIn: GraphQLNullable<[String?]>
   ) {
     self.page = page
     self.perPage = perPage
@@ -39,10 +39,10 @@ public class GetAnimeByQuery: GraphQLQuery {
     self.type = type
     self.season = season
     self.seasonYear = seasonYear
-    self.format = format
-    self.genre = genre
     self.search = search
     self.asHtml = asHtml
+    self.formatIn = formatIn
+    self.genreIn = genreIn
   }
 
   public var __variables: Variables? { [
@@ -52,10 +52,10 @@ public class GetAnimeByQuery: GraphQLQuery {
     "type": type,
     "season": season,
     "seasonYear": seasonYear,
-    "format": format,
-    "genre": genre,
     "search": search,
-    "asHtml": asHtml
+    "asHtml": asHtml,
+    "formatIn": formatIn,
+    "genreIn": genreIn
   ] }
 
   public struct Data: AnilistApi.SelectionSet {
@@ -87,9 +87,9 @@ public class GetAnimeByQuery: GraphQLQuery {
           "type": .variable("type"),
           "season": .variable("season"),
           "seasonYear": .variable("seasonYear"),
-          "format": .variable("format"),
-          "genre": .variable("genre"),
-          "search": .variable("search")
+          "search": .variable("search"),
+          "format_in": .variable("formatIn"),
+          "genre_in": .variable("genreIn")
         ]),
         .field("pageInfo", PageInfo?.self),
       ] }

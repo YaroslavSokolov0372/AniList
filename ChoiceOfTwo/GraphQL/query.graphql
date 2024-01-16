@@ -104,13 +104,9 @@ query trendingNow($page: Int, $perPage: Int, $sort: [MediaTrendSort]) {
 
 
 
-
-
-
-
-query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat, $genre: String, $search: String, $asHtml: Boolean) {
+query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $search: String, $asHtml: Boolean, $formatIn: [MediaFormat], $genreIn: [String]) {
   Page(page: $page, perPage: $perPage) {
-    media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear, format: $format, genre: $genre, search: $search) {
+    media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear, search: $search, format_in: $formatIn, genre_in: $genreIn) {
       bannerImage
       chapters
       coverImage {

@@ -73,7 +73,8 @@ class MenuAnimePreviewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             self.coverImage.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1),
-            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
+//            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
+            self.coverImage.heightAnchor.constraint(equalToConstant: 240),
             self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
             
             self.name.widthAnchor.constraint(equalTo: self.widthAnchor),

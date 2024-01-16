@@ -21,6 +21,11 @@ class ApiClient {
     private let appolo = ApolloClient(url: URL(string: "https://graphql.anilist.co")!)
     private (set) var state = ClientState.idle
     
+    private (set) var currentPage: Int = 0
+    private (set) var hasNextPage: Bool = false
+    private (set) var lastPage: Int = 0
+    private (set) var total: Int = 0
+    
     
     public func getAnimeBy(
         page: GraphQLNullable<Int>,
@@ -29,32 +34,51 @@ class ApiClient {
         type: GraphQLNullable<GraphQLEnum<MediaType>>,
         season: GraphQLNullable<GraphQLEnum<MediaSeason>>,
         seasonYear: GraphQLNullable<Int>,
-        format: GraphQLNullable<GraphQLEnum<MediaFormat>>,
-        genre: GraphQLNullable<String>,
+        formats: GraphQLNullable<[GraphQLEnum<MediaFormat>?]>,
+        genres: GraphQLNullable<[String?]>,
         search: GraphQLNullable<String>,
         escaping: @escaping (GraphQLResult<GetAnimeByQuery.Data>) -> ()) {
             
             state = .loading
             
-            self.appolo.fetch(query: GetAnimeByQuery(
-                page: page,
-                perPage: perPage,
-                sort: sort,
-                type: type,
-                season: season,
-                seasonYear: seasonYear,
-                format: format,
-                genre: genre,
-                search: search,
-                asHtml: false)) { result in
-                    switch result {
-                    case .success(let data):
-                        escaping(data)
-                        self.state = .loaded(data)
-                    case .failure(let error):
-                        self.state = .failed(error)
-                        debugPrint(error)
-                    }
+            self.appolo.fetch(query: GetAnimeByQuery(page: page, perPage: perPage, sort: sort, type: type, season: season, seasonYear: seasonYear, search: search, asHtml: false, formatIn: formats, genreIn: genres)) { result in
+                switch result {
+                case .success(let data):
+                    escaping(data)
+                    self.state = .loaded(data)
+//                        print(data.data?.page?.pageInfo?.hasNextPage)
+//                        print(data.data?.page?.pageInfo?.lastPage)
+//                        print(data.data?.page?.pageInfo?.currentPage)
+                case .failure(let error):
+                    self.state = .failed(error)
+                    debugPrint(error)
                 }
+            }
+            
+//            self.appolo.fetch(query: GetAnimeByQuery(
+//                page: page,
+//                perPage: perPage,
+//                sort: sort,
+//                type: type,
+//                season: season,
+//                seasonYear: seasonYear,
+//                format: format,
+//                genre: genre,
+//                search: search,
+//                asHtml: false)) { result in
+//                    switch result {
+//                    case .success(let data):
+//                        escaping(data)
+//                        self.state = .loaded(data)
+////                        print(data.data?.page?.pageInfo?.hasNextPage)
+////                        print(data.data?.page?.pageInfo?.lastPage)
+////                        print(data.data?.page?.pageInfo?.currentPage)
+//                    case .failure(let error):
+//                        self.state = .failed(error)
+//                        debugPrint(error)
+//                    }
+//                }
         }
+    
+    
 }

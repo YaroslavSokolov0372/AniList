@@ -279,7 +279,12 @@ extension DetailInfoController {
     
     private func configureContentSize() -> CGFloat {
         let imageHeight: CGFloat = 550
+        
+        
+        //TODO: - solve the problem when the name is on chinize
         let textHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
+        
+        
         let sideInfoCollHeight: CGFloat = 75
         let genreCollHeight: CGFloat = 50
         let descriptionHeaderHeight = descriptionHeader.text!.height(constraintedWidth: view.frame.width, font: UIFont().JosefinSans(font: .bold, size: 18)!) + 15
