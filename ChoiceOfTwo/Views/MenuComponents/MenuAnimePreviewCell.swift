@@ -7,6 +7,7 @@
 
 import UIKit
 import AnilistApi
+import SkeletonView
 
  protocol AnimePreviewProtocol {
      func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium)
@@ -21,14 +22,6 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     public var delegate: AnimePreviewProtocol?
     
     //MARK: - UI Components
-    private let releaseDate: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont().JosefinSans(font: .regular, size: 12)
-        label.text = "error"
-        return label
-    }()
-    
     private let coverImage: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
@@ -48,10 +41,15 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     }()
     
     //MARK: - Lifecycle
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupUI()
+        
+        self.isSkeletonable = true
+        self.contentView.isSkeletonable = true
+        self.coverImage.isSkeletonable = true
+        self.name.isSkeletonable = true
+        
         self.isUserInteractionEnabled = true
         gesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         self.addGestureRecognizer(gesture!)
@@ -64,16 +62,15 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     
     //MARK: - Setup UI
     private func setupUI() {
-        self.addSubview(coverImage)
-        self.addSubview(name)
-        self.addSubview(releaseDate)
+        self.contentView.addSubview(coverImage)
+        self.contentView.addSubview(name)
         
         self.coverImage.translatesAutoresizingMaskIntoConstraints = false
         self.name.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             self.coverImage.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1),
-//            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
+            //            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
             self.coverImage.heightAnchor.constraint(equalToConstant: 240),
             self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
             
@@ -91,7 +88,6 @@ class MenuAnimePreviewCell: UICollectionViewCell {
 extension MenuAnimePreviewCell {
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
-        self.releaseDate.text = String(describing: animeData.startDate?.year)
         self.name.text = animeData.title?.english ?? animeData.title?.native
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
     }

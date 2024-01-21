@@ -13,9 +13,11 @@
 		D1197C8B2B542D9600B7174D /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8A2B542D9600B7174D /* RoundedImageView.swift */; };
 		D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8C2B5548C400B7174D /* ListOfAnime.swift */; };
 		D1197C8F2B56C2FF00B7174D /* Saved_mb_for_later.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */; };
+		D1502D242B5AC88C00A902F1 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D232B5AC88C00A902F1 /* Genre.swift */; };
+		D1502D262B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */; };
+		D1502D292B5ACC6800A902F1 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = D1502D282B5ACC6800A902F1 /* SkeletonView */; };
 		D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3362B38B2B30021F92F /* hexStringToColor.swift */; };
 		D160B3392B3C4D240021F92F /* UILabelHeightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3382B3C4D240021F92F /* UILabelHeightText.swift */; };
-		D160B33B2B3C559A0021F92F /* SideInfoEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */; };
 		D16742C42B2F729E00C9F033 /* SearchToolsEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */; };
 		D16742C82B321BE300C9F033 /* SearchTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */; };
 		D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C92B3228FE00C9F033 /* LeftImageTexField.swift */; };
@@ -101,9 +103,10 @@
 		D1197C8A2B542D9600B7174D /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		D1197C8C2B5548C400B7174D /* ListOfAnime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfAnime.swift; sourceTree = "<group>"; };
 		D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Saved_mb_for_later.swift; sourceTree = "<group>"; };
+		D1502D232B5AC88C00A902F1 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
+		D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsForApiClientProp.swift; sourceTree = "<group>"; };
 		D160B3362B38B2B30021F92F /* hexStringToColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexStringToColor.swift; sourceTree = "<group>"; };
 		D160B3382B3C4D240021F92F /* UILabelHeightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelHeightText.swift; sourceTree = "<group>"; };
-		D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoEnum.swift; sourceTree = "<group>"; };
 		D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchToolsEnum.swift; sourceTree = "<group>"; };
 		D16742C72B321BE300C9F033 /* SearchTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextFieldView.swift; sourceTree = "<group>"; };
 		D16742C92B3228FE00C9F033 /* LeftImageTexField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftImageTexField.swift; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 				D1C9C8112B27429300E9DE4C /* ApolloWebSocket in Frameworks */,
 				D1C9C80F2B27429300E9DE4C /* ApolloTestSupport in Frameworks */,
 				D1C9C80D2B27429300E9DE4C /* ApolloSQLite in Frameworks */,
+				D1502D292B5ACC6800A902F1 /* SkeletonView in Frameworks */,
 				D1C9C81C2B2772F300E9DE4C /* AnilistApi in Frameworks */,
 				D1C9C8062B27429300E9DE4C /* Apollo in Frameworks */,
 				D1C9C8082B27429300E9DE4C /* Apollo-Dynamic in Frameworks */,
@@ -231,8 +235,8 @@
 			isa = PBXGroup;
 			children = (
 				D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */,
-				D160B33A2B3C559A0021F92F /* SideInfoEnum.swift */,
 				D1197C8C2B5548C400B7174D /* ListOfAnime.swift */,
+				D1502D232B5AC88C00A902F1 /* Genre.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -363,6 +367,7 @@
 				D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */,
 				D1197C882B5424AB00B7174D /* scrollToTheBeginning.swift */,
 				D1197C8A2B542D9600B7174D /* RoundedImageView.swift */,
+				D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -392,6 +397,7 @@
 				D1C9C80E2B27429300E9DE4C /* ApolloTestSupport */,
 				D1C9C8102B27429300E9DE4C /* ApolloWebSocket */,
 				D1C9C81B2B2772F300E9DE4C /* AnilistApi */,
+				D1502D282B5ACC6800A902F1 /* SkeletonView */,
 			);
 			productName = ChoiceOfTwo;
 			productReference = D1B89D982B24C493007447A5 /* ChoiceOfTwo.app */;
@@ -468,6 +474,7 @@
 			packageReferences = (
 				D1C9C8032B27428800E9DE4C /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				D1C9C81A2B2772F300E9DE4C /* XCLocalSwiftPackageReference "AnilistApi" */,
+				D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			productRefGroup = D1B89D992B24C493007447A5 /* Products */;
 			projectDirPath = "";
@@ -520,7 +527,6 @@
 			files = (
 				D1197C8B2B542D9600B7174D /* RoundedImageView.swift in Sources */,
 				D1197C8F2B56C2FF00B7174D /* Saved_mb_for_later.swift in Sources */,
-				D160B33B2B3C559A0021F92F /* SideInfoEnum.swift in Sources */,
 				D17DDAA92B24D7600082B4D7 /* MenuController.swift in Sources */,
 				D1C9C82B2B287F5800E9DE4C /* SectionHeader.swift in Sources */,
 				D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */,
@@ -530,6 +536,7 @@
 				D1197C842B45E58F00B7174D /* ToolsOptionsCell.swift in Sources */,
 				D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */,
 				D16742D92B34A41700C9F033 /* ImageShape.swift in Sources */,
+				D1502D262B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift in Sources */,
 				D16742CA2B3228FF00C9F033 /* LeftImageTexField.swift in Sources */,
 				D1C9C85A2B2CB73B00E9DE4C /* CustomSearchToolView.swift in Sources */,
 				D1C54FD02B3873EC000182E2 /* ResizeImage.swift in Sources */,
@@ -546,6 +553,7 @@
 				D16742C82B321BE300C9F033 /* SearchTextFieldView.swift in Sources */,
 				D1C54FD22B38768E000182E2 /* GenreViewCell.swift in Sources */,
 				D160B3392B3C4D240021F92F /* UILabelHeightText.swift in Sources */,
+				D1502D242B5AC88C00A902F1 /* Genre.swift in Sources */,
 				D1CDF7632B3C856D001C3668 /* UIColorLighter&Darker.swift in Sources */,
 				D16742DB2B35D53900C9F033 /* DetailAnimePreviewImage.swift in Sources */,
 				D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */,
@@ -897,6 +905,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.30.4;
+			};
+		};
 		D1C9C8032B27428800E9DE4C /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
@@ -908,6 +924,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D1502D282B5ACC6800A902F1 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
+		};
 		D1C9C8052B27429300E9DE4C /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D1C9C8032B27428800E9DE4C /* XCRemoteSwiftPackageReference "apollo-ios" */;

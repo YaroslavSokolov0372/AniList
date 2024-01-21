@@ -7,23 +7,45 @@
 
 import UIKit
 import AnilistApi
+import SkeletonView
+
+extension MenuController {
+    enum CollectionType {
+        case trendingNow
+        case popularThisSeason
+        case allTimePopular
+        case animeByUsersSearch
+        case none
+    }
+}
 
 class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol, HeaderMoreButtonProtocol {
-        
     
     //MARK: - Variables
+    private var extendedCollection: CollectionType = .none
     
-    
-    //TODO: - change choosedHeader to enum that i'll create in the future, so it's more understandble
-//    private var choosedHeader: SectionHeader?
-    private var extendedCollection: CollectionType?
-    //------------------|-----------------------------------------------------------------------------------
-    //-----------------|-|----------------------------------------------------------------------------------
-    //----------------|---|---------------------------------------------------------------------------------
-    //------------------|-----------------------------------------------------------------------------------
-    //------------------|-----------------------------------------------------------------------------------
-    //------------------|-----------------------------------------------------------------------------------
-    //----------------HE-RE---------------------------------------------------------------------------------
+    private var showScrollButton = false {
+        
+        didSet {
+            if oldValue != self.showScrollButton {
+                if showScrollButton {
+                    activeScrollButtonConstraints = [
+                        scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
+                    ]
+                    UIView.animate(withDuration: 0.3) {
+                        self.view.layoutIfNeeded()
+                    }
+                } else {
+                    activeScrollButtonConstraints = [
+                        scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
+                    ]
+                    UIView.animate(withDuration: 0.3) {
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            }
+        }
+    }
     
     private var choosedGenres: [Genre] = []
     
@@ -32,39 +54,56 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private var choosedSeason: MediaSeason?
     
     private var choosedFormats: [MediaFormat] = []
-//    private var choosedFOrmats: GraphQLNullable<GraphQLEnum<MediaFormat>> = .null
     
     private var searchStringAnime: String?
     
-    private var isChoosedOpened: Bool = false
+    private var isToolOpened: Bool = false
     
     private var choosedTool: SearchTool?
     
     private var scrollViewX: CGFloat = .zero
     
-    private var xChoosedTool: CGFloat = .zero
+    private var xPositionChoosedTool: CGFloat = .zero
     
     private var shouldDetectScrollStart = false
     
-    private var isFetching = false
+    private var isFetching = false {
+        didSet {
+            if oldValue != isFetching {
+                if isFetching {
+                    self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                    self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                    self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                } else {
+                    self.allTimePopularColl.hideSkeleton()
+                    self.currentSeasonPopularColl.hideSkeleton()
+                    self.trendingNowColl.hideSkeleton()
+                }
+            }
+        }
+    }
     
     private let apiClient = ApiClient()
     
     private var activeCollViewConstraints: [NSLayoutConstraint] = [] {
-      willSet {
-        NSLayoutConstraint.deactivate(activeCollViewConstraints)
-      }
-      didSet {
-        NSLayoutConstraint.activate(activeCollViewConstraints)
-      }
-    }
-    
-    private var activeSideButtonsConstraints: [NSLayoutConstraint] = [] {
         willSet {
-          NSLayoutConstraint.deactivate(activeSideButtonsConstraints)
+            NSLayoutConstraint.deactivate(activeCollViewConstraints)
         }
         didSet {
-          NSLayoutConstraint.activate(activeSideButtonsConstraints)
+            NSLayoutConstraint.activate(activeCollViewConstraints)
+        }
+    }
+    
+    private var activeScrollButtonConstraints: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeScrollButtonConstraints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeScrollButtonConstraints)
+            //            UIView.animate(withDuration: 0.3) {
+            //                self.view.layoutIfNeeded()
+            //
+            //            }
         }
     }
     
@@ -73,6 +112,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private var currentSeasonPopularAnimes: ListOfAnime?
     
     private var trendingNowAnimes: ListOfAnime?
+    
+    private var animesByUsersSearch: ListOfAnime?
     
     
     //MARK: - UI Components
@@ -106,7 +147,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     }()
     
     private let scrollToTopButton: UIButton = {
-      let button = UIButton()
+        let button = UIButton()
         let image = UIImage(named: "Arrow")!.resized(to: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysTemplate)
         button.setImage(image, for: .normal)
         button.backgroundColor = UIColor(named: "Orange")
@@ -118,15 +159,13 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         //        button.clipsToBounds = true
     }()
     
-    private let menuButton: UIButton = {
-        let button = UIButton()
-        let image = UIImage(named: "Menu")!.resized(to: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysTemplate)
-        button.setImage(image, for: .normal)
-        button.backgroundColor = UIColor(named: "Orange")
-        button.imageView?.tintColor = .white
-        button.layer.masksToBounds = false
-        button.layer.cornerRadius = 15
-        return button
+    private let animesByUsersSearchColl: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor(named: "Black")
+        collectionView.register(MenuAnimePreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        return collectionView
     }()
     
     private let allTimePopularHeader = SectionHeader(text: "ALL TIME POPULAR")
@@ -134,7 +173,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private let allTimePopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.showsHorizontalScrollIndicator = false
@@ -148,7 +186,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private let currentSeasonPopularColl: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.showsHorizontalScrollIndicator = false
@@ -178,90 +215,41 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = UIColor(named: "Black")
         
-            self.apiClient.getAnimeBy(
-                page: 1,
-                perPage: 20,
-                sort: [.case(.favouritesDesc)],
-                type: .some(.case(.anime)),
-                season: .some(.case(.fall)),
-                seasonYear: 2023,
-                formats: nil,
-                genres: nil,
-                search: nil) { result in
-                    
-                    self.currentSeasonPopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                    self.currentSeasonPopularColl.reloadData()
-                    self.currentSeasonPopularColl.setNeedsDisplay()
-                }
-            
-            self.apiClient.getAnimeBy(
-                page: 1,
-                perPage: 20,
-                sort: [.case(.popularityDesc)],
-                type: .some(.case(.anime)),
-                season: nil,
-                seasonYear: nil,
-                formats: nil,
-                genres: nil,
-                search: nil) { result in
-                    
-                    self.allTimePopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                    self.allTimePopularColl.reloadData()
-                    self.allTimePopularColl.setNeedsDisplay()
-
-                }
-            
-            self.apiClient.getAnimeBy(
-                page: 1,
-                perPage: 20,
-                sort: [.case(.trendingDesc)],
-                type: .some(.case(.anime)),
-                season: nil,
-                seasonYear: nil,
-                formats: nil,
-                genres: nil,
-                search: nil) { result in
-                    
-                    self.trendingNowAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                    self.trendingNowColl.reloadData()
-                    self.trendingNowColl.setNeedsDisplay()
-                }
-        
-        
         self.scrollToTopButton.addTarget(self, action: #selector(scrollToTopButtonTapped), for: .touchUpInside)
-        self.menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         self.trendingNowHeader.delegate = self
         self.allTimePopularHeader.delegate = self
         self.currentSeasonPopularHeader.delegate = self
         
         self.currentSeasonPopularColl.delegate = self
         self.currentSeasonPopularColl.dataSource = self
+        self.currentSeasonPopularColl.isSkeletonable = true
         self.allTimePopularColl.delegate = self
         self.allTimePopularColl.dataSource = self
+        self.allTimePopularColl.isSkeletonable = true
         self.trendingNowColl.delegate = self
         self.trendingNowColl.dataSource = self
+        self.trendingNowColl.isSkeletonable = true
         self.choosedToolCollectionView.delegate = self
         self.choosedToolCollectionView.dataSource = self
+        self.animesByUsersSearchColl.delegate = self
+        self.animesByUsersSearchColl.dataSource = self
         
         self.mainScrollView.delegate = self
         self.searchToolsScrollView.configureDelegate(self)
-        
         self.setupUI()
         
-//        setupMenuButton()
-//        setupContentView()
-//        setupMainScrollView()
-//        setupScrollTopButton()
-//        setupTrendingNowColl()
-//        setupTrendingNowHeader()
-//        setupAllTimePopularColl()
-//        setupAllTimePopularHeader()
-//        setupSearchToolScrollView()
-//        setupCurrentSeasonPopularColl()
-//        setupCurrentSeasonPopularHeader()
-//        setupActiveCollViewConstraints()
-//        setupActiveSideButtonConstraints()
         
+        self.fetchPopularThisSeason(currentPage: nil)
+        self.fetchAllTimePopular(currentPage: nil)
+        self.fetchTrendingNow(currentPage: nil)
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if self.allTimePopularAnimes == nil || self.trendingNowAnimes == nil || self.currentSeasonPopularAnimes == nil {
+            self.isFetching = true
+        }
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -276,174 +264,24 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         if scrollView == searchToolsScrollView.getScrollView() {
-            self.choosedToolCollectionView.frame.origin.x = self.xChoosedTool - scrollView.contentOffset.x
-            choosedToolCollectionView.frame.origin.x = xChoosedTool - (scrollView.contentOffset.x - scrollViewX)
+            
+            self.choosedToolCollectionView.frame.origin.x = self.xPositionChoosedTool - scrollView.contentOffset.x
+            choosedToolCollectionView.frame.origin.x = xPositionChoosedTool - (scrollView.contentOffset.x - scrollViewX)
+            
         } else if scrollView == allTimePopularColl || scrollView == trendingNowColl || scrollView == currentSeasonPopularColl {
             let offset = scrollView.contentOffset.y
             if offset > self.view.frame.height {
-                
-                self.activeSideButtonsConstraints = [
-                    scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
-                    menuButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
-                ]
-                
-                UIView.animate(withDuration: 0.4) {
-                    self.view.layoutIfNeeded()
-                }
+                self.showScrollButton = true
             } else {
-                
-                self.activeSideButtonsConstraints = [
-                    
-                    scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
-                    menuButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
-                ]
-                
-                UIView.animate(withDuration: 0.4) {
-                    self.view.layoutIfNeeded()
-                }
+                self.showScrollButton = false
             }
         }
-        
-        
     }
     
     //MARK: - Setup UI
-    
-//    private func setupMainScrollView() {
-//        self.view.addSubview(mainScrollView)
-//        mainScrollView.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
-//            mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            mainScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//            mainScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//        ])
-//    }
-//    
-//    private func setupContentView() {
-//        self.contentView.addSubview(searchToolsScrollView)
-//        contentView.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            contentView.topAnchor.constraint(equalTo: mainScrollView.topAnchor),
-//            contentView.leadingAnchor.constraint(equalTo: mainScrollView.leadingAnchor),
-//            contentView.bottomAnchor.constraint(equalTo: mainScrollView.bottomAnchor),
-//            contentView.trailingAnchor.constraint(equalTo: mainScrollView.trailingAnchor),
-//            contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
-//        ])
-//    }
-//    
-//    private func setupSearchToolScrollView() {
-//        self.contentView.addSubview(searchToolsScrollView)
-//        searchToolsScrollView.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        
-//        NSLayoutConstraint.activate([
-//            searchToolsScrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
-//            searchToolsScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-//            searchToolsScrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-//            searchToolsScrollView.widthAnchor.constraint(equalToConstant: 800),
-//            searchToolsScrollView.heightAnchor.constraint(equalToConstant: 80),
-//        ])
-//    }
-//    
-//    private func setupScrollTopButton() {
-//        self.view.addSubview(scrollToTopButton)
-//        scrollToTopButton.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            self.scrollToTopButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
-//            self.scrollToTopButton.widthAnchor.constraint(equalToConstant: 60),
-//            self.scrollToTopButton.heightAnchor.constraint(equalToConstant: 60),
-//        ])
-//    }
-//    
-//    private func setupMenuButton() {
-//        self.view.addSubview(menuButton)
-//        menuButton.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            self.menuButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
-//            self.menuButton.widthAnchor.constraint(equalToConstant: 60),
-//            self.menuButton.heightAnchor.constraint(equalToConstant: 60),
-//        ])
-//    }
-//    
-//    private func setupAllTimePopularHeader() {
-//        self.contentView.addSubview(allTimePopularHeader)
-//        allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
-//            allTimePopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
-//            allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//        ])
-//    }
-//    
-//    private func setupAllTimePopularColl() {
-//        self.contentView.addSubview(allTimePopularColl)
-//        allTimePopularColl.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            allTimePopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            allTimePopularColl.topAnchor.constraint(equalTo: self.allTimePopularHeader.bottomAnchor, constant: 15),
-//            allTimePopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//        ])
-//    }
-//    
-//    private func setupCurrentSeasonPopularHeader() {
-//        self.contentView.addSubview(currentSeasonPopularHeader)
-//        currentSeasonPopularHeader.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        
-//        NSLayoutConstraint.activate([
-//            currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
-//            currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
-//            currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//        ])
-//    }
-//    
-//    private func setupCurrentSeasonPopularColl() {
-//        self.contentView.addSubview(currentSeasonPopularColl)
-//        currentSeasonPopularColl.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
-//            currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//        ])
-//    }
-//    
-//    private func setupTrendingNowHeader() {
-//        self.contentView.addSubview(trendingNowHeader)
-//        trendingNowHeader.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            trendingNowHeader.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-//            trendingNowHeader.heightAnchor.constraint(equalToConstant: 20),
-//            trendingNowHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-//            trendingNowHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-//        ])
-//    }
-//    
-//    private func setupTrendingNowColl() {
-//        
-//        self.contentView.addSubview(trendingNowColl)
-//        trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        NSLayoutConstraint.activate([
-//            currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
-//            currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//        ])
-//        
-//    }
-    
     private func setupActiveSideButtonConstraints() {
-        self.activeSideButtonsConstraints = [
+        self.activeScrollButtonConstraints = [
             scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
-            menuButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
         ]
     }
     
@@ -456,7 +294,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
             trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
         ]
-
     }
     
     private func configureDefaultContentSize() -> CGFloat {
@@ -478,15 +315,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.contentView.addSubview(searchToolsScrollView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
-//        self.view.addSubview(choiceOfTwoButton)
-//        choiceOfTwoButton.translatesAutoresizingMaskIntoConstraints = false
-        
         self.view.addSubview(scrollToTopButton)
         scrollToTopButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.view.addSubview(menuButton)
-        menuButton.translatesAutoresizingMaskIntoConstraints = false
-        
         
         self.contentView.addSubview(allTimePopularHeader)
         allTimePopularHeader.translatesAutoresizingMaskIntoConstraints = false
@@ -509,18 +339,9 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         
         NSLayoutConstraint.activate([
             
-//            self.choiceOfTwoButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            self.choiceOfTwoButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1),
-//            self.choiceOfTwoButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            
             self.scrollToTopButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
             self.scrollToTopButton.widthAnchor.constraint(equalToConstant: 60),
             self.scrollToTopButton.heightAnchor.constraint(equalToConstant: 60),
-            
-            self.menuButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
-            self.menuButton.widthAnchor.constraint(equalToConstant: 60),
-            self.menuButton.heightAnchor.constraint(equalToConstant: 60),
-            
             
             mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
             mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -532,9 +353,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             contentView.bottomAnchor.constraint(equalTo: mainScrollView.bottomAnchor),
             contentView.trailingAnchor.constraint(equalTo: mainScrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
-//            contentView.heightAnchor.constraint(equalToConstant: 2000),
-            
-//            contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
             
             searchToolsScrollView.topAnchor.constraint(equalTo: contentView.topAnchor),
             searchToolsScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -551,9 +369,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             trendingNowColl.topAnchor.constraint(equalTo: self.trendingNowHeader.bottomAnchor, constant: 15),
             trendingNowColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
             
-//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            
-//            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.heightAnchor.constraint(equalToConstant: 20),
             currentSeasonPopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             currentSeasonPopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -562,7 +377,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             currentSeasonPopularColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             currentSeasonPopularColl.topAnchor.constraint(equalTo: self.currentSeasonPopularHeader.bottomAnchor, constant: 15),
             currentSeasonPopularColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-                
+            
             allTimePopularHeader.heightAnchor.constraint(equalToConstant: 20),
             allTimePopularHeader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             allTimePopularHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
@@ -575,19 +390,16 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         
         self.setupActiveCollViewConstraints()
         self.setupActiveSideButtonConstraints()
-//        self.activeSideButtonsConstraints = [
-//            scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
-//            menuButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
-//        ]
-//        
-//        self.activeCollViewConstraints = [
-//            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-//            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
-//            contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
-//            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//        ]
+    }
+    
+    private func setupAnimesBySearch() {
+        self.contentView.addSubview(animesByUsersSearchColl)
+        animesByUsersSearchColl.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            animesByUsersSearchColl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            animesByUsersSearchColl.topAnchor.constraint(equalTo: self.searchToolsScrollView.bottomAnchor, constant: 20),
+            animesByUsersSearchColl.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+        ])
     }
     
     private func makeCollectionViewFullScreen(_ collectionView: CollectionType) {
@@ -610,81 +422,132 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
                 contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
             ]
+        case .animeByUsersSearch:
+            self.activeCollViewConstraints = [
+                //                animesByUsersSearchColl.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+                animesByUsersSearchColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
+                contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
+            ]
         default: return
         }
     }
     
-//    private func setupUIAfterMoreButtonTapped(view: UIView, backToNormal: Bool) {
-//        
-//        if backToNormal {
-//            if view == self.allTimePopularHeader {
-//                self.activeCollViewConstraints = [
-//                    allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-//                    currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
-//                    
-//                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize())
-//                ]
-//                
-//            } else if view == self.currentSeasonPopularHeader {
-//                self.activeCollViewConstraints = [
-//                    allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-//                    currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
-//                    
-//                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    
-//                    contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize())
-//
-//                ]
-//            } else if view == self.trendingNowHeader {
-//                self.activeCollViewConstraints = [
-//                    allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-//                    currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
-//                    
-//                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-//                    contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize())
-//                ]
-//            }
-//        } else {
-//            if view == self.allTimePopularHeader {
-//                self.activeCollViewConstraints = [
-//                    view.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-////                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
-////                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1),
-//                    
-//                    allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
-//                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
-//                ]
-//            } else if view == self.currentSeasonPopularHeader {
-//                self.activeCollViewConstraints = [
-//                    view.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-////                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
-////                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1),
-//                    
-//                    currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
-//                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
-//                ]
-//            } else if view == self.trendingNowHeader {
-//                guard let currentPage = trendingNowAnimes?.pageInfo?.currentPage else { return }
-//                self.activeCollViewConstraints = [
-////                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 3.5),
-////                    trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
-//                    trendingNowColl.heightAnchor.constraint(equalToConstant: (self.view.frame.height * 0.78) * CGFloat(currentPage)),
-//                    contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
-//                ]
-//            }
-//            
-////            makeCollectionViewFullScreen(<#T##collectionView: verticalCollView##verticalCollView#>, header: <#T##SectionHeader#>)
-//        }
-//    }
-    
     //MARK: - Func
+    private func fetchDataByUserSearch(currentPage: Int?) {
+        self.apiClient.getAnimeBy(
+            page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
+            perPage: 20,
+            sort: [.case(.favouritesDesc)],
+            type: .some(.case(.anime)),
+            season: self.choosedSeason?.convertToGrapQL() ?? .none,
+            seasonYear: self.choosedYear?.convertToGraphQL() ?? .none,
+            formats: self.choosedFormats.isEmpty ? .none :
+                GraphQLNullable.some(self.choosedFormats.convertToGraphQL()),
+            genres: self.choosedGenres.isEmpty ? .none :
+                    .some(self.choosedGenres.getRawValues()),
+            search: self.searchStringAnime == nil ? .none :
+                    .some(self.searchStringAnime!)) { result in
+                        if self.animesByUsersSearch == nil {
+                            self.animesByUsersSearch = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            self.animesByUsersSearchColl.reloadData()
+                        } else {
+                            self.animesByUsersSearch?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            guard let newPageInfo = result.data?.page?.pageInfo else { return }
+                            self.animesByUsersSearch?.pageInfo? = newPageInfo
+                            self.animesByUsersSearchColl.reloadSections(IndexSet(integer: 0))
+                        }
+                    }
+    }
+    
+    private func fetchAllTimePopular(currentPage: Int?) {
+        self.apiClient.getAnimeBy(
+            page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
+            perPage: 20,
+            sort: [.case(.popularityDesc)],
+            type: .some(.case(.anime)),
+            season: nil,
+            seasonYear: nil,
+            formats: nil,
+            genres: nil,
+            search: nil) { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    if self.allTimePopularAnimes == nil {
+                        self.allTimePopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        self.isFetching = false
+                        self.allTimePopularColl.reloadData()
+                    } else {
+                        self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
+                        self.allTimePopularAnimes?.pageInfo? = newPageInfo
+                        self.isFetching = false
+                        self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
+                    }
+                }
+            }
+    }
+    
+    private func fetchPopularThisSeason(currentPage: Int?) {
+        self.apiClient.getAnimeBy(
+            page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
+            perPage: 20,
+            sort: [.case(.favouritesDesc)],
+            type: .some(.case(.anime)),
+            season: .some(.case(.fall)),
+            seasonYear: 2023,
+            formats: nil,
+            genres: nil,
+            search: nil) { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    if self.currentSeasonPopularAnimes == nil {
+                        self.currentSeasonPopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        self.isFetching = false
+                        self.currentSeasonPopularColl.reloadData()
+                    } else {
+                        self.currentSeasonPopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
+                        self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
+                        self.isFetching = false
+                        self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
+                    }
+                }
+            }
+    }
+    
+    private func fetchTrendingNow(currentPage: Int?) {
+        self.apiClient.getAnimeBy(
+            page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
+            perPage: 20,
+            sort: [.case(.trendingDesc)],
+            type: .some(.case(.anime)),
+            season: nil,
+            seasonYear: nil,
+            formats: nil,
+            genres: nil,
+            search: nil) { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    if self.trendingNowAnimes == nil {
+                        self.trendingNowAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        self.isFetching = false
+                        self.trendingNowColl.reloadData()
+                    } else {
+                        self.trendingNowAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
+                        self.trendingNowAnimes?.pageInfo? = newPageInfo
+                        self.isFetching = false
+                        self.trendingNowColl.reloadSections(IndexSet(integer: 0))
+                    }
+                }
+            }
+    }
+    
+    private func searchToolsAreEmpty() -> Bool {
+        if self.choosedGenres.isEmpty && self.choosedYear == nil && self.choosedFormats.isEmpty && self.choosedSeason == nil && self.searchStringAnime == nil {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     private func makeOtherCollectionTransparent(except collection: CollectionType, unhide: Bool) {
         switch collection {
         case .trendingNow:
@@ -702,26 +565,33 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             self.currentSeasonPopularColl.alpha = unhide == true ? 1.0 : 0.0
             self.trendingNowHeader.alpha = unhide == true ? 1.0 : 0.0
             self.trendingNowColl.alpha = unhide == true ? 1.0 : 0.0
+        case .animeByUsersSearch:
+            self.allTimePopularHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.allTimePopularColl.alpha = unhide == true ? 1.0 : 0.0
+            self.currentSeasonPopularHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.currentSeasonPopularColl.alpha = unhide == true ? 1.0 : 0.0
+            self.trendingNowHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.trendingNowColl.alpha = unhide == true ? 1.0 : 0.0
         case .none:
-            return
+            self.allTimePopularHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.allTimePopularColl.alpha = unhide == true ? 1.0 : 0.0
+            self.currentSeasonPopularHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.currentSeasonPopularColl.alpha = unhide == true ? 1.0 : 0.0
+            self.trendingNowHeader.alpha = unhide == true ? 1.0 : 0.0
+            self.trendingNowColl.alpha = unhide == true ? 1.0 : 0.0
         }
     }
     
-    @objc private func menuButtonTapped(_ sender: UIButton) {
-        
+    @objc private func scrollToTopButtonTapped(_ sender: UIButton) {
+        scrollToTheTop(collectionType: self.extendedCollection)
     }
     
-    @objc private func scrollToTopButtonTapped(_ sender: UIButton) {
-        
-//        let desiredOffset = CGPoint(x: 0, y: -51)
+    private func scrollToTheTop(collectionType: CollectionType) {
         let desiredOffset = CGPoint(x: 0, y: 0)
-//        if choosedHeader == self.trendingNowHeader {
-        if extendedCollection == .trendingNow {
+        if collectionType == .trendingNow {
             self.trendingNowColl.setContentOffset(desiredOffset, animated: true)
-//        } else if choosedHeader == self.currentSeasonPopularHeader {
         } else if extendedCollection == .popularThisSeason {
             self.currentSeasonPopularColl.setContentOffset(desiredOffset, animated: true)
-//        } else if choosedHeader == self.allTimePopularHeader {
         } else if extendedCollection == .allTimePopular {
             self.allTimePopularColl.setContentOffset(desiredOffset, animated: true)
         }
@@ -729,7 +599,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     
     func moreButtonTapped(_ sender: UIButton) {
         print("DEBUG:", "Tapped more anime button")
-//        self.isFetching = true
         
         let superview = sender.superview as! SectionHeader
         var headersCollectionView: CollectionType = .none
@@ -741,149 +610,112 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             headersCollectionView = .allTimePopular
         }
         
-        UIView.animate(withDuration: 0.4) {
-            if headersCollectionView != self.extendedCollection {
+        if headersCollectionView != self.extendedCollection {
+            UIView.animate(withDuration: 0.3) {
                 sender.transform = CGAffineTransform(rotationAngle: .pi/4)
+            }
+
+            switch headersCollectionView {
+            case .trendingNow:
+                self.trendingNowColl.setContentOffset(.zero, animated: true)
                 
-                switch headersCollectionView {
-                case .trendingNow:
-                    self.trendingNowColl.setContentOffset(.zero, animated: true)
-                    self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
-                    if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                        layout.scrollDirection = .vertical
-                    }
-                case .popularThisSeason:
-                    self.currentSeasonPopularColl.setContentOffset(.zero, animated: true)
-                    self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
-                    if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                        layout.scrollDirection = .vertical
-                    }
-                case .allTimePopular:
-                    self.allTimePopularColl.setContentOffset(.zero, animated: true)
-                    self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
-                    if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                        layout.scrollDirection = .vertical
-                    }
-                case .none:
-                    return
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
+                
+                self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.trendingNowColl.hideSkeleton()
+                    
+                    
                 }
                 
-//                if superview == self.allTimePopularHeader {
-//                    self.allTimePopularColl.setContentOffset(.zero, animated: true)
-//                    self.currentSeasonPopularHeader.alpha = 0.0
-//                    self.currentSeasonPopularColl.alpha = 0.0
-//                    self.trendingNowHeader.alpha = 0.0
-//                    self.trendingNowColl.alpha = 0.0
-//                    
-//                    if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                        layout.scrollDirection = .vertical
-//                    }
-//                    
-//                } else if superview == self.currentSeasonPopularHeader {
-//                    self.currentSeasonPopularColl.setContentOffset(.zero, animated: true)
-//                    self.allTimePopularHeader.alpha = 0.0
-//                    self.allTimePopularColl.alpha = 0.0
-//                    self.trendingNowHeader.alpha = 0.0
-//                    self.trendingNowColl.alpha = 0.0
-//                    
-//                    if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                        layout.scrollDirection = .vertical
-//                    }
-//                    
-//                    
-//                } else if superview == self.trendingNowHeader {
-//                    self.trendingNowColl.setContentOffset(.zero, animated: true)
-//                    self.allTimePopularHeader.alpha = 0.0
-//                    self.allTimePopularColl.alpha = 0.0
-//                    self.currentSeasonPopularHeader.alpha = 0.0
-//                    self.currentSeasonPopularColl.alpha = 0.0
-//                    
-//                    if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                        layout.scrollDirection = .vertical
-//                    }
-//                }
-            } else {
-//                self.setupUIAfterMoreButtonTapped(view: superview, backToNormal: true)
-                self.setupActiveCollViewConstraints()
-                
-                self.view.layoutIfNeeded()
-            }
-        } completion: { finish in
-            UIView.animate(withDuration: 0.4) {
-                if self.extendedCollection != headersCollectionView {
-//                    self.setupUIAfterMoreButtonTapped(view: superview, backToNormal: false)
-                    
-                    
-                    
-                    
-                    
-                    self.makeCollectionViewFullScreen(headersCollectionView)
-                    self.view.layoutIfNeeded()
-//                    self.choosedHeader = superview
-                    self.extendedCollection = headersCollectionView
-                } else {
-                    
-                    sender.transform = CGAffineTransform(rotationAngle: .pi)
-                    
-                    switch headersCollectionView {
-                    case .trendingNow:
-//                        self.trendingNowColl.setContentOffset(.zero, animated: true)
-                        self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
-                        if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                            layout.scrollDirection = .horizontal
-                        }
-                    case .popularThisSeason:
-//                        self.currentSeasonPopularColl.setContentOffset(.zero, animated: true)
-                        self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
-                        if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                            layout.scrollDirection = .horizontal
-                        }
-                    case .allTimePopular:
-//                        self.allTimePopularColl.setContentOffset(.zero, animated: true)
-                        self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
-                        if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-                            layout.scrollDirection = .horizontal
-                        }
-                    case .none:
-                        return
-                    }
-                    
-                    
-//                    if superview == self.allTimePopularHeader {
-//                        self.currentSeasonPopularHeader.alpha = 1
-//                        self.currentSeasonPopularColl.alpha = 1
-//                        self.trendingNowHeader.alpha = 1
-//                        self.trendingNowColl.alpha = 1
-//                        
-//                        if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                            layout.scrollDirection = .horizontal
-//                        }
-//                        
-//                    } else if superview == self.currentSeasonPopularHeader {
-//                        self.allTimePopularHeader.alpha = 1
-//                        self.allTimePopularColl.alpha = 1
-//                        self.trendingNowHeader.alpha = 1
-//                        self.trendingNowColl.alpha = 1
-//                        
-//                        if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                            layout.scrollDirection = .horizontal
-//                        }
-//                    } else if superview == self.trendingNowHeader {
-//                        self.allTimePopularHeader.alpha = 1
-//                        self.allTimePopularColl.alpha = 1
-//                        self.currentSeasonPopularHeader.alpha = 1
-//                        self.currentSeasonPopularColl.alpha = 1
-//                        
-//                        if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
-//                            layout.scrollDirection = .horizontal
-//                        }
-//                    }
-                    self.extendedCollection = nil
+                if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .vertical
                 }
+            case .popularThisSeason:
+                self.currentSeasonPopularColl.setContentOffset(.zero, animated: true)
+                
+                self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.currentSeasonPopularColl.hideSkeleton()
+                }
+                
+                
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
+                if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .vertical
+                }
+            case .allTimePopular:
+                self.allTimePopularColl.setContentOffset(.zero, animated: true)
+                
+                self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.allTimePopularColl.hideSkeleton()
+                }
+                
+                
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
+                if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .vertical
+                }
+            case .animeByUsersSearch:
+                return
+            case .none:
+                return
             }
+        } else {
+//            self.scrollToTheTop(collectionType: self.extendedCollection)
+            
+            self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+            self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+            self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.allTimePopularColl.hideSkeleton()
+                self.trendingNowColl.hideSkeleton()
+                self.currentSeasonPopularColl.hideSkeleton()
+            }
+            
+            self.setupActiveCollViewConstraints()
+            self.view.layoutIfNeeded()
+        }
+        if self.extendedCollection != headersCollectionView {
+            self.makeCollectionViewFullScreen(headersCollectionView)
+            self.view.layoutIfNeeded()
+            self.extendedCollection = headersCollectionView
+        } else {
+            
+            UIView.animate(withDuration: 0.3) {
+                sender.transform = CGAffineTransform(rotationAngle: .pi)
+            }
+            
+            switch headersCollectionView {
+            case .trendingNow:
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
+                if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .horizontal
+                }
+            case .popularThisSeason:
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
+                if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .horizontal
+                }
+            case .allTimePopular:
+                self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: true)
+                if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    layout.scrollDirection = .horizontal
+                }
+            case .none:
+                return
+            case .animeByUsersSearch:
+                return
+            }
+            self.extendedCollection = .none
         }
     }
-
+    
     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
         print("DEBUG:", "Tapped Anime Cell")
         let vc = DetailInfoController()
@@ -894,27 +726,35 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     func toolTapped(_ toolType: SearchTool, sender: UIButton) {
         
         let coordinats = sender.superview?.convert(sender.frame.origin, to: nil)
-        self.xChoosedTool = coordinats!.x
+        self.xPositionChoosedTool = coordinats!.x
         self.shouldDetectScrollStart = true
         
-        
-        if isChoosedOpened {
+        if isToolOpened {
             UIView.animate(withDuration: 0.3) {
                 self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y - 10
                 self.choosedToolCollectionView.alpha = 0.0
             } completion: { _ in
-                self.isChoosedOpened = false
-                
+                self.isToolOpened = false
                 if toolType != self.choosedTool {
                     self.toolTapped(toolType, sender: sender)
                 }
                 self.choosedToolCollectionView.reloadData()
-                print("Make request")
+                
+                if !self.searchToolsAreEmpty() {
+                    self.extendedCollection = .animeByUsersSearch
+                    self.setupAnimesBySearch()
+                    UIView.animate(withDuration: 0.3) {
+                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: false)
+                    } completion: { _ in
+                        self.makeCollectionViewFullScreen(self.extendedCollection)
+                        self.fetchDataByUserSearch(currentPage: nil)
+                        self.view.layoutIfNeeded()
+                    }
+                }
             }
         } else {
-            
             self.choosedTool = toolType
-            self.isChoosedOpened = true
+            self.isToolOpened = true
             self.contentView.addSubview(choosedToolCollectionView)
             choosedToolCollectionView.translatesAutoresizingMaskIntoConstraints = false
             
@@ -942,12 +782,64 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         switch toolType {
         case .genre:
             self.choosedGenres = []
+            if searchToolsAreEmpty() {
+                UIView.animate(withDuration: 0.3) {
+                    self.extendedCollection = .none
+                    for view in self.view.subviews {
+                        if view == self.animesByUsersSearchColl {
+                            view.removeFromSuperview()
+                        }
+                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.setupActiveCollViewConstraints()
+                        self.animesByUsersSearch = nil
+                    }
+                }
+            }
         case .year:
             self.choosedYear = nil
+            if searchToolsAreEmpty() {
+                UIView.animate(withDuration: 0.3) {
+                    self.extendedCollection = .none
+                    for view in self.view.subviews {
+                        if view == self.animesByUsersSearchColl {
+                            view.removeFromSuperview()
+                        }
+                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.setupActiveCollViewConstraints()
+                        self.animesByUsersSearch = nil
+                    }
+                }
+            }
         case .season:
             self.choosedSeason = nil
+            if searchToolsAreEmpty() {
+                UIView.animate(withDuration: 0.3) {
+                    self.extendedCollection = .none
+                    for view in self.view.subviews {
+                        if view == self.animesByUsersSearchColl {
+                            view.removeFromSuperview()
+                        }
+                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.setupActiveCollViewConstraints()
+                        self.animesByUsersSearch = nil
+                    }
+                }
+            }
         case .format:
             self.choosedFormats = []
+            if searchToolsAreEmpty() {
+                UIView.animate(withDuration: 0.3) {
+                    self.extendedCollection = .none
+                    for view in self.view.subviews {
+                        if view == self.animesByUsersSearchColl {
+                            view.removeFromSuperview()
+                        }
+                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.setupActiveCollViewConstraints()
+                        self.animesByUsersSearch = nil
+                    }
+                }
+            }
         }
         self.choosedToolCollectionView.reloadData()
     }
@@ -1018,11 +910,19 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     }
 }
 
-
-
-
-extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout  {
+extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, SkeletonCollectionViewDataSource, SkeletonCollectionViewDelegate  {
     
+    func numSections(in collectionSkeletonView: UICollectionView) -> Int {
+        return 1
+    }
+    
+//    func collectionSkeletonView(_ skeletonView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        return 20
+//    }
+    
+    func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> SkeletonView.ReusableCellIdentifier {
+        return "Cell"
+    }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
@@ -1031,55 +931,54 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 print("Scrolled to the end")
                 
                 guard let currentPage = self.trendingNowAnimes?.pageInfo?.currentPage, let hasNextPage = self.trendingNowAnimes?.pageInfo?.hasNextPage else { return }
-                
-                
+                    
                 if hasNextPage {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.apiClient.getAnimeBy(
-                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-                            perPage: 20,
-                            sort: [.case(.trendingDesc)],
-                            type: .some(.case(.anime)),
-                            season: nil,
-                            seasonYear: nil,
-                            formats: nil,
-                            genres: nil,
-                            search: nil) { result in
-                                self.trendingNowAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                                self.trendingNowAnimes?.pageInfo? = newPageInfo
-                                self.trendingNowColl.reloadSections(IndexSet(integer: 0))
-                            }
-                    }
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                        self.apiClient.getAnimeBy(
+//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
+//                            perPage: 20,
+//                            sort: [.case(.trendingDesc)],
+//                            type: .some(.case(.anime)),
+//                            season: nil,
+//                            seasonYear: nil,
+//                            formats: nil,
+//                            genres: nil,
+//                            search: nil) { result in
+//                                self.trendingNowAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
+//                                self.trendingNowAnimes?.pageInfo? = newPageInfo
+//                                self.trendingNowColl.reloadSections(IndexSet(integer: 0))
+//                            }
+                        self.fetchTrendingNow(currentPage: currentPage)
+//                    }
                 }
             }
         } else if collectionView == self.currentSeasonPopularColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
                 print("Scrolled to the end")
-                
-                guard let currentPage = self.currentSeasonPopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.currentSeasonPopularAnimes?.pageInfo?.hasNextPage else { return }
-                
-                if hasNextPage {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.apiClient.getAnimeBy(
-                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-                            perPage: 20,
-                            sort: [.case(.favouritesDesc)],
-                            type: .some(.case(.anime)),
-                            season: .some(.case(.fall)),
-                            seasonYear: 2023,
-                            formats: nil,
-                            genres: nil,
-                            search: nil) { result in
-                                self.currentSeasonPopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                                self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
-                                self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
-                            }
-                    }
                     
+                guard let currentPage = self.currentSeasonPopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.currentSeasonPopularAnimes?.pageInfo?.hasNextPage else { return }
+                    
+                if hasNextPage {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                        self.apiClient.getAnimeBy(
+//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
+//                            perPage: 20,
+//                            sort: [.case(.favouritesDesc)],
+//                            type: .some(.case(.anime)),
+//                            season: .some(.case(.fall)),
+//                            seasonYear: 2023,
+//                            formats: nil,
+//                            genres: nil,
+//                            search: nil) { result in
+//                                self.currentSeasonPopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
+//                                self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
+//                                self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
+//                            }
+                        self.fetchPopularThisSeason(currentPage: currentPage)
+//                    }
                 }
-                
             }
         } else if collectionView == self.allTimePopularColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
@@ -1088,24 +987,50 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
                 
                 if hasNextPage {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.apiClient.getAnimeBy(
-                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-                            perPage: 20,
-                            sort: [.case(.popularityDesc)],
-                            type: .some(.case(.anime)),
-                            season: nil,
-                            seasonYear: nil,
-                            formats: nil,
-                            genres: nil,
-                            search: nil) { result in
-                                self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                                self.allTimePopularAnimes?.pageInfo? = newPageInfo
-                                self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
-                            }
-                    }
-                    
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                        self.apiClient.getAnimeBy(
+//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
+//                            perPage: 20,
+//                            sort: [.case(.popularityDesc)],
+//                            type: .some(.case(.anime)),
+//                            season: nil,
+//                            seasonYear: nil,
+//                            formats: nil,
+//                            genres: nil,
+//                            search: nil) { result in
+//                                self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
+//                                self.allTimePopularAnimes?.pageInfo? = newPageInfo
+//                                self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
+//                            }
+                        self.fetchAllTimePopular(currentPage: currentPage)
+//                    }
+                }
+            }
+        } else if collectionView == self.animesByUsersSearchColl {
+            if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
+                print("Scrolled to the end")
+                guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
+                
+                if hasNextPage {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.fetchDataByUserSearch(currentPage: currentPage)
+//                        self.apiClient.getAnimeBy(
+//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
+//                            perPage: 20,
+//                            sort: [.case(.popularityDesc)],
+//                            type: .some(.case(.anime)),
+//                            season: nil,
+//                            seasonYear: nil,
+//                            formats: nil,
+//                            genres: nil,
+//                            search: nil) { result in
+//                                self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
+//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
+//                                self.allTimePopularAnimes?.pageInfo? = newPageInfo
+//                                self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
+//                            }
+//                    }
                 }
             }
         }
@@ -1126,12 +1051,11 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         
         if collectionView != choosedToolCollectionView {
             let layout = collectionViewLayout as! UICollectionViewFlowLayout
-                if layout.scrollDirection == .horizontal {
-                    return UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
-                } else {
-                    return UIEdgeInsets.init(top: 0, left: 10, bottom: 30, right: 12)
-                }
-
+            if layout.scrollDirection == .horizontal {
+                return UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
+            } else {
+                return UIEdgeInsets.init(top: 0, left: 10, bottom: 30, right: 12)
+            }
         } else {
             return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
         }
@@ -1157,19 +1081,13 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView != choosedToolCollectionView {
             if collectionView == self.allTimePopularColl {
-//                return self.allTimePopularAnimes.count
-//                return self.allTimePopularAnimes?.page?.media?.count ?? 0
-                return self.allTimePopularAnimes?.animes.count ?? 0
-                
+                return self.allTimePopularAnimes?.animes.count ?? 5
             } else if collectionView == self.currentSeasonPopularColl {
-//                return self.currentSeasonPopularAnimes.count
-//                return self.currentSeasonPopularAnimes?.page?.media?.count ?? 0
-                return self.currentSeasonPopularAnimes?.animes.count ?? 0
+                return self.currentSeasonPopularAnimes?.animes.count ?? 5
+            } else if collectionView == self.trendingNowColl {
+                return self.trendingNowAnimes?.animes.count ?? 5
             } else {
-//                return self.trendingNowAnimes.count
-//                return self.trendingNowAnimes?.page?.media?.count ?? 0
-                return self.trendingNowAnimes?.animes.count ?? 0
-//                return 20
+                return self.animesByUsersSearch?.animes.count ?? 0
             }
         } else {
             switch choosedTool {
@@ -1191,36 +1109,47 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         
         if collectionView != choosedToolCollectionView {
             if collectionView == self.allTimePopularColl {
-                    guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
-                        fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
-                    }
-                
-//                    let preview = self.allTimePopularAnimes[indexPath.row]
-//                let preview = self.allTimePopularAnimes?.page?.media![indexPath.row]
-                let preview = self.allTimePopularAnimes?.animes[indexPath.row]
+                guard let cell = allTimePopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
+                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                }
+                if allTimePopularAnimes != nil {
+                    let preview = self.allTimePopularAnimes?.animes[indexPath.row]
                     cell.configure(with: preview!)
                     cell.delegate = self
-                    return cell
+                }
+                return cell
                 
             } else if collectionView == self.currentSeasonPopularColl {
                 guard let cell = currentSeasonPopularColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                     fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
                 }
-                
-//                let preview = self.currentSeasonPopularAnimes[indexPath.row]
-//                let preview = self.currentSeasonPopularAnimes?.page?.media![indexPath.row]
-                let preview = self.currentSeasonPopularAnimes?.animes[indexPath.row]
-                cell.configure(with: preview!)
-                cell.delegate = self
+                if currentSeasonPopularAnimes != nil {
+                    let preview = self.currentSeasonPopularAnimes?.animes[indexPath.row]
+                    cell.configure(with: preview!)
+                    cell.delegate = self
+                }
                 return cell
-            } else {
+            } else if collectionView == self.trendingNowColl {
+//            } else  {
                 guard let cell = trendingNowColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                     fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
                 }
                 
 //                let preview = self.trendingNowAnimes[indexPath.row]
 //                let preview = self.trendingNowAnimes?.page?.media![indexPath.row]
-                let preview = self.trendingNowAnimes?.animes[indexPath.row]
+                if trendingNowAnimes != nil {
+                    let preview = self.trendingNowAnimes?.animes[indexPath.row]
+                    cell.configure(with: preview!)
+                    cell.delegate = self
+                }
+                return cell
+            }
+            else {
+                guard let cell = animesByUsersSearchColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+                        as? MenuAnimePreviewCell else {
+                    fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+                }
+                let preview = self.animesByUsersSearch?.animes[indexPath.row]
                 cell.configure(with: preview!)
                 cell.delegate = self
                 return cell
@@ -1278,32 +1207,4 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
     }
 }
 
-extension MenuController {
-    func fetchData() {
-        self.apiClient.getAnimeBy(
-            page: 1,
-            perPage: 20,
-            sort: [.case(.favouritesDesc)],
-            type: .some(.case(.anime)),
-            season: self.choosedSeason?.convertToGrapQL() ?? .none,
-            seasonYear: self.choosedYear?.convertToGraphQL() ?? .none,
-            formats: self.choosedFormats.isEmpty ? nil : GraphQLNullable.some(self.choosedFormats.convertToGraphQL()),
-            genres: self.choosedGenres.isEmpty ? nil :
-                    .some(self.choosedGenres.getRawValues()),
-            search: self.searchStringAnime == nil ? nil :
-                    .some(self.searchStringAnime!)) { result in
-                        self.trendingNowAnimes?.animes = result.data?.page?.media?.compactMap({ $0 }) ?? []
-                        self.trendingNowColl.reloadData()
-                    }
-    }
-}
 
-
-extension MenuController {
-    enum CollectionType {
-        case trendingNow
-        case popularThisSeason
-        case allTimePopular
-        case none
-    }
-}
