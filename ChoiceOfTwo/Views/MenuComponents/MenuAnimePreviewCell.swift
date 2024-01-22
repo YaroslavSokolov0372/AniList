@@ -88,7 +88,13 @@ class MenuAnimePreviewCell: UICollectionViewCell {
 extension MenuAnimePreviewCell {
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
-        self.name.text = animeData.title?.english ?? animeData.title?.native
+        if let englishName = animeData.title?.english {
+            self.name.text = englishName
+        } else if let userPrefered = animeData.title?.userPreferred {
+            self.name.text = userPrefered
+        } else {
+            self.name.text = animeData.title?.native
+        }
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
     }
 }

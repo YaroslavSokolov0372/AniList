@@ -24,25 +24,55 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     //MARK: - Variables
     private var extendedCollection: CollectionType = .none
     
-    private var showScrollButton = false {
-        
+    private var showMessage = false {
         didSet {
-            if oldValue != self.showScrollButton {
-                if showScrollButton {
-                    activeScrollButtonConstraints = [
-                        scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
-                    ]
+            if oldValue != self.showMessage {
+                if showMessage {
+                    self.showScrollButton = false
+                        activeMessageConstranints = [
+                            messageView.topAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100),
+                        ]
+                    print("DEBUG:", "Showing message")
                     UIView.animate(withDuration: 0.3) {
                         self.view.layoutIfNeeded()
                     }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.showMessage = false
+                    }
                 } else {
-                    activeScrollButtonConstraints = [
-                        scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
+                    activeMessageConstranints = [
+                        messageView.topAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 60),
                     ]
                     UIView.animate(withDuration: 0.3) {
                         self.view.layoutIfNeeded()
                     }
                 }
+            }
+        }
+    }
+    
+    private var showScrollButton = false {
+        didSet {
+            if oldValue != self.showScrollButton {
+                
+                    if showScrollButton {
+                        if !showMessage {
+                            activeScrollButtonConstraints = [
+                                scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor, constant: -10),
+                            ]
+                            UIView.animate(withDuration: 0.3) {
+                                self.view.layoutIfNeeded()
+                            }
+                        }
+                    } else {
+                        activeScrollButtonConstraints = [
+                            scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
+                        ]
+                        UIView.animate(withDuration: 0.3) {
+                            self.view.layoutIfNeeded()
+                        }
+                    }
+                
             }
         }
     }
@@ -74,10 +104,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                     self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
                     self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
                     self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+                    self.animesByUsersSearchColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
                 } else {
                     self.allTimePopularColl.hideSkeleton()
                     self.currentSeasonPopularColl.hideSkeleton()
                     self.trendingNowColl.hideSkeleton()
+                    self.animesByUsersSearchColl.hideSkeleton()
                 }
             }
         }
@@ -100,10 +132,16 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         }
         didSet {
             NSLayoutConstraint.activate(activeScrollButtonConstraints)
-            //            UIView.animate(withDuration: 0.3) {
-            //                self.view.layoutIfNeeded()
-            //
-            //            }
+        }
+    }
+    
+    private var activeMessageConstranints: [NSLayoutConstraint] = [] {
+        
+        willSet {
+            NSLayoutConstraint.deactivate(activeMessageConstranints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeMessageConstranints)
         }
     }
     
@@ -115,8 +153,9 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     
     private var animesByUsersSearch: ListOfAnime?
     
-    
     //MARK: - UI Components
+    private let messageView = MessageView()
+    
     private let mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = UIColor(named: "Black")
@@ -233,6 +272,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.choosedToolCollectionView.dataSource = self
         self.animesByUsersSearchColl.delegate = self
         self.animesByUsersSearchColl.dataSource = self
+        self.animesByUsersSearchColl.isSkeletonable = true
         
         self.mainScrollView.delegate = self
         self.searchToolsScrollView.configureDelegate(self)
@@ -243,7 +283,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.fetchAllTimePopular(currentPage: nil)
         self.fetchTrendingNow(currentPage: nil)
     }
-    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -279,31 +318,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     }
     
     //MARK: - Setup UI
-    private func setupActiveSideButtonConstraints() {
-        self.activeScrollButtonConstraints = [
-            scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
-        ]
-    }
-    
-    private func setupActiveCollViewConstraints() {
-        self.activeCollViewConstraints = [
-            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
-            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
-            contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
-            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-        ]
-    }
-    
-    private func configureDefaultContentSize() -> CGFloat {
-        let searchScrollView: CGFloat = 80
-        let headers: CGFloat = 20 * 3
-        let colls: CGFloat = (self.view.frame.height * 0.33) * 3
-        let spacing: CGFloat = 120
-        return searchScrollView + headers + colls + spacing
-    }
-    
     private func setupUI() {
         
         self.view.addSubview(mainScrollView)
@@ -336,12 +350,19 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.contentView.addSubview(trendingNowColl)
         trendingNowColl.translatesAutoresizingMaskIntoConstraints = false
         
+        self.view.addSubview(messageView)
+        messageView.translatesAutoresizingMaskIntoConstraints = false
+        
         
         NSLayoutConstraint.activate([
             
-            self.scrollToTopButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
-            self.scrollToTopButton.widthAnchor.constraint(equalToConstant: 60),
-            self.scrollToTopButton.heightAnchor.constraint(equalToConstant: 60),
+            messageView.heightAnchor.constraint(equalToConstant: 50),
+            messageView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            messageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            scrollToTopButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -10),
+            scrollToTopButton.widthAnchor.constraint(equalToConstant: 60),
+            scrollToTopButton.heightAnchor.constraint(equalToConstant: 60),
             
             mainScrollView.topAnchor.constraint(equalTo: view.topAnchor),
             mainScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -390,6 +411,39 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         
         self.setupActiveCollViewConstraints()
         self.setupActiveSideButtonConstraints()
+        self.setupActiveMessageConstraints()
+    }
+    
+    private func setupActiveMessageConstraints() {
+        self.activeMessageConstranints =  [
+            messageView.topAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 60),
+        ]
+    }
+    
+    private func setupActiveSideButtonConstraints() {
+        
+        self.activeScrollButtonConstraints = [
+            scrollToTopButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 80),
+        ]
+    }
+    
+    private func setupActiveCollViewConstraints() {
+        self.activeCollViewConstraints = [
+            allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
+            currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
+            contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
+            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+        ]
+    }
+    
+    private func configureDefaultContentSize() -> CGFloat {
+        let searchScrollView: CGFloat = 80
+        let headers: CGFloat = 20 * 3
+        let colls: CGFloat = (self.view.frame.height * 0.33) * 3
+        let spacing: CGFloat = 120
+        return searchScrollView + headers + colls + spacing
     }
     
     private func setupAnimesBySearch() {
@@ -447,14 +501,42 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                     .some(self.choosedGenres.getRawValues()),
             search: self.searchStringAnime == nil ? .none :
                     .some(self.searchStringAnime!)) { result in
-                        if self.animesByUsersSearch == nil {
-                            self.animesByUsersSearch = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                            self.animesByUsersSearchColl.reloadData()
-                        } else {
-                            self.animesByUsersSearch?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                            guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                            self.animesByUsersSearch?.pageInfo? = newPageInfo
-                            self.animesByUsersSearchColl.reloadSections(IndexSet(integer: 0))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            if self.animesByUsersSearch == nil {
+                                switch result {
+                                case .success(let data):
+                                    self.animesByUsersSearch = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                                    self.isFetching = false
+                                    self.animesByUsersSearchColl.reloadData()
+                                case .failure(let failure):
+                                    switch failure {
+                                    case .internetConnection(let error):
+                                        self.messageView.setupMessage(error.errorMessage)
+                                        self.showMessage = true
+                                    case .otherReason(let error):
+                                        self.messageView.setupMessage(error.errorMessage)
+                                        self.showMessage = true
+                                    }
+                                }
+                            } else {
+                                switch result {
+                                case .success(let data):
+                                    self.animesByUsersSearch?.animes.append(contentsOf: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                                    guard let newPageInfo = data.data?.page?.pageInfo else { return }
+                                    self.animesByUsersSearch?.pageInfo? = newPageInfo
+                                    self.animesByUsersSearchColl.reloadSections(IndexSet(integer: 0))
+                                    self.showMessage = true
+                                case .failure(let failure):
+                                    switch failure {
+                                    case .internetConnection(let error):
+                                        self.messageView.setupMessage(error.errorMessage)
+                                        self.showMessage = true
+                                    case .otherReason(let error):
+                                        self.messageView.setupMessage(error.errorMessage)
+                                        self.showMessage = true
+                                    }
+                                }
+                            }
                         }
                     }
     }
@@ -471,16 +553,42 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             genres: nil,
             search: nil) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    
                     if self.allTimePopularAnimes == nil {
-                        self.allTimePopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        self.isFetching = false
-                        self.allTimePopularColl.reloadData()
+                        
+                        switch result {
+                        case .success(let data):
+                            self.allTimePopularAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            self.isFetching = false
+                            self.allTimePopularColl.reloadData()
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
                     } else {
-                        self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                        self.allTimePopularAnimes?.pageInfo? = newPageInfo
-                        self.isFetching = false
-                        self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
+                        switch result {
+                        case .success(let data):
+                            self.allTimePopularAnimes?.animes.append(contentsOf: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            guard let newPageInfo = data.data?.page?.pageInfo else { return }
+                            self.allTimePopularAnimes?.pageInfo? = newPageInfo
+                            self.isFetching = false
+                            self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
                     }
                 }
             }
@@ -499,15 +607,42 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             search: nil) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     if self.currentSeasonPopularAnimes == nil {
-                        self.currentSeasonPopularAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        self.isFetching = false
-                        self.currentSeasonPopularColl.reloadData()
+                        
+                        switch result {
+                        case .success(let data):
+                            self.currentSeasonPopularAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            self.isFetching = false
+                            self.currentSeasonPopularColl.reloadData()
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
+
                     } else {
-                        self.currentSeasonPopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                        self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
-                        self.isFetching = false
-                        self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
+                        switch result {
+                        case .success(let data):
+                            self.currentSeasonPopularAnimes?.animes.append(contentsOf: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            guard let newPageInfo = data.data?.page?.pageInfo else { return }
+                            self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
+                            self.isFetching = false
+                            self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
+
                     }
                 }
             }
@@ -526,15 +661,42 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             search: nil) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     if self.trendingNowAnimes == nil {
-                        self.trendingNowAnimes = ListOfAnime(pageInfo: result.data?.page?.pageInfo, animes: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        self.isFetching = false
-                        self.trendingNowColl.reloadData()
+                        switch result {
+                        case .success(let data):
+                            self.trendingNowAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            self.isFetching = false
+                            self.trendingNowColl.reloadData()
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
+                        
                     } else {
-                        self.trendingNowAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-                        guard let newPageInfo = result.data?.page?.pageInfo else { return }
-                        self.trendingNowAnimes?.pageInfo? = newPageInfo
-                        self.isFetching = false
-                        self.trendingNowColl.reloadSections(IndexSet(integer: 0))
+                        switch result {
+                        case .success(let data):
+                            self.trendingNowAnimes?.animes.append(contentsOf: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                            guard let newPageInfo = data.data?.page?.pageInfo else { return }
+                            self.trendingNowAnimes?.pageInfo? = newPageInfo
+                            self.isFetching = false
+                            self.trendingNowColl.reloadSections(IndexSet(integer: 0))
+                            self.showMessage = true
+                        case .failure(let failure):
+                            switch failure {
+                            case .internetConnection(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            case .otherReason(let error):
+                                self.messageView.setupMessage(error.errorMessage)
+                                self.showMessage = true
+                            }
+                        }
+                        
                     }
                 }
             }
@@ -614,7 +776,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             UIView.animate(withDuration: 0.3) {
                 sender.transform = CGAffineTransform(rotationAngle: .pi/4)
             }
-
+            
             switch headersCollectionView {
             case .trendingNow:
                 self.trendingNowColl.setContentOffset(.zero, animated: true)
@@ -625,8 +787,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.trendingNowColl.hideSkeleton()
-                    
-                    
                 }
                 
                 if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
@@ -666,8 +826,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 return
             }
         } else {
-//            self.scrollToTheTop(collectionType: self.extendedCollection)
-            
             self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
             self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
             self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
@@ -743,38 +901,48 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 if !self.searchToolsAreEmpty() {
                     self.extendedCollection = .animeByUsersSearch
                     self.setupAnimesBySearch()
-                    UIView.animate(withDuration: 0.3) {
-                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: false)
-                    } completion: { _ in
-                        self.makeCollectionViewFullScreen(self.extendedCollection)
-                        self.fetchDataByUserSearch(currentPage: nil)
-                        self.view.layoutIfNeeded()
-                    }
+                    self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: false)
+                    self.makeCollectionViewFullScreen(self.extendedCollection)
+                    
+                    self.isFetching = true
+                    self.animesByUsersSearch = nil
+                    self.fetchDataByUserSearch(currentPage: nil)
+                    
+                    
+                    
                 }
             }
         } else {
-            self.choosedTool = toolType
-            self.isToolOpened = true
-            self.contentView.addSubview(choosedToolCollectionView)
-            choosedToolCollectionView.translatesAutoresizingMaskIntoConstraints = false
-            
-            self.choosedToolCollectionView.alpha = 0.0
-            
-            choosedToolCollectionView.frame = CGRect(
-                x: coordinats!.x,
-                y: 80,
-                width: 150,
-                height: choosedTool == .season ? 160 : 320
-            )
-            
-            UIView.animate(withDuration: 0.3) {
-                self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y + 10
-                self.choosedToolCollectionView.alpha = 1.0
+            if !isFetching {
+                var hasChoosedToolView = false
+                self.choosedTool = toolType
+                
+                for view in contentView.subviews {
+                    if view == choosedToolCollectionView {
+                        hasChoosedToolView = true
+                    }
+                }
+                self.isToolOpened = true
+                if !hasChoosedToolView {
+                    self.contentView.addSubview(choosedToolCollectionView)
+                }
+                self.contentView.bringSubviewToFront(choosedToolCollectionView)
+                choosedToolCollectionView.translatesAutoresizingMaskIntoConstraints = false
+                
+                self.choosedToolCollectionView.alpha = 0.0
+                choosedToolCollectionView.frame = CGRect(
+                    x: coordinats!.x,
+                    y: 80,
+                    width: 150,
+                    height: choosedTool == .season ? 160 : 320
+                )
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y + 10
+                    self.choosedToolCollectionView.alpha = 1.0
+                }
+                choosedToolCollectionView.reloadData()
             }
-            
-            choosedToolCollectionView.reloadData()
-            choosedToolCollectionView.setNeedsLayout()
-            choosedToolCollectionView.setNeedsDisplay()
         }
     }
     
@@ -791,9 +959,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         }
                         self.makeOtherCollectionTransparent(except: .none, unhide: true)
                         self.setupActiveCollViewConstraints()
-                        self.animesByUsersSearch = nil
                     }
                 }
+            } else {
+                self.isFetching = true
+                self.animesByUsersSearch = nil
+                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .year:
             self.choosedYear = nil
@@ -806,9 +977,13 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         }
                         self.makeOtherCollectionTransparent(except: .none, unhide: true)
                         self.setupActiveCollViewConstraints()
-                        self.animesByUsersSearch = nil
+                        
                     }
                 }
+            } else {
+                self.isFetching = true
+                self.animesByUsersSearch = nil
+                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .season:
             self.choosedSeason = nil
@@ -824,6 +999,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         self.animesByUsersSearch = nil
                     }
                 }
+            } else {
+                self.isFetching = true
+                self.animesByUsersSearch = nil
+                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .format:
             self.choosedFormats = []
@@ -839,6 +1018,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         self.animesByUsersSearch = nil
                     }
                 }
+            } else {
+                self.isFetching = true
+                self.animesByUsersSearch = nil
+                self.fetchDataByUserSearch(currentPage: nil)
             }
         }
         self.choosedToolCollectionView.reloadData()
@@ -912,13 +1095,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
 
 extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, SkeletonCollectionViewDataSource, SkeletonCollectionViewDelegate  {
     
-    func numSections(in collectionSkeletonView: UICollectionView) -> Int {
-        return 1
-    }
-    
-//    func collectionSkeletonView(_ skeletonView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return 20
-//    }
     
     func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> SkeletonView.ReusableCellIdentifier {
         return "Cell"
@@ -931,53 +1107,19 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 print("Scrolled to the end")
                 
                 guard let currentPage = self.trendingNowAnimes?.pageInfo?.currentPage, let hasNextPage = self.trendingNowAnimes?.pageInfo?.hasNextPage else { return }
-                    
+                
                 if hasNextPage {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                        self.apiClient.getAnimeBy(
-//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-//                            perPage: 20,
-//                            sort: [.case(.trendingDesc)],
-//                            type: .some(.case(.anime)),
-//                            season: nil,
-//                            seasonYear: nil,
-//                            formats: nil,
-//                            genres: nil,
-//                            search: nil) { result in
-//                                self.trendingNowAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-//                                self.trendingNowAnimes?.pageInfo? = newPageInfo
-//                                self.trendingNowColl.reloadSections(IndexSet(integer: 0))
-//                            }
-                        self.fetchTrendingNow(currentPage: currentPage)
-//                    }
+                    self.fetchTrendingNow(currentPage: currentPage)
                 }
             }
         } else if collectionView == self.currentSeasonPopularColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
                 print("Scrolled to the end")
-                    
+                
                 guard let currentPage = self.currentSeasonPopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.currentSeasonPopularAnimes?.pageInfo?.hasNextPage else { return }
-                    
+                
                 if hasNextPage {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                        self.apiClient.getAnimeBy(
-//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-//                            perPage: 20,
-//                            sort: [.case(.favouritesDesc)],
-//                            type: .some(.case(.anime)),
-//                            season: .some(.case(.fall)),
-//                            seasonYear: 2023,
-//                            formats: nil,
-//                            genres: nil,
-//                            search: nil) { result in
-//                                self.currentSeasonPopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-//                                self.currentSeasonPopularAnimes?.pageInfo? = newPageInfo
-//                                self.currentSeasonPopularColl.reloadSections(IndexSet(integer: 0))
-//                            }
-                        self.fetchPopularThisSeason(currentPage: currentPage)
-//                    }
+                    self.fetchPopularThisSeason(currentPage: currentPage)
                 }
             }
         } else if collectionView == self.allTimePopularColl {
@@ -987,24 +1129,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
                 
                 if hasNextPage {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                        self.apiClient.getAnimeBy(
-//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-//                            perPage: 20,
-//                            sort: [.case(.popularityDesc)],
-//                            type: .some(.case(.anime)),
-//                            season: nil,
-//                            seasonYear: nil,
-//                            formats: nil,
-//                            genres: nil,
-//                            search: nil) { result in
-//                                self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-//                                self.allTimePopularAnimes?.pageInfo? = newPageInfo
-//                                self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
-//                            }
-                        self.fetchAllTimePopular(currentPage: currentPage)
-//                    }
+                    self.fetchAllTimePopular(currentPage: currentPage)
                 }
             }
         } else if collectionView == self.animesByUsersSearchColl {
@@ -1013,24 +1138,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
                 
                 if hasNextPage {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.fetchDataByUserSearch(currentPage: currentPage)
-//                        self.apiClient.getAnimeBy(
-//                            page: GraphQLNullable<Int>(integerLiteral: currentPage + 1),
-//                            perPage: 20,
-//                            sort: [.case(.popularityDesc)],
-//                            type: .some(.case(.anime)),
-//                            season: nil,
-//                            seasonYear: nil,
-//                            formats: nil,
-//                            genres: nil,
-//                            search: nil) { result in
-//                                self.allTimePopularAnimes?.animes.append(contentsOf: result.data?.page?.media?.compactMap({ $0 }) ?? [])
-//                                guard let newPageInfo = result.data?.page?.pageInfo else { return }
-//                                self.allTimePopularAnimes?.pageInfo? = newPageInfo
-//                                self.allTimePopularColl.reloadSections(IndexSet(integer: 0))
-//                            }
-//                    }
+                    self.fetchDataByUserSearch(currentPage: currentPage)
                 }
             }
         }
@@ -1087,7 +1195,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
             } else if collectionView == self.trendingNowColl {
                 return self.trendingNowAnimes?.animes.count ?? 5
             } else {
-                return self.animesByUsersSearch?.animes.count ?? 0
+                return self.animesByUsersSearch?.animes.count ?? 6
             }
         } else {
             switch choosedTool {
@@ -1130,13 +1238,10 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 }
                 return cell
             } else if collectionView == self.trendingNowColl {
-//            } else  {
                 guard let cell = trendingNowColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? MenuAnimePreviewCell else {
                     fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
                 }
                 
-//                let preview = self.trendingNowAnimes[indexPath.row]
-//                let preview = self.trendingNowAnimes?.page?.media![indexPath.row]
                 if trendingNowAnimes != nil {
                     let preview = self.trendingNowAnimes?.animes[indexPath.row]
                     cell.configure(with: preview!)
@@ -1149,9 +1254,11 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                         as? MenuAnimePreviewCell else {
                     fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
                 }
-                let preview = self.animesByUsersSearch?.animes[indexPath.row]
-                cell.configure(with: preview!)
-                cell.delegate = self
+                if animesByUsersSearch != nil {
+                    let preview = self.animesByUsersSearch?.animes[indexPath.row]
+                    cell.configure(with: preview!)
+                    cell.delegate = self
+                }
                 return cell
             }
         } else {

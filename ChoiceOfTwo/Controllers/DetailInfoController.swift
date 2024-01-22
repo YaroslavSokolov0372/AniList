@@ -68,7 +68,7 @@ class DetailInfoController: UIViewController {
     
     private let animeName: UILabel = {
       let label = UILabel()
-        label.text = ""
+        label.text = "Hello"
         label.textAlignment = .left
         label.numberOfLines = 0
         label.font = UIFont().JosefinSans(font: .bold, size: 22)
@@ -270,7 +270,15 @@ extension DetailInfoController {
         }
         
         self.animeData = animeData
-        self.animeName.text = animeData.title?.english
+        
+        if let englishName = animeData.title?.english {
+            self.animeName.text = englishName
+        } else if let userPrefered = animeData.title?.userPreferred {
+            self.animeName.text = userPrefered
+        } else {
+            self.animeName.text = animeData.title?.native
+        }
+//        self.animeName.text = animeData.title?.english
         self.animeDescription.text = animeData.description?.replacingOccurrences(of: "<br>", with: "")
 //        self.imageView.setupImage(with: animeData.coverImage?.extraLarge ?? "")
         self.imageView.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
@@ -291,7 +299,6 @@ extension DetailInfoController {
         let animeDescriptionHeight = animeDescription.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
         
         let height = imageHeight + textHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight
-//        print(height)
         return height
     }
 }

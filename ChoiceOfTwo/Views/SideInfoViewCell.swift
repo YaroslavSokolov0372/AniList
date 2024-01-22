@@ -103,6 +103,8 @@ extension SideInfoViewCell {
 //            self.sideInfoDescription.text = String("\(info.episodes ?? info.episodes : "")")
             if info.episodes != nil {
                 self.sideInfoDescription.text = String("\(info.episodes!)")
+            } else {
+                self.sideInfoDescription.text = "___"
             }
         case 3:
             self.sideInfoHeader.text = "Status"
@@ -124,7 +126,11 @@ extension SideInfoViewCell {
             }
         case 4:
             self.sideInfoHeader.text = "Mean Score"
-            self.sideInfoDescription.text = String("\(info.meanScore ?? info.meanScore!)%")
+            if info.meanScore != nil {
+                self.sideInfoDescription.text = String("\(info.meanScore!)%")
+            } else {
+                self.sideInfoDescription.text = "___"
+            }
         case 5:
             self.sideInfoHeader.text = "Start Date"
 //            self.sideInfoDescription.text = String("\(info.startDate?.day) \(info.startDate?.month) \( info.startDate?.year)")
