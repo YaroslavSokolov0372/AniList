@@ -113,13 +113,15 @@ class SearchToolsScrollView: UIView {
         ])
     }
     
-    
     //MARK: - Func
     public func configureDelegate(_ controller: UIViewController) {
-        for toolView in searchToolsViews {
-            let view = toolView as! CustomSearchToolView
-            view.delegate = controller as? SearchToolButtonProtocol
-            scrollView.delegate = controller as? UIScrollViewDelegate
+        if let controller = controller as? MenuController {
+            for toolView in searchToolsViews {
+                let view = toolView as! CustomSearchToolView
+                view.delegate = controller
+                scrollView.delegate = controller
+                textField.passTextField().delegate = controller
+            }
         }
     }
     

@@ -8,7 +8,6 @@
 import UIKit
 
 class SearchTextFieldView: UIView {
-
     
     //MARK: - UI Components
     private let title: UILabel = {
@@ -28,7 +27,7 @@ class SearchTextFieldView: UIView {
         let tf = UITextField()
         tf.backgroundColor = UIColor(named: "DarkBlack")
         tf.layer.cornerRadius = 12
-        
+        tf.returnKeyType = .done
         tf.font = UIFont().JosefinSans(font: .regular, size: 14)
         tf.textColor = .white
         tf.leftViewMode = .always
@@ -36,7 +35,6 @@ class SearchTextFieldView: UIView {
         tf.rightViewMode = .always
         return tf
     }()
-    
     
     //MARK: - Lifecycle
     init(title: String) {
@@ -71,5 +69,9 @@ class SearchTextFieldView: UIView {
             self.textField.heightAnchor.constraint(equalToConstant: 40),
             self.textField.widthAnchor.constraint(equalTo: self.widthAnchor),
         ])
+    }
+    
+    public func passTextField() -> UITextField {
+        return self.textField
     }
 }

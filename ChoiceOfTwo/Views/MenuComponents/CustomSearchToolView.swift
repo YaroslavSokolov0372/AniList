@@ -241,9 +241,11 @@ class CustomSearchToolView: UIView {
         case .year:
             self.choosedFirstOption.removeFromSuperview()
             self.shouldHideButtonsLabel(false)
+            self.removeButton.removeFromSuperview()
         case .season:
             self.choosedFirstOption.removeFromSuperview()
             self.shouldHideButtonsLabel(false)
+            self.removeButton.removeFromSuperview()
         case .format:
             let formatArray = option as! [MediaFormat]
             
