@@ -7,7 +7,16 @@
 
 import UIKit
 
+protocol SearchTextFieldProtocol {
+    func textFieldDidChange(_ sender: UITextField)
+    
+    func textFieldRemoveButtonTapped(_ sender: UIButton)
+}
+
 class SearchTextFieldView: UIView {
+    
+    //MARK: - Variables
+    var delegate: SearchTextFieldProtocol!
     
     //MARK: - UI Components
     private let title: UILabel = {
@@ -18,9 +27,23 @@ class SearchTextFieldView: UIView {
         return label
     }()
  
-    private let image: UIImage = {
+    private let leftImage: UIImage = {
         let image = UIImage(named: "Magnifier")!.withRenderingMode(.alwaysTemplate)
         return image
+    }()
+    
+    private let rightImage: UIImage = {
+        let image = UIImage(named: "Magnifier")!.withRenderingMode(.alwaysTemplate)
+        return image
+    }()
+    
+    private var removeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "Cross")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.backgroundColor = UIColor(named: "DarkBlack")
+        button.imageView?.tintColor = .white
+        button.imageView?.contentMode = .scaleToFill
+        return button
     }()
     
     private let textField: UITextField = {
@@ -41,7 +64,12 @@ class SearchTextFieldView: UIView {
         super.init(frame: .zero)
         self.backgroundColor = UIColor(named: "Black")
         self.title.text = title
-        self.textField.leftImage(self.image, imageSize: CGSize(width: 15, height: 15), padding: 10)
+        self.textField.leftImage(self.leftImage, imageSize: CGSize(width: 15, height: 15), padding: 10)
+        self.textField.rightImage(rightImage, imageSize: CGSize(width: 15, height: 15), padding: 10)
+        self.textField.rightView?.alpha = 0
+        
+        self.textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        self.removeButton.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)
         setupUI()
     }
     
@@ -49,7 +77,7 @@ class SearchTextFieldView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    //MARK: Setup UI
+    //MARK: - Setup UI
     private func setupUI() {
         
         self.addSubview(title)
@@ -71,7 +99,42 @@ class SearchTextFieldView: UIView {
         ])
     }
     
+    private func setupRemoveButton() {
+        self.textField.addSubview(removeButton)
+        self.removeButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            self.removeButton.trailingAnchor.constraint(equalTo: textField.trailingAnchor, constant: -15),
+            self.removeButton.heightAnchor.constraint(equalToConstant: 15),
+            self.removeButton.widthAnchor.constraint(equalToConstant: 15),
+            self.removeButton.centerYAnchor.constraint(equalTo: textField.centerYAnchor),
+        ])
+    }
+    
+    //MARK: - Func
     public func passTextField() -> UITextField {
         return self.textField
+    }
+    
+    public func removeRemoveButton() {
+        removeButton.removeFromSuperview()
+    }
+    
+    @objc private func textFieldDidChange(_ sender: UITextField) {
+        self.delegate.textFieldDidChange(sender)
+        
+        if let text = sender.text {
+            if !text.isEmpty {
+                self.setupRemoveButton()
+            }
+        } else {
+            removeRemoveButton()
+        }
+    }
+    
+    @objc private func removeButtonTapped(_ sender: UIButton) {
+        self.delegate.textFieldRemoveButtonTapped(sender)
+        removeButton.removeFromSuperview()
+        self.textField.text = nil
     }
 }

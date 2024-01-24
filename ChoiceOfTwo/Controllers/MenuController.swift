@@ -19,16 +19,29 @@ extension MenuController {
     }
 }
 
-class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol, HeaderMoreButtonProtocol, UITextFieldDelegate {
+class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol, HeaderMoreButtonProtocol, UITextFieldDelegate, SearchTextFieldProtocol {
+
+    
     
     //MARK: - Variables
     private var extendedCollection: CollectionType = .none
     
     private var showMessage = false {
         didSet {
-            if oldValue != self.showMessage {
+//            if oldValue != self.showMessage {
                 if showMessage {
-                    self.showScrollButton = false
+                    if showScrollButton == true {
+                        self.showScrollButton = false
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                            self.showScrollButton = true
+//                        }
+                    }
+                    if showSearchButton == true {
+                        self.showSearchButton = false
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                            self.showSearchButton = true
+//                        }
+                    }
                     activeMessageConstranints = [
                         messageView.topAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100),
                     ]
@@ -38,7 +51,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         self.showMessage = false
-                        self.showScrollButton = true
                     }
                 } else {
                     activeMessageConstranints = [
@@ -48,7 +60,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         self.view.layoutIfNeeded()
                     }
                 }
-            }
+//            }
         }
     }
     
@@ -79,7 +91,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     private var showScrollButton = false {
         didSet {
             if oldValue != self.showScrollButton {
-                
                 if showScrollButton {
                     if !showMessage {
                         activeScrollButtonConstraints = [
@@ -361,7 +372,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             self.choosedToolCollectionView.frame.origin.x = self.xPositionChoosedTool - scrollView.contentOffset.x
             choosedToolCollectionView.frame.origin.x = xPositionChoosedTool - (scrollView.contentOffset.x - scrollViewX)
             
-        } else if scrollView == allTimePopularColl || scrollView == trendingNowColl || scrollView == currentSeasonPopularColl {
+        } else if scrollView == allTimePopularColl || scrollView == trendingNowColl || scrollView == currentSeasonPopularColl || scrollView == animesByUsersSearchColl {
             let offset = scrollView.contentOffset.y
             if offset > self.view.frame.height {
                 self.showScrollButton = true
@@ -375,9 +386,29 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
+        if let superView = textField.superview as? SearchTextFieldView {
+            if let text = textField.text {
+                if !text.isEmpty {
+                    let regexValue = try! NSRegularExpression(pattern: "\\s", options: [])
+                    let newString = regexValue.stringByReplacingMatches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count), withTemplate: "")
+                    
+                    if !newString.isEmpty {
+                        self.searchStringAnime = text
+                    } else {
+                        self.searchStringAnime = nil
+                        textField.text = nil
+                        superView.removeRemoveButton()
+                    }
+                } else {
+                    self.searchStringAnime = nil
+                    textField.text = nil
+                    superView.removeRemoveButton()
+                }
+            }
+        }
         return false
     }
-    
+        
     //MARK: - Setup UI
     private func setupUI() {
         
@@ -506,16 +537,32 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             allTimePopularHeader.topAnchor.constraint(equalTo: self.currentSeasonPopularColl.bottomAnchor, constant: 30),
             currentSeasonPopularHeader.topAnchor.constraint(equalTo: self.trendingNowColl.bottomAnchor, constant: 30),
             contentView.heightAnchor.constraint(equalToConstant: configureDefaultContentSize()),
-            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
-            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//            currentSeasonPopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//            allTimePopularColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+//            trendingNowColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.33),
+            currentSeasonPopularColl.heightAnchor.constraint(equalToConstant: 290),
+            allTimePopularColl.heightAnchor.constraint(equalToConstant: 290),
+            trendingNowColl.heightAnchor.constraint(equalToConstant: 290),
         ]
+    }
+    
+    private func backToHorizontalScrollColls() {
+        
+        let trendingLayout = self.trendingNowColl.collectionViewLayout as! UICollectionViewFlowLayout
+        trendingLayout.scrollDirection = .horizontal
+        trendingNowHeader.rotateButton(toCross: false)
+        let allTimePopularCollLayout = self.allTimePopularColl.collectionViewLayout as! UICollectionViewFlowLayout
+        allTimePopularCollLayout.scrollDirection = .horizontal
+        allTimePopularHeader.rotateButton(toCross: false)
+        let currentSeasonPopularCollLayout = self.currentSeasonPopularColl.collectionViewLayout as! UICollectionViewFlowLayout
+        currentSeasonPopularCollLayout.scrollDirection = .horizontal
+        currentSeasonPopularHeader.rotateButton(toCross: false)
     }
     
     private func configureDefaultContentSize() -> CGFloat {
         let searchScrollView: CGFloat = 80
         let headers: CGFloat = 20 * 3
-        let colls: CGFloat = (self.view.frame.height * 0.33) * 3
+        let colls: CGFloat = 290 * 3
         let spacing: CGFloat = 120
         return searchScrollView + headers + colls + spacing
     }
@@ -553,6 +600,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         case .animeByUsersSearch:
             self.activeCollViewConstraints = [
                 //                animesByUsersSearchColl.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
+                
                 animesByUsersSearchColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
                 contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
             ]
@@ -686,8 +734,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             perPage: 20,
             sort: [.case(.favouritesDesc)],
             type: .some(.case(.anime)),
-            season: .some(.case(.fall)),
-            seasonYear: 2023,
+            season: .some(Date().getSeason()),
+            seasonYear: Date().getCurrentYear(),
             formats: nil,
             genres: nil,
             search: nil) { result in
@@ -777,10 +825,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                             self.trendingNowAnimes?.animes.append(contentsOf: data.data?.page?.media?.compactMap({ $0 }) ?? [])
                             guard let newPageInfo = data.data?.page?.pageInfo else { return }
                             self.trendingNowAnimes?.pageInfo? = newPageInfo
-                            self.isFetching = false
                             self.trendingNowColl.reloadSections(IndexSet(integer: 0))
                             self.messageView.setupMessage("Loaded more Animes")
                             self.showMessage = true
+                            self.isFetching = false
                         case .failure(let failure):
                             switch failure {
                             case .internetConnection(let error):
@@ -805,6 +853,47 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         } else {
             return false
         }
+    }
+    
+    @objc private func searchButtonTapped(_ sender: UIButton) {
+        
+        UIView.animate(withDuration: 0.3) {
+            self.choosedToolCollectionView.frame.origin.y = self.choosedToolCollectionView.frame.origin.y - 10
+            self.choosedToolCollectionView.alpha = 0.0
+        } completion: { _ in
+            if !self.searchToolsAreEmpty() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    self.isFetching = true
+                }
+//                self.setupActiveCollViewConstraints()
+//                self.view.layoutIfNeeded()
+                
+                
+                self.extendedCollection = .animeByUsersSearch
+                self.setupAnimesBySearch()
+                self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: false)
+                self.makeCollectionViewFullScreen(self.extendedCollection)
+                self.animesByUsersSearch = nil
+                self.fetchDataByUserSearch(currentPage: nil)
+            }
+        }
+    }
+    
+    private func scrollToTheTop(collectionType: CollectionType) {
+        let desiredOffset = CGPoint(x: 0, y: 0)
+        if collectionType == .trendingNow {
+            self.trendingNowColl.setContentOffset(desiredOffset, animated: true)
+        } else if extendedCollection == .popularThisSeason {
+            self.currentSeasonPopularColl.setContentOffset(desiredOffset, animated: true)
+        } else if extendedCollection == .allTimePopular {
+            self.allTimePopularColl.setContentOffset(desiredOffset, animated: true)
+        } else if extendedCollection == .animeByUsersSearch {
+            self.animesByUsersSearchColl.setContentOffset(desiredOffset, animated: true)
+        }
+    }
+    
+    @objc private func scrollToTopButtonTapped(_ sender: UIButton) {
+        scrollToTheTop(collectionType: self.extendedCollection)
     }
     
     private func makeOtherCollectionTransparent(except collection: CollectionType, unhide: Bool) {
@@ -841,34 +930,25 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         }
     }
     
-    @objc private func scrollToTopButtonTapped(_ sender: UIButton) {
-        scrollToTheTop(collectionType: self.extendedCollection)
+    func textFieldDidChange(_ sender: UITextField) {
     }
     
-    @objc private func searchButtonTapped(_ sender: UIButton) {
-        if !self.searchToolsAreEmpty() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-            self.isFetching = true
+    func textFieldRemoveButtonTapped(_ sender: UIButton) {
+        print("DEBUG:", "Cross button tapped")
+        self.searchStringAnime = nil
+        
+        if searchToolsAreEmpty() {
+            UIView.animate(withDuration: 0.3) {
+                self.extendedCollection = .none
+                for view in self.view.subviews {
+                    if view == self.animesByUsersSearchColl {
+                        view.removeFromSuperview()
+                    }
+                    self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                    self.backToHorizontalScrollColls()
+                    self.setupActiveCollViewConstraints()
+                }
             }
-            self.extendedCollection = .animeByUsersSearch
-            self.setupAnimesBySearch()
-            self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: false)
-            self.makeCollectionViewFullScreen(self.extendedCollection)
-            
-            self.animesByUsersSearch = nil
-            self.fetchDataByUserSearch(currentPage: nil)
-        }
-
-    }
-    
-    private func scrollToTheTop(collectionType: CollectionType) {
-        let desiredOffset = CGPoint(x: 0, y: 0)
-        if collectionType == .trendingNow {
-            self.trendingNowColl.setContentOffset(desiredOffset, animated: true)
-        } else if extendedCollection == .popularThisSeason {
-            self.currentSeasonPopularColl.setContentOffset(desiredOffset, animated: true)
-        } else if extendedCollection == .allTimePopular {
-            self.allTimePopularColl.setContentOffset(desiredOffset, animated: true)
         }
     }
     
@@ -928,7 +1008,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                     self.allTimePopularColl.hideSkeleton()
                 }
                 
-                
                 self.makeOtherCollectionTransparent(except: headersCollectionView, unhide: false)
                 if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
                     layout.scrollDirection = .vertical
@@ -939,14 +1018,33 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 return
             }
         } else {
-            self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
-            self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
-            self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+//            self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+//            self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+//            self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
+//            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                self.allTimePopularColl.hideSkeleton()
+//                self.trendingNowColl.hideSkeleton()
+//                self.currentSeasonPopularColl.hideSkeleton()
+//            }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.allTimePopularColl.hideSkeleton()
-                self.trendingNowColl.hideSkeleton()
-                self.currentSeasonPopularColl.hideSkeleton()
+            switch headersCollectionView {
+            case .trendingNow:
+                isFetching = true
+                self.trendingNowAnimes = nil
+                self.fetchTrendingNow(currentPage: nil)
+            case .popularThisSeason:
+                isFetching = true
+                self.currentSeasonPopularAnimes = nil
+                self.fetchPopularThisSeason(currentPage: nil)
+            case .allTimePopular:
+                isFetching = true
+                self.allTimePopularAnimes = nil
+                self.fetchAllTimePopular(currentPage: nil)
+            case .animeByUsersSearch:
+                return
+            case .none:
+                return
             }
             
             self.setupActiveCollViewConstraints()
@@ -1056,14 +1154,11 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         if view == self.animesByUsersSearchColl {
                             view.removeFromSuperview()
                         }
-                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: true)
+                        self.backToHorizontalScrollColls()
                         self.setupActiveCollViewConstraints()
                     }
                 }
-            } else {
-//                self.isFetching = true
-//                self.animesByUsersSearch = nil
-//                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .year:
             self.choosedYear = nil
@@ -1074,15 +1169,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         if view == self.animesByUsersSearchColl {
                             view.removeFromSuperview()
                         }
-                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: true)
+                        self.backToHorizontalScrollColls()
                         self.setupActiveCollViewConstraints()
                         
                     }
                 }
-            } else {
-//                self.isFetching = true
-//                self.animesByUsersSearch = nil
-//                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .season:
             self.choosedSeason = nil
@@ -1093,15 +1185,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         if view == self.animesByUsersSearchColl {
                             view.removeFromSuperview()
                         }
-                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: true)
+                        self.backToHorizontalScrollColls()
                         self.setupActiveCollViewConstraints()
                         self.animesByUsersSearch = nil
                     }
                 }
-            } else {
-//                self.isFetching = true
-//                self.animesByUsersSearch = nil
-//                self.fetchDataByUserSearch(currentPage: nil)
             }
         case .format:
             self.choosedFormats = []
@@ -1112,15 +1201,12 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         if view == self.animesByUsersSearchColl {
                             view.removeFromSuperview()
                         }
-                        self.makeOtherCollectionTransparent(except: .none, unhide: true)
+                        self.makeOtherCollectionTransparent(except: self.extendedCollection, unhide: true)
+                        self.backToHorizontalScrollColls()
                         self.setupActiveCollViewConstraints()
                         self.animesByUsersSearch = nil
                     }
                 }
-            } else {
-//                self.isFetching = true
-//                self.animesByUsersSearch = nil
-//                self.fetchDataByUserSearch(currentPage: nil)
             }
         }
         self.choosedToolCollectionView.reloadData()
@@ -1203,44 +1289,56 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         
         if collectionView == self.trendingNowColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
-                print("DEBUG:", "Scrolled to the end")
-                
-                if let animes = self.trendingNowAnimes?.animes {
-                    if animes.count % 20 == 0 {
+                if let layout = self.trendingNowColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    if layout.scrollDirection == .vertical {
+                        print("DEBUG:", "Scrolled to the end")
                         
-                        guard let currentPage = self.trendingNowAnimes?.pageInfo?.currentPage, let hasNextPage = self.trendingNowAnimes?.pageInfo?.hasNextPage else { return }
-                        
-                        if hasNextPage {
-                            self.fetchTrendingNow(currentPage: currentPage)
+                        if let animes = self.trendingNowAnimes?.animes {
+                            if animes.count % 20 == 0 {
+                                
+                                guard let currentPage = self.trendingNowAnimes?.pageInfo?.currentPage, let hasNextPage = self.trendingNowAnimes?.pageInfo?.hasNextPage else { return }
+                                
+                                if hasNextPage {
+                                    self.fetchTrendingNow(currentPage: currentPage)
+                                }
+                            }
                         }
                     }
                 }
             }
         } else if collectionView == self.currentSeasonPopularColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
-                print("DEBUG:", "Scrolled to the end")
-                
-                if let animes = self.currentSeasonPopularAnimes?.animes {
-                    if animes.count % 20 == 0 {
+                if let layout = self.currentSeasonPopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    if layout.scrollDirection == .vertical {
+                        print("DEBUG:", "Scrolled to the end")
                         
-                        guard let currentPage = self.currentSeasonPopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.currentSeasonPopularAnimes?.pageInfo?.hasNextPage else { return }
-                        
-                        if hasNextPage {
-                            self.fetchPopularThisSeason(currentPage: currentPage)
+                        if let animes = self.currentSeasonPopularAnimes?.animes {
+                            if animes.count % 20 == 0 {
+                                
+                                guard let currentPage = self.currentSeasonPopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.currentSeasonPopularAnimes?.pageInfo?.hasNextPage else { return }
+                                
+                                if hasNextPage {
+                                    self.fetchPopularThisSeason(currentPage: currentPage)
+                                }
+                            }
                         }
                     }
                 }
             }
         } else if collectionView == self.allTimePopularColl {
             if indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
-                print("DEBUG:", "Scrolled to the end")
-                
-                if let animes = self.allTimePopularAnimes?.animes {
-                    if animes.count % 20 == 0 {
-                        guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
+                if let layout = self.allTimePopularColl.collectionViewLayout as? UICollectionViewFlowLayout {
+                    if layout.scrollDirection == .vertical {
+                        print("DEBUG:", "Scrolled to the end")
                         
-                        if hasNextPage {
-                            self.fetchAllTimePopular(currentPage: currentPage)
+                        if let animes = self.allTimePopularAnimes?.animes {
+                            if animes.count % 20 == 0 {
+                                guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
+
+                                if hasNextPage {
+                                    self.fetchAllTimePopular(currentPage: currentPage)
+                                }
+                            }
                         }
                     }
                 }
@@ -1250,7 +1348,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
                 print("DEBUG:", "Scrolled to the end")
                 if let animes = self.animesByUsersSearch?.animes {
                     if animes.count % 20 == 0 {
-                        guard let currentPage = self.allTimePopularAnimes?.pageInfo?.currentPage, let hasNextPage = self.allTimePopularAnimes?.pageInfo?.hasNextPage else { return }
+                        guard let currentPage = self.animesByUsersSearch?.pageInfo?.currentPage, let hasNextPage = self.animesByUsersSearch?.pageInfo?.hasNextPage else { return }
                         
                         if hasNextPage {
                             self.fetchDataByUserSearch(currentPage: currentPage)
@@ -1263,8 +1361,7 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView != choosedToolCollectionView {
-//            let size = CGSize(width: collectionView.frame.width * 0.44, height: collectionView.frame.height * 1)
-            let size = CGSize(width: collectionView.frame.width * 0.44, height: 281)
+            let size = CGSize(width: collectionView.frame.width * 0.44, height: 290)
             return size
             
         } else {
@@ -1316,16 +1413,16 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
             }
         } else {
             switch choosedTool {
-                case .format:
-                    return GraphQLEnum<MediaFormat>.allCases.count
-                case .season:
-                    return GraphQLEnum<MediaSeason>.allCases.count
-                case .genre:
+            case .format:
+                return GraphQLEnum<MediaFormat>.allCases.count
+            case .season:
+                return GraphQLEnum<MediaSeason>.allCases.count
+            case .genre:
                 return Genre.allCases.count
-                case .year:
+            case .year:
                 return choosedTool!.yearCount
-                case .none:
-                    return 0
+            case .none:
+                return 0
             }
         }
     }
@@ -1430,5 +1527,3 @@ extension MenuController: UICollectionViewDataSource, UICollectionViewDelegateFl
         }
     }
 }
-
-

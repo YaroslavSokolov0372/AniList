@@ -121,6 +121,7 @@ class SearchToolsScrollView: UIView {
                 view.delegate = controller
                 scrollView.delegate = controller
                 textField.passTextField().delegate = controller
+                textField.delegate = controller
             }
         }
     }

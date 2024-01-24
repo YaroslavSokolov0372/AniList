@@ -21,6 +21,15 @@ class MenuAnimePreviewCell: UICollectionViewCell {
     private var gesture: UITapGestureRecognizer?
     public var delegate: AnimePreviewProtocol?
     
+    private var activeNameConstraints: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeNameConstraints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeNameConstraints)
+        }
+    }
+    
     //MARK: - UI Components
     private let coverImage: UIImageView = {
         let iv = UIImageView()
@@ -34,9 +43,10 @@ class MenuAnimePreviewCell: UICollectionViewCell {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-        label.numberOfLines = 2
+//        label.sizeToFit()
+        label.numberOfLines = 0
         label.font = UIFont().JosefinSans(font: .regular, size: 14)
-        label.text = "error"
+        label.text = ""
         return label
     }()
     
@@ -74,9 +84,15 @@ class MenuAnimePreviewCell: UICollectionViewCell {
             self.coverImage.heightAnchor.constraint(equalToConstant: 240),
             self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
             
-            self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
             self.name.topAnchor.constraint(equalTo: self.coverImage.bottomAnchor, constant: 10),
+            self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
+//            self.name.heightAnchor.constraint(equalToConstant: 20),
+            
         ])
+        
+        self.activeNameConstraints = [
+            self.name.heightAnchor.constraint(equalToConstant: 20),
+        ]
     }
     
     //MARK: - Func
@@ -94,7 +110,18 @@ extension MenuAnimePreviewCell {
             self.name.text = userPrefered
         } else {
             self.name.text = animeData.title?.native
+            //            self.name.text = "No info about Anime name"
         }
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
+        let textHeight = self.name.text!.height(constraintedWidth: self.frame.width, font: UIFont().JosefinSans(font: .regular, size: 14)!)
+        self.activeNameConstraints = [
+            self.name.heightAnchor.constraint(equalToConstant: textHeight),
+        ]
+        let numberOfRows = textHeight / 14
+        self.name.numberOfLines = Int(numberOfRows)
+        
+//        self.name.frame.size.height = textHeight
+//        print("AnimeName: ", self.name.text!, "TexHeight: ", textHeight)
+        
     }
 }

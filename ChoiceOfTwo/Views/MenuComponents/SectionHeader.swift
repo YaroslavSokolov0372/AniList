@@ -28,10 +28,10 @@ class SectionHeader: UIView {
     }()
     
     private let moreButton: UIButton = {
-      let button = UIButton()
+        let button = UIButton()
         button.setImage(UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView!.contentMode = .scaleToFill
-//        button.imageView!.layer.anchorPoint = CGPointMake(0.0, 0.0);
+        //        button.imageView!.layer.anchorPoint = CGPointMake(0.0, 0.0);
         button.imageView!.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         button.imageView!.tintColor = .white
         return button
@@ -74,6 +74,14 @@ class SectionHeader: UIView {
     //MARK: - Func
     @objc private func moreButtonTapped(_ sender: UIButton) {
         self.delegate?.moreButtonTapped(sender)
+    }
+    
+    public func rotateButton(toCross: Bool) {
+        if toCross {
+            self.moreButton.transform = CGAffineTransform(rotationAngle: .pi/4)
+        } else {
+            self.moreButton.transform = CGAffineTransform(rotationAngle: .pi)
+        }
     }
 }
 
