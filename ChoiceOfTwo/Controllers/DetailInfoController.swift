@@ -13,6 +13,33 @@ class DetailInfoController: UIViewController {
     //MARK: - Variables
     private var animeData: GetAnimeByQuery.Data.Page.Medium!
     
+    private var activeAnimeNameConstraints: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeAnimeNameConstraints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeAnimeNameConstraints)
+        }
+    }
+    
+    private var activeAnimeDescriptionConstraints: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeAnimeDescriptionConstraints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeAnimeDescriptionConstraints)
+        }
+    }
+    
+    private var activeContentConstraints: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeContentConstraints)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeContentConstraints)
+        }
+    }
+    
     //MARK: - UI Components
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -176,7 +203,8 @@ class DetailInfoController: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 //            contentView.heightAnchor.constraint(equalToConstant: 1300),
-            contentView.heightAnchor.constraint(equalToConstant: configureContentSize() + 50),
+//            contentView.heightAnchor.constraint(equalToConstant: configureContentSize() + 50),
+//            contentView.heightAnchor.constraint(equalToConstant: 1000),
             
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
@@ -203,7 +231,7 @@ class DetailInfoController: UIViewController {
             animeName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
 //            animeName.heightAnchor.constraint(equalToConstant: 80),
 //            animeName.heightAnchor.constraint(equalToConstant: self.animeName.requiredHeight()),
-            animeName.heightAnchor.constraint(equalToConstant: (animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10),
+//            animeName.heightAnchor.constraint(equalToConstant: (animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10),
             
             sideInfoColl.topAnchor.constraint(equalTo: animeName.bottomAnchor, constant: 15),
             sideInfoColl.heightAnchor.constraint(equalToConstant: 60),
@@ -221,7 +249,20 @@ class DetailInfoController: UIViewController {
             animeDescription.topAnchor.constraint(equalTo: descriptionHeader.bottomAnchor, constant: 10),
             animeDescription.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             animeDescription.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
+            
         ])
+        
+        self.activeAnimeNameConstraints = [
+            self.animeName.heightAnchor.constraint(equalToConstant: 20),
+        ]
+        
+        self.activeAnimeDescriptionConstraints = [
+            self.animeDescription.heightAnchor.constraint(equalToConstant: 300),
+            ]
+        
+        self.activeContentConstraints = [
+            self.contentView.heightAnchor.constraint(equalToConstant: 1000),
+            ]
     }
     
     //MARK: - Func
@@ -253,22 +294,23 @@ class DetailInfoController: UIViewController {
         print("DEBUG:", "Tapped back button")
         self.navigationController?.popViewController(animated: true)
     }
+    
 }
 
 extension DetailInfoController {
     
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
+        self.animeData = animeData
+        
+        
         if let hexStr = animeData.coverImage?.color {
             self.bookmarkButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
             self.likeButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
         } else {
-//            self.bookmarkButton.tintColor = UIColor(named: "Yellow")
             self.bookmarkButton.tintColor = UIColor(.white.opacity(0.5))
-//            self.likeButton.tintColor = UIColor(named: "Red")
             self.likeButton.tintColor = UIColor(.white.opacity(0.5))
         }
         
-        self.animeData = animeData
         
         if let englishName = animeData.title?.english {
             self.animeName.text = englishName
@@ -277,28 +319,38 @@ extension DetailInfoController {
         } else {
             self.animeName.text = animeData.title?.native
         }
-//        self.animeName.text = animeData.title?.english
+        let animeNameHeight = self.animeName.text!.height(constraintedWidth: self.view.frame.width - 30, font: UIFont().JosefinSans(font: .bold, size: 22)!)
+        self.activeAnimeNameConstraints = [
+            self.animeName.heightAnchor.constraint(equalToConstant: animeNameHeight),
+        ]
+        
+        
         self.animeDescription.text = animeData.description?.replacingOccurrences(of: "<br>", with: "")
-//        self.imageView.setupImage(with: animeData.coverImage?.extraLarge ?? "")
+        let animeDesriptionHeight = self.animeDescription.text!.height(constraintedWidth: self.view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
+        self.activeAnimeDescriptionConstraints = [
+            self.animeDescription.heightAnchor.constraint(equalToConstant: animeDesriptionHeight),
+            ]
+        
         self.imageView.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
-//        self.imageView.setImageFromStringrURL(stringUrl: animeData.bannerImage ?? "")
+        
+        configureContentSize()
     }
     
-    private func configureContentSize() -> CGFloat {
+    private func configureContentSize() {
         let imageHeight: CGFloat = 550
         
-        
-        //TODO: - solve the problem when the name is on chinize
-        let textHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
-        
+        let animeNameHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
         
         let sideInfoCollHeight: CGFloat = 75
         let genreCollHeight: CGFloat = 50
         let descriptionHeaderHeight = descriptionHeader.text!.height(constraintedWidth: view.frame.width, font: UIFont().JosefinSans(font: .bold, size: 18)!) + 15
         let animeDescriptionHeight = animeDescription.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
         
-        let height = imageHeight + textHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight
-        return height
+        let height = imageHeight + animeNameHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight + 50
+        
+        self.activeContentConstraints = [
+            self.contentView.heightAnchor.constraint(equalToConstant: height),
+        ]
     }
 }
 
@@ -316,10 +368,32 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if collectionView == self.genresColl {
-            let size: CGSize = animeData.genres![indexPath.row]!.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+            let size: CGSize = animeData.genres![indexPath.row]!.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .bold, size: 15)!])
             return CGSize(width: size.width + 20, height: size.height + 20)
         } else {
             switch indexPath.row {
+            case 2:
+                let sideInfoHeader = "Status"
+                let headerSize = sideInfoHeader.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                switch self.animeData.status {
+                case .case(.cancelled):
+                    let size: CGSize = String("Cancelled").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                    return CGSize(width: headerSize.width > size.width ? headerSize.width : size.width + 20, height: size.height + 20)
+                case .case(.finished):
+                    let size: CGSize = String("Finished").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                    return CGSize(width: headerSize.width > size.width ? headerSize.width : size.width + 20, height: size.height + 20)
+                case .case(.notYetReleased):
+                    let size: CGSize = String("Not yet released").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                    return CGSize(width: headerSize.width > size.width ? headerSize.width : size.width + 20, height: size.height + 20)
+                case .case(.releasing):
+                    let size: CGSize = String("Releasing").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                    return CGSize(width: headerSize.width > size.width ? headerSize.width : size.width + 20, height: size.height + 20)
+                case .case(.hiatus):
+                    let size: CGSize = String("Currently paused").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
+                    return CGSize(width: headerSize.width > size.width ? headerSize.width : size.width + 20, height: size.height + 20)
+                default:
+                    return CGSize(width: 85, height: 40)
+                }
             case 3:
                 let size: CGSize = String("Mean Score").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
                 return CGSize(width: size.width + 10, height: 40)

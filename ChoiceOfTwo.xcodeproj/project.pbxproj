@@ -201,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				D1C54FD12B38768E000182E2 /* GenreViewCell.swift */,
+				D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */,
 				D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */,
 				D16742DC2B35ED3900C9F033 /* CustomSaveButton.swift */,
 				D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */,
@@ -229,7 +230,6 @@
 			children = (
 				D16742DF2B36087600C9F033 /* MenuComponents */,
 				D16742DE2B36086300C9F033 /* DetailComponents */,
-				D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

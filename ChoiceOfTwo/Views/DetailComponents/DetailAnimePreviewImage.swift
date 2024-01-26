@@ -12,7 +12,6 @@ class DetailAnimePreviewImage: UIImageView {
     //MARK: - Lifecycle
     init() {
         super.init(frame: .zero)
-//        self.contentMode = .scaleAspectFit
         self.contentMode = .scaleAspectFill
     }
     

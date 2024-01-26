@@ -67,7 +67,6 @@ class SideInfoViewCell: UICollectionViewCell {
 extension SideInfoViewCell {
     public func configure(info: GetAnimeByQuery.Data.Page.Medium, index: Int) {
         
-        
         switch index + 1 {
         case 1:
             self.sideInfoHeader.text = "Format"
