@@ -46,7 +46,6 @@ class GenreViewCell: UICollectionViewCell {
     }
 }
 
-
 extension GenreViewCell {
     public func configure(genreName: String, borderWidth: CGFloat, backgroundColor: String?) {
         if let hexStr = backgroundColor {

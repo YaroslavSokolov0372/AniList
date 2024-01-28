@@ -7,8 +7,9 @@
 
 import UIKit
 import AnilistApi
+import YouTubeiOSPlayerHelper
 
-class DetailInfoController: UIViewController {
+class DetailInfoController: UIViewController, YTPlayerViewDelegate {
     
     //MARK: - Variables
     private var animeData: GetAnimeByQuery.Data.Page.Medium!
@@ -74,6 +75,22 @@ class DetailInfoController: UIViewController {
         return label
     }()
     
+    private let charactersHeader: UILabel = {
+      let label = UILabel()
+        label.text = "Characters"
+        label.font = UIFont().JosefinSans(font: .bold, size: 18)
+        label.textColor = .white
+        return label
+    }()
+    
+    private let trailerHeader: UILabel = {
+      let label = UILabel()
+        label.text = "Trailer"
+        label.font = UIFont().JosefinSans(font: .bold, size: 18)
+        label.textColor = .white
+        return label
+    }()
+    
     private let backButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "Arrow")!.resized(to: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysTemplate), for: .normal)
@@ -81,6 +98,14 @@ class DetailInfoController: UIViewController {
         button.imageView?.contentMode = .scaleAspectFill
         button.imageView!.transform = button.imageView!.transform.rotated(by: .pi / 1)
         return button
+    }()
+    
+    private let ytVideoView: YTPlayerView = {
+      let ytView = YTPlayerView()
+        ytView.backgroundColor = .black
+        ytView.clipsToBounds = true
+        ytView.layer.cornerRadius = 12
+        return ytView
     }()
     
     private let bookmarkButton = CustomSaveButton(
@@ -125,6 +150,23 @@ class DetailInfoController: UIViewController {
         return collectionView
     }()
     
+    private let charactersColl: UICollectionView = {
+      let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor(named: "Black")
+        collectionView.register(CharacterPreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        return collectionView
+    }()
+    
+    private let relationColl: UICollectionView = {
+      let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor(named: "Black")
+//        collectionView.register(CharacterPreviewCell.self, forCellWithReuseIdentifier: "Cell")
+        return collectionView
+    }()
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -135,11 +177,12 @@ class DetailInfoController: UIViewController {
         sideInfoColl.dataSource = self
         sideInfoColl.delegate = self
         scrollView.delegate = self
-        
+        charactersColl.delegate = self
+        charactersColl.dataSource = self
+        ytVideoView.delegate = self
         backButton.addTarget(self, action: #selector(didTappedBackButton), for: .touchUpInside)
         
         //MARK: - Temporary
-        
         likeButton.addDidTappedCircleButtonTarget(self, action: #selector(didTappedLikeButton))
         bookmarkButton.addDidTappedCircleButtonTarget(self, action: #selector(didTappedBookmarkButton))
     }
@@ -157,6 +200,8 @@ class DetailInfoController: UIViewController {
     //MARK: - Setup UI
     private func setup() {
         
+        
+        
         view.addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -165,9 +210,6 @@ class DetailInfoController: UIViewController {
         
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentView.addSubview(backButton)
-        backButton.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(bookmarkButton)
         bookmarkButton.translatesAutoresizingMaskIntoConstraints = false
@@ -189,6 +231,21 @@ class DetailInfoController: UIViewController {
         
         contentView.addSubview(animeDescription)
         animeDescription.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(charactersHeader)
+        charactersHeader.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(charactersColl)
+        charactersColl.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(ytVideoView)
+        ytVideoView.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(trailerHeader)
+        trailerHeader.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(backButton)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
                 
         NSLayoutConstraint.activate([
             
@@ -243,13 +300,29 @@ class DetailInfoController: UIViewController {
             genresColl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             genresColl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            descriptionHeader.topAnchor.constraint(equalTo: genresColl.bottomAnchor, constant: 15),
+            descriptionHeader.topAnchor.constraint(equalTo: genresColl.bottomAnchor, constant: 20),
             descriptionHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             
             animeDescription.topAnchor.constraint(equalTo: descriptionHeader.bottomAnchor, constant: 10),
             animeDescription.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-            animeDescription.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
+            animeDescription.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
+            charactersHeader.topAnchor.constraint(equalTo: animeDescription.bottomAnchor, constant: 20),
+            charactersHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            
+            charactersColl.topAnchor.constraint(equalTo: charactersHeader.bottomAnchor, constant: 10),
+            charactersColl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            charactersColl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            charactersColl.heightAnchor.constraint(equalToConstant: 400),
+            
+            
+            trailerHeader.topAnchor.constraint(equalTo: charactersColl.bottomAnchor, constant: 20),
+            trailerHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            
+            ytVideoView.topAnchor.constraint(equalTo: trailerHeader.bottomAnchor, constant: 10),
+            ytVideoView.heightAnchor.constraint(equalToConstant: 230),
+            ytVideoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            ytVideoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
         ])
         
         self.activeAnimeNameConstraints = [
@@ -261,7 +334,8 @@ class DetailInfoController: UIViewController {
             ]
         
         self.activeContentConstraints = [
-            self.contentView.heightAnchor.constraint(equalToConstant: 1000),
+            self.contentView.heightAnchor.constraint(equalToConstant: 2000),
+            self.scrollView.heightAnchor.constraint(equalToConstant: 2000),
             ]
     }
     
@@ -295,10 +369,6 @@ class DetailInfoController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
-}
-
-extension DetailInfoController {
-    
     public func configure(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
         
@@ -329,48 +399,55 @@ extension DetailInfoController {
         let animeDesriptionHeight = self.animeDescription.text!.height(constraintedWidth: self.view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
         self.activeAnimeDescriptionConstraints = [
             self.animeDescription.heightAnchor.constraint(equalToConstant: animeDesriptionHeight),
-            ]
+        ]
         
         self.imageView.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
         
-        configureContentSize()
+        if let id = animeData.trailer?.id {
+            self.ytVideoView.load(withVideoId: id)
+        }
+//        configureContentSize()
     }
     
-    private func configureContentSize() {
-        let imageHeight: CGFloat = 550
-        
-        let animeNameHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
-        
-        let sideInfoCollHeight: CGFloat = 75
-        let genreCollHeight: CGFloat = 50
-        let descriptionHeaderHeight = descriptionHeader.text!.height(constraintedWidth: view.frame.width, font: UIFont().JosefinSans(font: .bold, size: 18)!) + 15
-        let animeDescriptionHeight = animeDescription.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
-        
-        let height = imageHeight + animeNameHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight + 50
-        
-        self.activeContentConstraints = [
-            self.contentView.heightAnchor.constraint(equalToConstant: height),
-        ]
-    }
+//    private func configureContentSize() {
+//        let imageHeight: CGFloat = 550
+//        
+//        let animeNameHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
+//        
+//        let sideInfoCollHeight: CGFloat = 75
+//        let genreCollHeight: CGFloat = 50
+//        let descriptionHeaderHeight = descriptionHeader.text!.height(constraintedWidth: view.frame.width, font: UIFont().JosefinSans(font: .bold, size: 18)!) + 15
+//        let animeDescriptionHeight = animeDescription.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
+//        
+//        let height = imageHeight + animeNameHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight + 50
+//        
+//        self.activeContentConstraints = [
+//            self.contentView.heightAnchor.constraint(equalToConstant: height),
+//        ]
+//    }
+    
 }
 
-extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {    
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 15
+        if collectionView != charactersColl {
+            return 15
+        } else {
+            return 30   
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-     
             return UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 15)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        if collectionView == self.genresColl {
+        if collectionView == genresColl {
             let size: CGSize = animeData.genres![indexPath.row]!.size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .bold, size: 15)!])
             return CGSize(width: size.width + 20, height: size.height + 20)
-        } else {
+        } else if collectionView == sideInfoColl {
             switch indexPath.row {
             case 2:
                 let sideInfoHeader = "Status"
@@ -403,6 +480,10 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
             default:
                 return CGSize(width: 85, height: 40)
             }
+        } else {
+//            let size = CGSize(width: collectionView.frame.width * 0.44, height: 290)
+            let size = CGSize(width: collectionView.frame.width * 0.29, height: 180)
+            return size
         }
     }
     
@@ -410,8 +491,18 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
         
         if collectionView == self.genresColl {
             return animeData.genres?.count ?? 0
-        } else {
+        } else if collectionView == self.sideInfoColl {
             return 6
+        } else {
+            if let charactersCount = self.animeData.characters?.nodes?.count {
+                if charactersCount >= 6 {
+                    return 6
+                } else {
+                    return charactersCount
+                }
+            } else {
+                return 0
+            }
         }
     }
     
@@ -425,13 +516,21 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
             let preview = animeData.genres?[indexPath.row]
             cell.configure(genreName: preview ?? "Bitch", borderWidth: 2, backgroundColor: self.animeData.coverImage?.color)
             return cell
-        } else {
+        } else if collectionView == sideInfoColl {
             guard let cell = sideInfoColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as?
                     SideInfoViewCell else {
                 fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
             }
             
             cell.configure(info: self.animeData, index: indexPath.row)
+            return cell
+        } else {
+            guard let cell = charactersColl.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as?
+                    CharacterPreviewCell else {
+                fatalError("Unenable to dequeue AnimePreviewCell in MenuCntroller")
+            }
+            
+            cell.configure(info: animeData.characters?.nodes?[indexPath.row])
             return cell
         }
     }

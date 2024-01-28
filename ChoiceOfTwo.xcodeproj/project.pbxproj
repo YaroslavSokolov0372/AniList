@@ -19,6 +19,8 @@
 		D1502D2D2B5D51DA00A902F1 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D2C2B5D51DA00A902F1 /* MessageView.swift */; };
 		D1502D302B5D5EE900A902F1 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D2F2B5D5EE900A902F1 /* Reachability.swift */; };
 		D1502D322B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D312B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift */; };
+		D1502D342B656E2600A902F1 /* CharacterPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */; };
+		D1502D372B66D15200A902F1 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = D1502D362B66D15200A902F1 /* YouTubeiOSPlayerHelper */; };
 		D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3362B38B2B30021F92F /* hexStringToColor.swift */; };
 		D160B3392B3C4D240021F92F /* UILabelHeightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D160B3382B3C4D240021F92F /* UILabelHeightText.swift */; };
 		D16742C42B2F729E00C9F033 /* SearchToolsEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */; };
@@ -65,6 +67,7 @@
 		D1CDF75F2B3C5D74001C3668 /* SideInfoViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */; };
 		D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */; };
 		D1CDF7632B3C856D001C3668 /* UIColorLighter&Darker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */; };
+		D1F602BC2B66D9550024128A /* RelationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +113,7 @@
 		D1502D2C2B5D51DA00A902F1 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		D1502D2F2B5D5EE900A902F1 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		D1502D312B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionToGetCurrentSeason.swift; sourceTree = "<group>"; };
+		D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterPreviewCell.swift; sourceTree = "<group>"; };
 		D160B3362B38B2B30021F92F /* hexStringToColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexStringToColor.swift; sourceTree = "<group>"; };
 		D160B3382B3C4D240021F92F /* UILabelHeightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelHeightText.swift; sourceTree = "<group>"; };
 		D16742C32B2F729E00C9F033 /* SearchToolsEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchToolsEnum.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 		D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoViewCell.swift; sourceTree = "<group>"; };
 		D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringToDateConverter.swift; sourceTree = "<group>"; };
 		D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColorLighter&Darker.swift"; sourceTree = "<group>"; };
+		D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +174,7 @@
 				D1C9C81C2B2772F300E9DE4C /* AnilistApi in Frameworks */,
 				D1C9C8062B27429300E9DE4C /* Apollo in Frameworks */,
 				D1C9C8082B27429300E9DE4C /* Apollo-Dynamic in Frameworks */,
+				D1502D372B66D15200A902F1 /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +211,8 @@
 				D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */,
 				D16742DC2B35ED3900C9F033 /* CustomSaveButton.swift */,
 				D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */,
+				D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */,
+				D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */,
 			);
 			path = DetailComponents;
 			sourceTree = "<group>";
@@ -289,8 +297,8 @@
 		D1B89D9A2B24C493007447A5 /* ChoiceOfTwo */ = {
 			isa = PBXGroup;
 			children = (
-				D1502D2E2B5D5EDC00A902F1 /* Network */,
 				D1B89DA92B24C493007447A5 /* Info.plist */,
+				D1502D2E2B5D5EDC00A902F1 /* Network */,
 				D1C9C83B2B28837700E9DE4C /* Helpers */,
 				D1C9C82C2B287FF100E9DE4C /* Font */,
 				D1C9C8212B28714900E9DE4C /* ApiManger */,
@@ -412,6 +420,7 @@
 				D1C9C8102B27429300E9DE4C /* ApolloWebSocket */,
 				D1C9C81B2B2772F300E9DE4C /* AnilistApi */,
 				D1502D282B5ACC6800A902F1 /* SkeletonView */,
+				D1502D362B66D15200A902F1 /* YouTubeiOSPlayerHelper */,
 			);
 			productName = ChoiceOfTwo;
 			productReference = D1B89D982B24C493007447A5 /* ChoiceOfTwo.app */;
@@ -489,6 +498,7 @@
 				D1C9C8032B27428800E9DE4C /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				D1C9C81A2B2772F300E9DE4C /* XCLocalSwiftPackageReference "AnilistApi" */,
 				D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */,
+				D1502D352B66D15200A902F1 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 			);
 			productRefGroup = D1B89D992B24C493007447A5 /* Products */;
 			projectDirPath = "";
@@ -539,6 +549,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1502D342B656E2600A902F1 /* CharacterPreviewCell.swift in Sources */,
 				D1197C8B2B542D9600B7174D /* RoundedImageView.swift in Sources */,
 				D1197C8F2B56C2FF00B7174D /* Saved_mb_for_later.swift in Sources */,
 				D17DDAA92B24D7600082B4D7 /* MenuController.swift in Sources */,
@@ -546,6 +557,7 @@
 				D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */,
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
+				D1F602BC2B66D9550024128A /* RelationCollectionViewCell.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomMenuButtonSections.swift in Sources */,
 				D1197C842B45E58F00B7174D /* ToolsOptionsCell.swift in Sources */,
 				D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */,
@@ -929,6 +941,14 @@
 				minimumVersion = 1.30.4;
 			};
 		};
+		D1502D352B66D15200A902F1 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		D1C9C8032B27428800E9DE4C /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
@@ -944,6 +964,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */;
 			productName = SkeletonView;
+		};
+		D1502D362B66D15200A902F1 /* YouTubeiOSPlayerHelper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1502D352B66D15200A902F1 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */;
+			productName = YouTubeiOSPlayerHelper;
 		};
 		D1C9C8052B27429300E9DE4C /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
