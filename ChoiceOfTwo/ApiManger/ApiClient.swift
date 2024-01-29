@@ -36,7 +36,7 @@ class ApiClient {
         completition: @escaping (Result<GraphQLResult<GetAnimeByQuery.Data>, ClientErrorType>) -> ()) {
             
             
-            self.appolo.fetch(query: GetAnimeByQuery(page: page, perPage: perPage, sort: sort, type: type, season: season, seasonYear: seasonYear, search: search, asHtml: false, formatIn: formats, genreIn: genres)) { result in
+            self.appolo.fetch(query: GetAnimeByQuery(page: page, perPage: perPage, sort: sort, type: type, season: season, seasonYear: seasonYear, search: search, asHtml: .none, formatIn: formats, genreIn: genres)) { result in
                 switch result {
                 case .success(let data):
                     //                    completition(data)

@@ -7,7 +7,7 @@ public class GetAnimeByQuery: GraphQLQuery {
   public static let operationName: String = "getAnimeBy"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $search: String, $asHtml: Boolean, $formatIn: [MediaFormat], $genreIn: [String]) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear search: $search format_in: $formatIn genre_in: $genreIn ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status endDate { __typename day month year } characters { __typename nodes { __typename description image { __typename large medium } name { __typename alternative first full last middle userPreferred native } } } trailer { __typename id site thumbnail } relations { __typename nodes { __typename bannerImage averageScore chapters coverImage { __typename color extraLarge large medium } description duration endDate { __typename day month year } episodes format genres meanScore seasonYear source startDate { __typename day month year } status title { __typename english native romaji userPreferred } trailer { __typename id site thumbnail } } } } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
+      #"query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $search: String, $asHtml: Boolean, $formatIn: [MediaFormat], $genreIn: [String]) { Page(page: $page, perPage: $perPage) { __typename media( sort: $sort type: $type season: $season seasonYear: $seasonYear search: $search format_in: $formatIn genre_in: $genreIn ) { __typename bannerImage chapters coverImage { __typename medium large color extraLarge } description(asHtml: $asHtml) duration genres episodes meanScore seasonYear startDate { __typename year month day } title { __typename userPreferred native english } source averageScore countryOfOrigin format status endDate { __typename day month year } characters { __typename nodes { __typename description image { __typename large medium } name { __typename alternative first full last middle userPreferred native } } } trailer { __typename id site thumbnail } relations { __typename nodes { __typename bannerImage averageScore chapters coverImage { __typename color extraLarge large medium } description duration endDate { __typename day month year } episodes format genres meanScore seasonYear source startDate { __typename day month year } status title { __typename english native romaji userPreferred } trailer { __typename id site thumbnail } characters { __typename nodes { __typename description image { __typename large medium } name { __typename userPreferred alternative native middle last full first } } } } } } pageInfo { __typename total perPage lastPage hasNextPage currentPage } } }"#
     ))
 
   public var page: GraphQLNullable<Int>
@@ -425,6 +425,7 @@ public class GetAnimeByQuery: GraphQLQuery {
               .field("status", GraphQLEnum<AnilistApi.MediaStatus>?.self),
               .field("title", Title?.self),
               .field("trailer", Trailer?.self),
+              .field("characters", Characters?.self),
             ] }
 
             /// The banner image of the media
@@ -461,6 +462,8 @@ public class GetAnimeByQuery: GraphQLQuery {
             public var title: Title? { __data["title"] }
             /// Media trailer or advertisement
             public var trailer: Trailer? { __data["trailer"] }
+            /// The characters in the media
+            public var characters: Characters? { __data["characters"] }
 
             /// Page.Medium.Relations.Node.CoverImage
             ///
@@ -581,6 +584,100 @@ public class GetAnimeByQuery: GraphQLQuery {
               public var site: String? { __data["site"] }
               /// The url for the thumbnail image of the video
               public var thumbnail: String? { __data["thumbnail"] }
+            }
+
+            /// Page.Medium.Relations.Node.Characters
+            ///
+            /// Parent Type: `CharacterConnection`
+            public struct Characters: AnilistApi.SelectionSet {
+              public let __data: DataDict
+              public init(_dataDict: DataDict) { __data = _dataDict }
+
+              public static var __parentType: ApolloAPI.ParentType { AnilistApi.Objects.CharacterConnection }
+              public static var __selections: [ApolloAPI.Selection] { [
+                .field("__typename", String.self),
+                .field("nodes", [Node?]?.self),
+              ] }
+
+              public var nodes: [Node?]? { __data["nodes"] }
+
+              /// Page.Medium.Relations.Node.Characters.Node
+              ///
+              /// Parent Type: `Character`
+              public struct Node: AnilistApi.SelectionSet {
+                public let __data: DataDict
+                public init(_dataDict: DataDict) { __data = _dataDict }
+
+                public static var __parentType: ApolloAPI.ParentType { AnilistApi.Objects.Character }
+                public static var __selections: [ApolloAPI.Selection] { [
+                  .field("__typename", String.self),
+                  .field("description", String?.self),
+                  .field("image", Image?.self),
+                  .field("name", Name?.self),
+                ] }
+
+                /// A general description of the character
+                public var description: String? { __data["description"] }
+                /// Character images
+                public var image: Image? { __data["image"] }
+                /// The names of the character
+                public var name: Name? { __data["name"] }
+
+                /// Page.Medium.Relations.Node.Characters.Node.Image
+                ///
+                /// Parent Type: `CharacterImage`
+                public struct Image: AnilistApi.SelectionSet {
+                  public let __data: DataDict
+                  public init(_dataDict: DataDict) { __data = _dataDict }
+
+                  public static var __parentType: ApolloAPI.ParentType { AnilistApi.Objects.CharacterImage }
+                  public static var __selections: [ApolloAPI.Selection] { [
+                    .field("__typename", String.self),
+                    .field("large", String?.self),
+                    .field("medium", String?.self),
+                  ] }
+
+                  /// The character's image of media at its largest size
+                  public var large: String? { __data["large"] }
+                  /// The character's image of media at medium size
+                  public var medium: String? { __data["medium"] }
+                }
+
+                /// Page.Medium.Relations.Node.Characters.Node.Name
+                ///
+                /// Parent Type: `CharacterName`
+                public struct Name: AnilistApi.SelectionSet {
+                  public let __data: DataDict
+                  public init(_dataDict: DataDict) { __data = _dataDict }
+
+                  public static var __parentType: ApolloAPI.ParentType { AnilistApi.Objects.CharacterName }
+                  public static var __selections: [ApolloAPI.Selection] { [
+                    .field("__typename", String.self),
+                    .field("userPreferred", String?.self),
+                    .field("alternative", [String?]?.self),
+                    .field("native", String?.self),
+                    .field("middle", String?.self),
+                    .field("last", String?.self),
+                    .field("full", String?.self),
+                    .field("first", String?.self),
+                  ] }
+
+                  /// The currently authenticated users preferred name language. Default romaji for non-authenticated
+                  public var userPreferred: String? { __data["userPreferred"] }
+                  /// Other names the character might be referred to as
+                  public var alternative: [String?]? { __data["alternative"] }
+                  /// The character's full name in their native language
+                  public var native: String? { __data["native"] }
+                  /// The character's middle name
+                  public var middle: String? { __data["middle"] }
+                  /// The character's surname
+                  public var last: String? { __data["last"] }
+                  /// The character's first and last name
+                  public var full: String? { __data["full"] }
+                  /// The character's given name
+                  public var first: String? { __data["first"] }
+                }
+              }
             }
           }
         }

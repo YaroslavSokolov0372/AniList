@@ -13,6 +13,9 @@
 		D1197C8B2B542D9600B7174D /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8A2B542D9600B7174D /* RoundedImageView.swift */; };
 		D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8C2B5548C400B7174D /* ListOfAnime.swift */; };
 		D1197C8F2B56C2FF00B7174D /* Saved_mb_for_later.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */; };
+		D12181AE2B683CDD008BBE0F /* CharactersDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */; };
+		D14630CB2B67F35D00022B4A /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = D14630CA2B67F35D00022B4A /* SwiftSoup */; };
+		D14630CD2B67F86D00022B4A /* prepareHTMLDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */; };
 		D1502D242B5AC88C00A902F1 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D232B5AC88C00A902F1 /* Genre.swift */; };
 		D1502D262B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */; };
 		D1502D292B5ACC6800A902F1 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = D1502D282B5ACC6800A902F1 /* SkeletonView */; };
@@ -108,6 +111,8 @@
 		D1197C8A2B542D9600B7174D /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		D1197C8C2B5548C400B7174D /* ListOfAnime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfAnime.swift; sourceTree = "<group>"; };
 		D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Saved_mb_for_later.swift; sourceTree = "<group>"; };
+		D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharactersDetailView.swift; sourceTree = "<group>"; };
+		D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = prepareHTMLDescription.swift; sourceTree = "<group>"; };
 		D1502D232B5AC88C00A902F1 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsForApiClientProp.swift; sourceTree = "<group>"; };
 		D1502D2C2B5D51DA00A902F1 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
@@ -175,6 +180,7 @@
 				D1C9C8062B27429300E9DE4C /* Apollo in Frameworks */,
 				D1C9C8082B27429300E9DE4C /* Apollo-Dynamic in Frameworks */,
 				D1502D372B66D15200A902F1 /* YouTubeiOSPlayerHelper in Frameworks */,
+				D14630CB2B67F35D00022B4A /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +219,7 @@
 				D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */,
 				D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */,
 				D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */,
+				D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */,
 			);
 			path = DetailComponents;
 			sourceTree = "<group>";
@@ -390,6 +397,7 @@
 				D1197C8A2B542D9600B7174D /* RoundedImageView.swift */,
 				D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */,
 				D1502D312B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift */,
+				D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -421,6 +429,7 @@
 				D1C9C81B2B2772F300E9DE4C /* AnilistApi */,
 				D1502D282B5ACC6800A902F1 /* SkeletonView */,
 				D1502D362B66D15200A902F1 /* YouTubeiOSPlayerHelper */,
+				D14630CA2B67F35D00022B4A /* SwiftSoup */,
 			);
 			productName = ChoiceOfTwo;
 			productReference = D1B89D982B24C493007447A5 /* ChoiceOfTwo.app */;
@@ -499,6 +508,7 @@
 				D1C9C81A2B2772F300E9DE4C /* XCLocalSwiftPackageReference "AnilistApi" */,
 				D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 				D1502D352B66D15200A902F1 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
+				D14630C92B67F35D00022B4A /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = D1B89D992B24C493007447A5 /* Products */;
 			projectDirPath = "";
@@ -570,6 +580,7 @@
 				D1C54FD02B3873EC000182E2 /* ResizeImage.swift in Sources */,
 				D1502D322B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift in Sources */,
 				D1197C872B504CFB00B7174D /* LoadingAnimePreviewCell.swift in Sources */,
+				D12181AE2B683CDD008BBE0F /* CharactersDetailView.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */,
 				D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
@@ -588,6 +599,7 @@
 				D160B3372B38B2B30021F92F /* hexStringToColor.swift in Sources */,
 				D1B89D9E2B24C493007447A5 /* SceneDelegate.swift in Sources */,
 				D1C9C84E2B28E1BB00E9DE4C /* AsynImageFetching.swift in Sources */,
+				D14630CD2B67F86D00022B4A /* prepareHTMLDescription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +771,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JTJACLKKSJ;
@@ -786,6 +799,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JTJACLKKSJ;
@@ -933,6 +947,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		D14630C92B67F35D00022B4A /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.0;
+			};
+		};
 		D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Juanpe/SkeletonView.git";
@@ -960,6 +982,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D14630CA2B67F35D00022B4A /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D14630C92B67F35D00022B4A /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
 		D1502D282B5ACC6800A902F1 /* SkeletonView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D1502D272B5ACC6800A902F1 /* XCRemoteSwiftPackageReference "SkeletonView" */;

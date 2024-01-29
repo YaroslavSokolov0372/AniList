@@ -253,3 +253,120 @@ import Foundation
 //    }
 //  }
 //}
+
+
+
+
+//query getAnimeBy($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $season: MediaSeason, $seasonYear: Int, $search: String, $asHtml: Boolean, $formatIn: [MediaFormat], $genreIn: [String]) {
+//  Page(page: $page, perPage: $perPage) {
+//    media(sort: $sort, type: $type, season: $season, seasonYear: $seasonYear, search: $search, format_in: $formatIn, genre_in: $genreIn) {
+//      bannerImage
+//      chapters
+//      coverImage {
+//        medium
+//        large
+//        color
+//        extraLarge
+//      }
+//      description(asHtml: $asHtml)
+//      duration
+//      genres
+//      episodes
+//      meanScore
+//      seasonYear
+//      startDate {
+//        year
+//        month
+//        day
+//      }
+//      title {
+//        userPreferred
+//        native
+//        english
+//      }
+//      source
+//      averageScore
+//      countryOfOrigin
+//      format
+//      status
+//      endDate {
+//        day
+//        month
+//        year
+//      }
+//      characters {
+//        nodes {
+//          description
+//          image {
+//            large
+//            medium
+//          }
+//          name {
+//            alternative
+//            first
+//            full
+//            last
+//            middle
+//            userPreferred
+//            native
+//          }
+//        }
+//      }
+//      trailer {
+//        id
+//        site
+//        thumbnail
+//      }
+//      relations {
+//        nodes {
+//          bannerImage
+//          averageScore
+//          chapters
+//          coverImage {
+//            color
+//            extraLarge
+//            large
+//            medium
+//          }
+//          description
+//          duration
+//          endDate {
+//            day
+//            month
+//            year
+//          }
+//          episodes
+//          format
+//          genres
+//          meanScore
+//          seasonYear
+//          source
+//          startDate {
+//            day
+//            month
+//            year
+//          }
+//          status
+//          title {
+//            english
+//            native
+//            romaji
+//            userPreferred
+//          }
+//          trailer {
+//            id
+//            site
+//            thumbnail
+//          }
+//        }
+//      }
+//    }
+//    pageInfo {
+//      total
+//      perPage
+//      lastPage
+//      hasNextPage
+//      currentPage
+//    }
+//  }
+//}

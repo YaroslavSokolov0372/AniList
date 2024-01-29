@@ -347,6 +347,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         self.fetchPopularThisSeason(currentPage: nil)
         self.fetchAllTimePopular(currentPage: nil)
         self.fetchTrendingNow(currentPage: nil)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -1088,7 +1089,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
     func didTapCell(with type: GetAnimeByQuery.Data.Page.Medium) {
         print("DEBUG:", "Tapped Anime Cell")
         let vc = DetailInfoController()
-        vc.configure(with: type)
+        vc.configureAsDefault(with: type)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
