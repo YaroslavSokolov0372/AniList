@@ -10,7 +10,7 @@ import AnilistApi
 import YouTubeiOSPlayerHelper
 import SwiftSoup
 
-class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationCollectionViewCellDelegate, characterPreviewCellProtocol {
+class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationCollectionViewCellDelegate {
 
     
 
@@ -27,6 +27,15 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         }
         didSet {
             NSLayoutConstraint.activate(activeAnimeNameConstraints)
+        }
+    }
+    
+    private var activeRelativeConstraint: [NSLayoutConstraint] = [] {
+        willSet {
+            NSLayoutConstraint.deactivate(activeRelativeConstraint)
+        }
+        didSet {
+            NSLayoutConstraint.activate(activeRelativeConstraint)
         }
     }
     
@@ -48,12 +57,12 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         }
     }
     
-    private var activeExtendedCharConstrints: [NSLayoutConstraint] = [] {
+    private var activeCharCollConstaints: [NSLayoutConstraint] = [] {
         willSet {
-            NSLayoutConstraint.deactivate(activeExtendedCharConstrints)
+            NSLayoutConstraint.deactivate(activeCharCollConstaints)
         }
         didSet {
-            NSLayoutConstraint.activate(activeExtendedCharConstrints)
+            NSLayoutConstraint.activate(activeCharCollConstaints)
         }
     }
     
@@ -120,8 +129,8 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         button.setImage(UIImage(named: "Arrow")!.resized(to: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .white
         button.imageView?.contentMode = .scaleAspectFill
-        button.backgroundColor = UIColor(named: "DarkBlack")
-        button.layer.cornerRadius = 30
+//        button.backgroundColor = UIColor(named: "DarkBlack")
+//        button.layer.cornerRadius = 30
         button.imageView!.transform = button.imageView!.transform.rotated(by: .pi / 1)
         return button
     }()
@@ -133,16 +142,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         ytView.layer.cornerRadius = 12
         return ytView
     }()
-    
-    private let bookmarkButton = CustomSaveButton(
-        hasBackground: true,
-        image: UIImage(named: "BookmarkFilled")!,
-        backgroundColor: .clear)
-    
-    private let likeButton = CustomSaveButton(
-        hasBackground: true,
-        image: UIImage(named: "HeartFilled")!,
-        backgroundColor: .clear)
     
     private let animeName: UILabel = {
       let label = UILabel()
@@ -190,12 +189,12 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
       let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.isScrollEnabled = false
         collectionView.backgroundColor = UIColor(named: "Black")
         collectionView.register(RelationCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         return collectionView
     }()
     
-    private let extendedChar = CharactersDetailView()
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -214,9 +213,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         relativeColl.dataSource = self
         backButton.addTarget(self, action: #selector(didTappedBackButton), for: .touchUpInside)
         
-        //MARK: - Temporary
-        likeButton.addDidTappedCircleButtonTarget(self, action: #selector(didTappedLikeButton))
-        bookmarkButton.addDidTappedCircleButtonTarget(self, action: #selector(didTappedBookmarkButton))
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -226,9 +222,54 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }
     
     override func viewDidLayoutSubviews() {
-        self.imageView.setupMask(frame: self.imageView.frame)
+        super.viewDidLayoutSubviews()
+        
+        
+//        let layout = relativeColl.collectionViewLayout as! UICollectionViewFlowLayout
+//        let size = layout.collectionViewContentSize
+        let relativeHeight = self.relativeColl.collectionViewLayout.collectionViewContentSize.height
+        self.activeRelativeConstraint = [
+//            self.relativeColl.heightAnchor.constraint(equalToConstant: size.height),
+            self.relativeColl.heightAnchor.constraint(equalToConstant: relativeHeight),
+        ]
+        
+        if self.animeDataAsRelative == nil {
+            if let charactersCount = self.animeData!.characters?.nodes?.count {
+                if charactersCount <= 3 {
+                    self.activeCharCollConstaints = [
+                        charactersColl.heightAnchor.constraint(equalToConstant: 210)
+                    ]
+                } else {
+                    self.activeCharCollConstaints = [
+                        charactersColl.heightAnchor.constraint(equalToConstant: 420),
+                    ]
+                }
+            }
+        } else {
+            if let charactersCount = self.animeDataAsRelative!.characters?.nodes?.count {
+                if charactersCount <= 3 {
+                    self.activeCharCollConstaints = [
+                        charactersColl.heightAnchor.constraint(equalToConstant: 210)
+                    ]
+                } else {
+                    self.activeCharCollConstaints = [
+                        charactersColl.heightAnchor.constraint(equalToConstant: 420),
+                    ]
+                }
+            }
+        }
+        
+        var contentRectContentView = CGRectZero
+        for view in self.contentView.subviews {
+            contentRectContentView = CGRectUnion(contentRectContentView, view.frame)
+        }
+        
+        self.activeContentConstraints = [
+            self.contentView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + 40),
+            self.scrollView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + 40),
+        ]
     }
-    
+        
     //MARK: - Setup UI
     private func setupRelative() {
         contentView.addSubview(relativeHeader)
@@ -242,8 +283,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             relativeHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             
             relativeColl.topAnchor.constraint(equalTo: relativeHeader.bottomAnchor, constant: 10),
-            relativeColl.heightAnchor.constraint(equalToConstant: 230),
-            //            relativeColl.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             relativeColl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             relativeColl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
         ])
@@ -259,12 +298,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentView.addSubview(bookmarkButton)
-        bookmarkButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentView.addSubview(likeButton)
-        likeButton.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(animeName)
         animeName.translatesAutoresizingMaskIntoConstraints = false
@@ -296,6 +329,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         
         contentView.addSubview(backButton)
         backButton.translatesAutoresizingMaskIntoConstraints = false
+
         
         NSLayoutConstraint.activate([
             
@@ -309,37 +343,27 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            //            contentView.heightAnchor.constraint(equalToConstant: 1300),
-            //            contentView.heightAnchor.constraint(equalToConstant: configureContentSize() + 50),
-            //            contentView.heightAnchor.constraint(equalToConstant: 1000),
             
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+//            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+//            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+//            imageView.widthAnchor.constraint(equalToConstant: 300),
             imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 550),
+//            imageView.heightAnchor.constraint(equalToConstant: 550),
+            imageView.heightAnchor.constraint(equalToConstant: 450),
             
             backButton.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
             //            backButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            backButton.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor, constant: 10),
             backButton.widthAnchor.constraint(equalToConstant: 60),
             backButton.heightAnchor.constraint(equalToConstant: 60),
-            backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-            
-            bookmarkButton.widthAnchor.constraint(equalToConstant: 40),
-            bookmarkButton.heightAnchor.constraint(equalToConstant: 40),
-            bookmarkButton.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -20),
-            bookmarkButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            
-            likeButton.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -20),
-            likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            likeButton.widthAnchor.constraint(equalToConstant: 60),
-            likeButton.heightAnchor.constraint(equalToConstant: 60),
+            backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             
             animeName.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 15),
             animeName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             animeName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            //            animeName.heightAnchor.constraint(equalToConstant: 80),
-            //            animeName.heightAnchor.constraint(equalToConstant: self.animeName.requiredHeight()),
-            //            animeName.heightAnchor.constraint(equalToConstant: (animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10),
             
             sideInfoColl.topAnchor.constraint(equalTo: animeName.bottomAnchor, constant: 15),
             sideInfoColl.heightAnchor.constraint(equalToConstant: 60),
@@ -364,21 +388,29 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             charactersColl.topAnchor.constraint(equalTo: charactersHeader.bottomAnchor, constant: 10),
             charactersColl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             charactersColl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            charactersColl.heightAnchor.constraint(equalToConstant: 420),
+//            charactersColl.heightAnchor.constraint(equalToConstant: 420),
             
             
             trailerHeader.topAnchor.constraint(equalTo: charactersColl.bottomAnchor, constant: 20),
             trailerHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             
             ytVideoView.topAnchor.constraint(equalTo: trailerHeader.bottomAnchor, constant: 10),
-            //            ytVideoView.heightAnchor.constraint(equalToConstant: 230),
             ytVideoView.heightAnchor.constraint(equalToConstant: 200),
             ytVideoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             ytVideoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            
         ])
+        
+        if self.animeData != nil {
+            self.setupRelative()
+        }
         
         self.activeAnimeNameConstraints = [
             self.animeName.heightAnchor.constraint(equalToConstant: 20),
+        ]
+        
+        self.activeCharCollConstaints = [
+            charactersColl.heightAnchor.constraint(equalToConstant: 420),
         ]
         
         self.activeAnimeDescriptionConstraints = [
@@ -386,59 +418,12 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         ]
         
         self.activeContentConstraints = [
-            self.contentView.heightAnchor.constraint(equalToConstant: 2000),
-            self.scrollView.heightAnchor.constraint(equalToConstant: 2000),
+//            self.contentView.heightAnchor.constraint(equalToConstant: 2000),
+//            self.scrollView.heightAnchor.constraint(equalToConstant: 2000),
         ]
-    }
-    
-    private func setupExtendedChar(frame: CGRect) {
-        self.scrollView.addSubview(extendedChar)
-        extendedChar.translatesAutoresizingMaskIntoConstraints = false
-        
-        activeExtendedCharConstrints = [
-            extendedChar.widthAnchor.constraint(equalToConstant: frame.width),
-            extendedChar.heightAnchor.constraint(equalToConstant: 160),
-            extendedChar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: frame.minX),
-            extendedChar.topAnchor.constraint(equalTo: view.topAnchor, constant: frame.minY),
-        ]
-        
-        let animation1 = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
-            self.activeContentConstraints = [
-                self.extendedChar.heightAnchor.constraint(equalToConstant: 300),
-                self.extendedChar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: frame.minX),
-                self.extendedChar.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100),
-                self.extendedChar.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            ]
-            self.view.layoutIfNeeded()
-        }
-        
-        animation1.startAnimation(afterDelay: 0.2)
     }
     
     //MARK: - Func
-    @objc private func didTappedBookmarkButton() {
-        if bookmarkButton.checkSaved() {
-            bookmarkButton.setImage(UIImage(named: "BookmarkStroke")!.resized(to: CGSize(width: 40, height: 40)).withRenderingMode(.alwaysTemplate), for: .normal)
-            bookmarkButton.saved()
-            bookmarkButton.animateView(bookmarkButton)
-        } else {
-            bookmarkButton.setImage(UIImage(named: "BookmarkFilled")!.resized(to: CGSize(width: 40, height: 40)).withRenderingMode(.alwaysTemplate), for: .normal)
-            bookmarkButton.saved()
-            bookmarkButton.animateView(bookmarkButton)
-        }
-    }
-    
-    @objc private func didTappedLikeButton() {
-        if likeButton.checkSaved() {
-            likeButton.setImage(UIImage(named: "HeartStroke")!.resized(to: CGSize(width: 40, height: 40)).withRenderingMode(.alwaysTemplate), for: .normal)
-            likeButton.saved()
-            likeButton.animateView(likeButton)
-        } else {
-            likeButton.setImage(UIImage(named: "HeartFilled")!.resized(to: CGSize(width: 40, height: 40)).withRenderingMode(.alwaysTemplate), for: .normal)
-            likeButton.saved()
-            likeButton.animateView(likeButton)
-        }
-    }
     
     @objc private func didTappedBackButton() {
         print("DEBUG:", "Tapped back button")
@@ -448,14 +433,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     public func configureAsRelarive(with animeData: GetAnimeByQuery.Data.Page.Medium.Relations.Node) {
         self.animeDataAsRelative = animeData
         
-        if let hexStr = animeData.coverImage?.color {
-            self.bookmarkButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
-            self.likeButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
-        } else {
-            self.bookmarkButton.tintColor = UIColor(.white.opacity(0.5))
-            self.likeButton.tintColor = UIColor(.white.opacity(0.5))
-        }
-        
         if let englishName = animeData.title?.english {
             self.animeName.text = englishName
         } else if let userPrefered = animeData.title?.userPreferred {
@@ -464,7 +441,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             self.animeName.text = animeData.title?.native
         }
         
-        self.animeDescription.text =  animeData.description!.prepareHTMLDescription()
+        self.animeDescription.text = animeData.description!.prepareHTMLDescription()
         let animeDesriptionHeight = self.animeDescription.text!.height(constraintedWidth: self.view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
         self.activeAnimeDescriptionConstraints = [
             self.animeDescription.heightAnchor.constraint(equalToConstant: animeDesriptionHeight),
@@ -480,17 +457,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     public func configureAsDefault(with animeData: GetAnimeByQuery.Data.Page.Medium) {
         self.animeData = animeData
         
-        if let hexStr = animeData.coverImage?.color {
-            self.bookmarkButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
-            self.likeButton.tintColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
-//            self.backButton.backgroundColor = UIColor().hexStringToUIColor(hex: hexStr).darker(by: 20)
-        } else {
-            self.bookmarkButton.tintColor = UIColor(.white.opacity(0.5))
-            self.likeButton.tintColor = UIColor(.white.opacity(0.5))
-//            self.backButton.backgroundColor = UIColor(.white.opacity(0.5))
-        }
-        
-        
         if let englishName = animeData.title?.english {
             self.animeName.text = englishName
         } else if let userPrefered = animeData.title?.userPreferred {
@@ -503,9 +469,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             self.animeName.heightAnchor.constraint(equalToConstant: animeNameHeight),
         ]
         
-        
-//        self.animeDescription.text = animeData.description?.replacingOccurrences(of: "<br>", with: "")
-//        self.animeDescription.text = animeData.description
         self.animeDescription.text =  animeData.description!.prepareHTMLDescription()
         let animeDesriptionHeight = self.animeDescription.text!.height(constraintedWidth: self.view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
         self.activeAnimeDescriptionConstraints = [
@@ -517,10 +480,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         if let id = animeData.trailer?.id {
             self.ytVideoView.load(withVideoId: id)
         }
-        self.setupRelative()
-//        configureContentSize()
-        
-        
     }
     
     func onTapGesture(data: GetAnimeByQuery.Data.Page.Medium.Relations.Node) {   
@@ -529,39 +488,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
 //        self.navigationController?.pushViewController(vc, animated: true)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    
-    func previewCellTapped(dataAsDefault: AnilistApi.GetAnimeByQuery.Data.Page.Medium.Characters.Node, sender: UICollectionViewCell) {
-        
-        if let frame = sender.superview?.convert(sender.frame, to: nil) {
-             print(frame)
-            setupExtendedChar(frame: frame)
-         }
-        self.extendedChar.configure(data: dataAsDefault)
-        print("DEBUG: -", "Preview Character Cell Tapped")
-        
-    }
-    
-    func previewCellTapped(dataAsRelevant: AnilistApi.GetAnimeByQuery.Data.Page.Medium.Relations.Node.Characters.Node) {
-        print("DEBUG: -", "Preview Character Cell Tapped")
-        self.extendedChar.configureAsRelative(data: dataAsRelevant)
-    }
-    
-//    private func configureContentSize() {
-//        let imageHeight: CGFloat = 550
-//        
-//        let animeNameHeight = ((animeName.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)) + 10) + 15
-//        
-//        let sideInfoCollHeight: CGFloat = 75
-//        let genreCollHeight: CGFloat = 50
-//        let descriptionHeaderHeight = descriptionHeader.text!.height(constraintedWidth: view.frame.width, font: UIFont().JosefinSans(font: .bold, size: 18)!) + 15
-//        let animeDescriptionHeight = animeDescription.text!.height(constraintedWidth: view.frame.width - 30, font: UIFont().JosefinSans(font: .medium, size: 19)!)
-//        
-//        let height = imageHeight + animeNameHeight + sideInfoCollHeight + genreCollHeight + descriptionHeaderHeight + animeDescriptionHeight + 50
-//        
-//        self.activeContentConstraints = [
-//            self.contentView.heightAnchor.constraint(equalToConstant: height),
-//        ]
-//    }
     
 }
 
@@ -641,7 +567,7 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
                 return CGSize(width: size.width + 10, height: 40)
             case 5:
                 let size: CGSize = String("End Date").size(withAttributes: [NSAttributedString.Key.font: UIFont().JosefinSans(font: .regular, size: 15)!])
-                return CGSize(width: size.width + 5, height: 40)
+                return CGSize(width: size.width + 10, height: 40)
             default:
                 return CGSize(width: 85, height: 40)
             }
@@ -734,11 +660,11 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
             
             if self.animeDataAsRelative == nil {
                 cell.configure(info: animeData!.characters?.nodes?[indexPath.row])
-                cell.delegate = self
+//                cell.delegate = self
                 return cell
             } else {
                 cell.configureAsRelative(info: animeDataAsRelative!.characters?.nodes?[indexPath.row])
-                cell.delegate = self
+//                cell.delegate = self
                 return cell
             }
         } else {

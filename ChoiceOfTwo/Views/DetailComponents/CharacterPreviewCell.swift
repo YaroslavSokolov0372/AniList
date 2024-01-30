@@ -9,18 +9,10 @@ import UIKit
 import AnilistApi
 
 
-protocol characterPreviewCellProtocol {
-    func previewCellTapped(dataAsDefault: GetAnimeByQuery.Data.Page.Medium.Characters.Node, sender: UICollectionViewCell)
-    func previewCellTapped(dataAsRelevant: GetAnimeByQuery.Data.Page.Medium.Relations.Node.Characters.Node)
-}
 
 class CharacterPreviewCell: UICollectionViewCell {
     
     //MARK: - Properties
-    private var gesture: UITapGestureRecognizer?
-    
-    public var delegate: characterPreviewCellProtocol?
-    
     public var data: GetAnimeByQuery.Data.Page.Medium.Characters.Node?
     
     public var dataAsRelative:  GetAnimeByQuery.Data.Page.Medium.Relations.Node.Characters.Node?
@@ -47,10 +39,6 @@ class CharacterPreviewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
-        
-        self.isUserInteractionEnabled = true
-        gesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        self.addGestureRecognizer(gesture!)
     }
     
     required init?(coder: NSCoder) {
@@ -66,26 +54,13 @@ class CharacterPreviewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             image.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-//            image.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-//            image.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-//            image.heightAnchor.constraint(equalToConstant: 100),
-//            image.widthAnchor.constraint(equalToConstant: 70),
             image.heightAnchor.constraint(equalToConstant: 160),
             image.widthAnchor.constraint(equalTo: self.widthAnchor),
             
             name.topAnchor.constraint(equalTo: image.bottomAnchor, constant: 10),
             name.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             name.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-//            name.heightAnchor.constraint(equalToConstant: 30),
         ])
-    }
-    
-    @objc private func handleTap() {
-        if self.dataAsRelative == nil {
-            self.delegate?.previewCellTapped(dataAsDefault: self.data!, sender: self)
-        } else {
-            self.delegate?.previewCellTapped(dataAsRelevant: self.dataAsRelative!)
-        }
     }
     
     

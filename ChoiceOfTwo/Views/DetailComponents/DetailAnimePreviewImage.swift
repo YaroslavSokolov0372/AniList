@@ -13,6 +13,8 @@ class DetailAnimePreviewImage: UIImageView {
     init() {
         super.init(frame: .zero)
         self.contentMode = .scaleAspectFill
+        self.clipsToBounds = true
+        self.layer.cornerRadius = 30
     }
     
     required init?(coder: NSCoder) {

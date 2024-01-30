@@ -13,7 +13,6 @@
 		D1197C8B2B542D9600B7174D /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8A2B542D9600B7174D /* RoundedImageView.swift */; };
 		D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8C2B5548C400B7174D /* ListOfAnime.swift */; };
 		D1197C8F2B56C2FF00B7174D /* Saved_mb_for_later.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */; };
-		D12181AE2B683CDD008BBE0F /* CharactersDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */; };
 		D14630CB2B67F35D00022B4A /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = D14630CA2B67F35D00022B4A /* SwiftSoup */; };
 		D14630CD2B67F86D00022B4A /* prepareHTMLDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */; };
 		D1502D242B5AC88C00A902F1 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D232B5AC88C00A902F1 /* Genre.swift */; };
@@ -111,7 +110,6 @@
 		D1197C8A2B542D9600B7174D /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		D1197C8C2B5548C400B7174D /* ListOfAnime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfAnime.swift; sourceTree = "<group>"; };
 		D1197C8E2B56C2FE00B7174D /* Saved_mb_for_later.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Saved_mb_for_later.swift; sourceTree = "<group>"; };
-		D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharactersDetailView.swift; sourceTree = "<group>"; };
 		D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = prepareHTMLDescription.swift; sourceTree = "<group>"; };
 		D1502D232B5AC88C00A902F1 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsForApiClientProp.swift; sourceTree = "<group>"; };
@@ -201,14 +199,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D1502D2E2B5D5EDC00A902F1 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				D1502D2F2B5D5EE900A902F1 /* Reachability.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
 		D16742DE2B36086300C9F033 /* DetailComponents */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,7 +209,6 @@
 				D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */,
 				D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */,
 				D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */,
-				D12181AD2B683CDD008BBE0F /* CharactersDetailView.swift */,
 			);
 			path = DetailComponents;
 			sourceTree = "<group>";
@@ -305,10 +294,9 @@
 			isa = PBXGroup;
 			children = (
 				D1B89DA92B24C493007447A5 /* Info.plist */,
-				D1502D2E2B5D5EDC00A902F1 /* Network */,
 				D1C9C83B2B28837700E9DE4C /* Helpers */,
 				D1C9C82C2B287FF100E9DE4C /* Font */,
-				D1C9C8212B28714900E9DE4C /* ApiManger */,
+				D1C9C8212B28714900E9DE4C /* ApiManger&Network */,
 				D1C9C8152B2762F300E9DE4C /* GraphQL */,
 				D17DDAA52B24D6810082B4D7 /* Views */,
 				D17DDAA62B24D6830082B4D7 /* Controllers */,
@@ -352,12 +340,13 @@
 			path = GraphQL;
 			sourceTree = "<group>";
 		};
-		D1C9C8212B28714900E9DE4C /* ApiManger */ = {
+		D1C9C8212B28714900E9DE4C /* ApiManger&Network */ = {
 			isa = PBXGroup;
 			children = (
+				D1502D2F2B5D5EE900A902F1 /* Reachability.swift */,
 				D1C9C8222B28716100E9DE4C /* ApiClient.swift */,
 			);
-			path = ApiManger;
+			path = "ApiManger&Network";
 			sourceTree = "<group>";
 		};
 		D1C9C8292B287D6300E9DE4C /* New Group */ = {
@@ -580,7 +569,6 @@
 				D1C54FD02B3873EC000182E2 /* ResizeImage.swift in Sources */,
 				D1502D322B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift in Sources */,
 				D1197C872B504CFB00B7174D /* LoadingAnimePreviewCell.swift in Sources */,
-				D12181AE2B683CDD008BBE0F /* CharactersDetailView.swift in Sources */,
 				D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */,
 				D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,

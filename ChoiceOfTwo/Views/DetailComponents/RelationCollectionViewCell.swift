@@ -35,6 +35,7 @@ class RelationCollectionViewCell: UICollectionViewCell {
         let imageV = UIImageView()
         imageV.clipsToBounds = true
         imageV.layer.cornerRadius = 12
+        imageV.contentMode = .scaleAspectFill
         return imageV
     }()
     

@@ -30,17 +30,11 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         didSet {
 //            if oldValue != self.showMessage {
                 if showMessage {
-                    if showScrollButton == true {
+                    if showScrollButton {
                         self.showScrollButton = false
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                            self.showScrollButton = true
-//                        }
                     }
-                    if showSearchButton == true {
+                    if showSearchButton {
                         self.showSearchButton = false
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                            self.showSearchButton = true
-//                        }
                     }
                     activeMessageConstranints = [
                         messageView.topAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100),
@@ -600,8 +594,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             ]
         case .animeByUsersSearch:
             self.activeCollViewConstraints = [
-                //                animesByUsersSearchColl.topAnchor.constraint(equalTo: searchToolsScrollView.bottomAnchor, constant: 20),
-                
                 animesByUsersSearchColl.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.78),
                 contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.8),
             ]
@@ -629,6 +621,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                                 switch result {
                                 case .success(let data):
                                     self.animesByUsersSearch = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
+                                    
                                     self.isFetching = false
                                     self.animesByUsersSearchColl.reloadData()
                                 case .failure(let failure):
@@ -670,7 +663,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                     }
     }
     
-    private func fetchAllTimePopular(currentPage: Int?) {
+    private func fetchAllTimePopular(currentPage: Int?, tryOneMoreIfFailed: Bool = true) {
         self.apiClient.getAnimeBy(
             page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
             perPage: 20,
@@ -688,18 +681,24 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         switch result {
                         case .success(let data):
                             self.allTimePopularAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
-                            self.isFetching = false
-                            self.allTimePopularColl.reloadData()
+                            if self.trendingNowAnimes != nil, self.currentSeasonPopularAnimes != nil {
+                                self.isFetching = false
+                                self.allTimePopularColl.reloadData()
+                            }
                         case .failure(let failure):
-                            switch failure {
-                            case .internetConnection(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
-                            case .otherReason(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
+                            if tryOneMoreIfFailed {
+                                self.fetchAllTimePopular(currentPage: nil, tryOneMoreIfFailed: false)
+                            } else {
+                                switch failure {
+                                case .internetConnection(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                case .otherReason(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                }
                             }
                         }
                     } else {
@@ -729,7 +728,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             }
     }
     
-    private func fetchPopularThisSeason(currentPage: Int?) {
+    private func fetchPopularThisSeason(currentPage: Int?, tryOneMoreIfFailed: Bool = true) {
         self.apiClient.getAnimeBy(
             page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
             perPage: 20,
@@ -746,18 +745,25 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         switch result {
                         case .success(let data):
                             self.currentSeasonPopularAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
-                            self.isFetching = false
-                            self.currentSeasonPopularColl.reloadData()
+                            if self.trendingNowAnimes != nil, self.allTimePopularAnimes != nil {
+                                self.isFetching = false
+                                self.currentSeasonPopularColl.reloadData()
+                            }
                         case .failure(let failure):
-                            switch failure {
-                            case .internetConnection(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
-                            case .otherReason(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
+                            
+                            if tryOneMoreIfFailed {
+                                self.fetchPopularThisSeason(currentPage: nil, tryOneMoreIfFailed: false)
+                            } else {
+                                switch failure {
+                                case .internetConnection(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                case .otherReason(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                }
                             }
                         }
                         
@@ -789,7 +795,8 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             }
     }
     
-    private func fetchTrendingNow(currentPage: Int?) {
+    private func fetchTrendingNow(currentPage: Int?, tryOneMoreIfFailed: Bool = true) {
+        
         self.apiClient.getAnimeBy(
             page: GraphQLNullable<Int>(integerLiteral: currentPage == nil ? 1 : currentPage! + 1),
             perPage: 20,
@@ -805,18 +812,25 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                         switch result {
                         case .success(let data):
                             self.trendingNowAnimes = ListOfAnime(pageInfo: data.data?.page?.pageInfo, animes: data.data?.page?.media?.compactMap({ $0 }) ?? [])
-                            self.isFetching = false
-                            self.trendingNowColl.reloadData()
+                            
+                            if self.currentSeasonPopularAnimes != nil, self.allTimePopularAnimes != nil {
+                                self.isFetching = false
+                                self.trendingNowColl.reloadData()
+                            }
                         case .failure(let failure):
-                            switch failure {
-                            case .internetConnection(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
-                            case .otherReason(let error):
-                                self.messageView.setupMessage(error.errorMessage)
-                                self.showMessage = true
-                                self.isFetching = false
+                            if tryOneMoreIfFailed {
+                                self.fetchTrendingNow(currentPage: nil, tryOneMoreIfFailed: false)
+                            } else {
+                                switch failure {
+                                case .internetConnection(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                case .otherReason(let error):
+                                    self.messageView.setupMessage(error.errorMessage)
+                                    self.showMessage = true
+                                    self.isFetching = false
+                                }
                             }
                         }
                         
@@ -1019,16 +1033,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
                 return
             }
         } else {
-//            self.trendingNowColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
-//            self.currentSeasonPopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
-//            self.allTimePopularColl.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: UIColor(named: "DarkBlack")!, secondaryColor: UIColor(named: "DarkOne")!), transition: .crossDissolve(0.25))
-//            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                self.allTimePopularColl.hideSkeleton()
-//                self.trendingNowColl.hideSkeleton()
-//                self.currentSeasonPopularColl.hideSkeleton()
-//            }
-            
             switch headersCollectionView {
             case .trendingNow:
                 isFetching = true
