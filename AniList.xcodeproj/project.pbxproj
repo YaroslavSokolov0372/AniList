@@ -33,7 +33,6 @@
 		D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */; };
 		D16742D92B34A41700C9F033 /* ImageShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742D82B34A41700C9F033 /* ImageShape.swift */; };
 		D16742DB2B35D53900C9F033 /* DetailAnimePreviewImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */; };
-		D16742DD2B35ED3900C9F033 /* CustomSaveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16742DC2B35ED3900C9F033 /* CustomSaveButton.swift */; };
 		D17806E02B6989EB003B84F7 /* ApiClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17806DF2B6989EB003B84F7 /* ApiClientTests.swift */; };
 		D17806E62B6A7D53003B84F7 /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C9C8222B28716100E9DE4C /* ApiClient.swift */; };
 		D17806E82B6A7E47003B84F7 /* ExtensionToGetCurrentSeason.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1502D312B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift */; };
@@ -123,7 +122,6 @@
 		D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomShapeForImage.swift; sourceTree = "<group>"; };
 		D16742D82B34A41700C9F033 /* ImageShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageShape.swift; sourceTree = "<group>"; };
 		D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAnimePreviewImage.swift; sourceTree = "<group>"; };
-		D16742DC2B35ED3900C9F033 /* CustomSaveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSaveButton.swift; sourceTree = "<group>"; };
 		D17806DD2B6989EB003B84F7 /* AniListTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AniListTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D17806DF2B6989EB003B84F7 /* ApiClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientTests.swift; sourceTree = "<group>"; };
 		D17DDAA82B24D7600082B4D7 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
@@ -191,7 +189,6 @@
 				D1C54FD12B38768E000182E2 /* GenreViewCell.swift */,
 				D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */,
 				D16742D62B34898A00C9F033 /* CustomShapeForImage.swift */,
-				D16742DC2B35ED3900C9F033 /* CustomSaveButton.swift */,
 				D16742DA2B35D53900C9F033 /* DetailAnimePreviewImage.swift */,
 				D1502D332B656E2600A902F1 /* CharacterPreviewCell.swift */,
 				D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */,
@@ -530,7 +527,6 @@
 				D1C9C8472B28B40A00E9DE4C /* MenuAnimePreviewCell.swift in Sources */,
 				D1197C8D2B5548C400B7174D /* ListOfAnime.swift in Sources */,
 				D1C9C8232B28716100E9DE4C /* ApiClient.swift in Sources */,
-				D16742DD2B35ED3900C9F033 /* CustomSaveButton.swift in Sources */,
 				D16742D12B33387300C9F033 /* DetailInfoController.swift in Sources */,
 				D16742CC2B330E1500C9F033 /* SearchToolsScrollView.swift in Sources */,
 				D1CDF75F2B3C5D74001C3668 /* SideInfoViewCell.swift in Sources */,

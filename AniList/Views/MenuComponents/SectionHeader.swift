@@ -31,7 +31,6 @@ class SectionHeader: UIView {
         let button = UIButton()
         button.setImage(UIImage(named: "Plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView!.contentMode = .scaleToFill
-        //        button.imageView!.layer.anchorPoint = CGPointMake(0.0, 0.0);
         button.imageView!.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         button.imageView!.tintColor = .white
         return button

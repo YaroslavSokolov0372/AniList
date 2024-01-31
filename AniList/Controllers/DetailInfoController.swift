@@ -225,54 +225,56 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         super.viewDidLayoutSubviews()
         
         
-//        let layout = relativeColl.collectionViewLayout as! UICollectionViewFlowLayout
-//        let size = layout.collectionViewContentSize
+        //        let layout = relativeColl.collectionViewLayout as! UICollectionViewFlowLayout
+        //        let size = layout.collectionViewContentSize
+        //            let relativeHeight = self.relativeColl.collectionViewLayout.collectionViewContentSize.height
+        //
+        //            print(relativeHeight)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            let relativeHeight = self.relativeColl.collectionViewLayout.collectionViewContentSize.height
-            
-            print(relativeHeight)
-            self.activeRelativeConstraint = [
-                //            self.relativeColl.heightAnchor.constraint(equalToConstant: size.height),
-                self.relativeColl.heightAnchor.constraint(equalToConstant: relativeHeight),
-            ]
-            
-            if self.animeDataAsRelative == nil {
-                if let charactersCount = self.animeData!.characters?.nodes?.count {
-                    if charactersCount <= 3 {
-                        self.activeCharCollConstaints = [
-                            self.charactersColl.heightAnchor.constraint(equalToConstant: 210)
-                        ]
-                    } else {
-                        self.activeCharCollConstaints = [
-                            self.charactersColl.heightAnchor.constraint(equalToConstant: 420),
-                        ]
-                    }
-                }
-            } else {
-                if let charactersCount = self.animeDataAsRelative!.characters?.nodes?.count {
-                    if charactersCount <= 3 {
-                        self.activeCharCollConstaints = [
-                            self.charactersColl.heightAnchor.constraint(equalToConstant: 210)
-                        ]
-                    } else {
-                        self.activeCharCollConstaints = [
-                            self.charactersColl.heightAnchor.constraint(equalToConstant: 420),
-                        ]
-                    }
+        
+        
+        
+        
+        self.activeRelativeConstraint = [
+            //            self.relativeColl.heightAnchor.constraint(equalToConstant: size.height),
+            self.relativeColl.heightAnchor.constraint(equalToConstant: CGFloat((self.animeData?.relations?.nodes?.count ?? 0) * 195)),
+        ]
+        
+        if self.animeDataAsRelative == nil {
+            if let charactersCount = self.animeData!.characters?.nodes?.count {
+                if charactersCount <= 3 {
+                    self.activeCharCollConstaints = [
+                        self.charactersColl.heightAnchor.constraint(equalToConstant: 210)
+                    ]
+                } else {
+                    self.activeCharCollConstaints = [
+                        self.charactersColl.heightAnchor.constraint(equalToConstant: 420),
+                    ]
                 }
             }
-            
-            var contentRectContentView = CGRectZero
-            for view in self.contentView.subviews {
-                contentRectContentView = CGRectUnion(contentRectContentView, view.frame)
+        } else {
+            if let charactersCount = self.animeDataAsRelative!.characters?.nodes?.count {
+                if charactersCount <= 3 {
+                    self.activeCharCollConstaints = [
+                        self.charactersColl.heightAnchor.constraint(equalToConstant: 210)
+                    ]
+                } else {
+                    self.activeCharCollConstaints = [
+                        self.charactersColl.heightAnchor.constraint(equalToConstant: 420),
+                    ]
+                }
             }
-            
-            self.activeContentConstraints = [
-                self.contentView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + 40),
-                self.scrollView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + 40),
-            ]
         }
+        
+        var contentRectContentView = CGRectZero
+        for view in self.contentView.subviews {
+            contentRectContentView = CGRectUnion(contentRectContentView, view.frame)
+        }
+        
+        self.activeContentConstraints = [
+            self.contentView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + (self.animeDataAsRelative == nil ? 20 : 40)),
+            self.scrollView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + (self.animeDataAsRelative == nil ? 20 : 40)),
+        ]
     }
         
     //MARK: - Setup UI
@@ -422,10 +424,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             self.animeDescription.heightAnchor.constraint(equalToConstant: 300),
         ]
         
-        self.activeContentConstraints = [
-//            self.contentView.heightAnchor.constraint(equalToConstant: 2000),
-//            self.scrollView.heightAnchor.constraint(equalToConstant: 2000),
-        ]
     }
     
     //MARK: - Func
@@ -490,7 +488,6 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     func onTapGesture(data: GetAnimeByQuery.Data.Page.Medium.Relations.Node) {   
         let vc = DetailInfoController()
         vc.configureAsRelarive(with: data)
-//        self.navigationController?.pushViewController(vc, animated: true)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

@@ -37,7 +37,6 @@ class ToolsOptionsCell: UICollectionViewCell {
         button.setTitleColor(UIColor(named: "Gray"), for: .normal)
         button.titleLabel?.font = UIFont().JosefinSans(font: .regular, size: 14)
         button.backgroundColor = UIColor(named: "DarkBlack")
-//        button.layer.cornerRadius = 12
         return button
     }()
 
@@ -129,7 +128,6 @@ extension ToolsOptionsCell {
             self.index = index
             self.tool = choosedTool
             let season = MediaSeason.allCases
-//            self.plusButton.setTitle(season[index].rawValue, for: .normal)
             self.plusButton.setTitle(season[index].getName(), for: .normal)
         case .genre:
             self.index = index

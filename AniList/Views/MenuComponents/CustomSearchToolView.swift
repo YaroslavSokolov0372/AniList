@@ -208,9 +208,6 @@ class CustomSearchToolView: UIView {
     
     @objc private func removeButtonTapped() {
         self.delegate?.removeButtonTapped(self.toolType)
-//        self.choosedFirstOption.removeConstraints(choosedFirstOption.constraints)
-//        self.choosedMoreOptions.removeConstraints(choosedMoreOptions.constraints)
-//        self.removeButton.removeConstraints(removeButton.constraints)
         self.shouldHideButtonsLabel(false)
         
         self.choosedFirstOption.removeFromSuperview()

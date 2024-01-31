@@ -43,7 +43,6 @@ class MenuAnimePreviewCell: UICollectionViewCell {
         let label = UILabel()
         label.textColor = .white
         label.textAlignment = .left
-//        label.sizeToFit()
         label.numberOfLines = 0
         label.font = UIFont().JosefinSans(font: .regular, size: 14)
         label.text = ""
@@ -80,13 +79,11 @@ class MenuAnimePreviewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             self.coverImage.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1),
-            //            self.coverImage.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.85),
             self.coverImage.heightAnchor.constraint(equalToConstant: 240),
             self.coverImage.topAnchor.constraint(equalTo: self.topAnchor),
             
             self.name.topAnchor.constraint(equalTo: self.coverImage.bottomAnchor, constant: 10),
             self.name.widthAnchor.constraint(equalTo: self.widthAnchor),
-//            self.name.heightAnchor.constraint(equalToConstant: 20),
             
         ])
         
@@ -110,18 +107,24 @@ extension MenuAnimePreviewCell {
             self.name.text = userPrefered
         } else {
             self.name.text = animeData.title?.native
-            //            self.name.text = "No info about Anime name"
+//                        self.name.text = "No info about Anime name"
         }
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
         let textHeight = self.name.text!.height(constraintedWidth: self.frame.width, font: UIFont().JosefinSans(font: .regular, size: 14)!)
-        self.activeNameConstraints = [
-            self.name.heightAnchor.constraint(equalToConstant: textHeight),
-        ]
+
         let numberOfRows = textHeight / 14
-        self.name.numberOfLines = Int(numberOfRows)
         
-//        self.name.frame.size.height = textHeight
-//        print("AnimeName: ", self.name.text!, "TexHeight: ", textHeight)
+        if numberOfRows > 4 {
+            self.activeNameConstraints = [
+                self.name.heightAnchor.constraint(equalToConstant: 14 * 4),
+            ]
+            self.name.numberOfLines = 4
+        } else {
+            self.activeNameConstraints = [
+                self.name.heightAnchor.constraint(equalToConstant: textHeight),
+            ]
+            self.name.numberOfLines = Int(numberOfRows)
+        }
         
     }
 }

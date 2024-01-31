@@ -99,7 +99,6 @@ extension SideInfoViewCell {
 
         case 2:
             self.sideInfoHeader.text = "Episodes"
-//            self.sideInfoDescription.text = String("\(info.episodes ?? info.episodes : "")")
             if info.episodes != nil {
                 self.sideInfoDescription.text = String("\(info.episodes!)")
             } else {
@@ -132,13 +131,10 @@ extension SideInfoViewCell {
             }
         case 5:
             self.sideInfoHeader.text = "Start Date"
-//            self.sideInfoDescription.text = String("\(info.startDate?.day) \(info.startDate?.month) \( info.startDate?.year)")
+
             self.sideInfoDescription.text = info.configureDate(isStartDate: true)
         case 6:
             self.sideInfoHeader.text = "End Date"
-//            print(info.endDate?.day)
-//            print(info.endDate?.month)
-//            print(info.endDate?.year)
             self.sideInfoDescription.text = info.configureDate(isStartDate: false)
         default:
             return
@@ -180,7 +176,6 @@ extension SideInfoViewCell {
 
         case 2:
             self.sideInfoHeader.text = "Episodes"
-//            self.sideInfoDescription.text = String("\(info.episodes ?? info.episodes : "")")
             if info.episodes != nil {
                 self.sideInfoDescription.text = String("\(info.episodes!)")
             } else {
@@ -213,13 +208,9 @@ extension SideInfoViewCell {
             }
         case 5:
             self.sideInfoHeader.text = "Start Date"
-//            self.sideInfoDescription.text = String("\(info.startDate?.day) \(info.startDate?.month) \( info.startDate?.year)")
             self.sideInfoDescription.text = info.configureDate(isStartDate: true)
         case 6:
             self.sideInfoHeader.text = "End Date"
-//            print(info.endDate?.day)
-//            print(info.endDate?.month)
-//            print(info.endDate?.year)
             self.sideInfoDescription.text = info.configureDate(isStartDate: false)
         default:
             return
