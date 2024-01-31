@@ -10,7 +10,6 @@ import AnilistApi
 
 
 struct ListOfAnime {
-        
     var pageInfo: GetAnimeByQuery.Data.Page.PageInfo?
     var animes: [GetAnimeByQuery.Data.Page.Medium]
 }

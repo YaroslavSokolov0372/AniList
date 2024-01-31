@@ -22,6 +22,14 @@ struct ClientError {
 class ApiClient {
     
     private let appolo = ApolloClient(url: URL(string: "https://graphql.anilist.co")!)
+    private (set) var network = NetworkReachability()
+    
+    private (set) var chosenGenres: [Genre] = []
+    private (set) var chosenYear: Int?
+    private (set) var chosenSeason: MediaSeason?
+    private (set) var chosenFormats: [MediaFormat] = []
+    private (set) var searchStringAnime: String?
+    
     
     public func getAnimeBy(
         page: GraphQLNullable<Int>,
@@ -39,22 +47,52 @@ class ApiClient {
             self.appolo.fetch(query: GetAnimeByQuery(page: page, perPage: perPage, sort: sort, type: type, season: season, seasonYear: seasonYear, search: search, asHtml: .none, formatIn: formats, genreIn: genres)) { result in
                 switch result {
                 case .success(let data):
-                    //                    completition(data)
                     completition(.success(data))
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    DispatchQueue.main.async {
                         if let error = data.errors {
                             debugPrint(error)
                         }
                     }
                 case .failure(let error):
-                    if !NetworkReachability().isNetworkAvailable() {
+                    if !self.network.isNetworkAvailable() {
                         completition(.failure(ClientErrorType.internetConnection(ClientError(errorCode: nil, errorMessage: "No Internet Connection"))))
                     } else {
                         completition(.failure(ClientErrorType.otherReason(ClientError(errorCode: nil, errorMessage: " Failed To Load Data"))))
                     }
-                    
                     debugPrint(error)
                 }
             }
         }
+    
+    
+    public func changeGenres(to genres: [Genre]) {
+        chosenGenres = genres
+    }
+    
+    public func changeYear(to year: Int?) {
+        chosenYear = year
+    }
+    
+    public func changeSeason(to season: MediaSeason?) {
+        chosenSeason = season
+    }
+    
+    public func changeFormats(to formats: [MediaFormat]) {
+        chosenFormats = formats
+    }
+    
+    public func changeSearchString(to string: String?) {
+        searchStringAnime = string
+    }
+    
+}
+
+
+
+extension ApiClient {
+    static let mockGenres = [Genre.action]
+    static let mockChosenYear = 2014
+    static let mockChosenSeason: MediaSeason = .fall
+    static let mockChosenFormats: [MediaFormat] = [.music, .movie]
+    static let mockSearchStringAnime  = "Clone"
 }

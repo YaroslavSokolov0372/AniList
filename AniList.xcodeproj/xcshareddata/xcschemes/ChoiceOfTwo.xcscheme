@@ -51,6 +51,39 @@
                ReferencedContainer = "container:AniList.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D17806DC2B6989EB003B84F7"
+               BuildableName = "AniListTests.xctest"
+               BlueprintName = "AniListTests"
+               ReferencedContainer = "container:AniList.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D17806F12B6A9677003B84F7"
+               BuildableName = "NewOne.xctest"
+               BlueprintName = "NewOne"
+               ReferencedContainer = "container:AniList.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D17807002B6A9881003B84F7"
+               BuildableName = "tryingNewOne.xctest"
+               BlueprintName = "tryingNewOne"
+               ReferencedContainer = "container:AniList.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
