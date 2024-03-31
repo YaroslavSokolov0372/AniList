@@ -21,8 +21,6 @@ extension MenuController {
 
 class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonProtocol, ToolsOptionsProtocol, HeaderMoreButtonProtocol, UITextFieldDelegate, SearchTextFieldProtocol {
 
-    
-    
     //MARK: - Variables
     private var extendedCollection: CollectionType = .none
     
@@ -190,7 +188,6 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         view.showsVerticalScrollIndicator = false
         return view
     }()
-    
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Black")
@@ -400,10 +397,10 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
         mainScrollView.translatesAutoresizingMaskIntoConstraints = false
         
         self.mainScrollView.addSubview(contentView)
-        searchToolsScrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         
         self.contentView.addSubview(searchToolsScrollView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+        searchToolsScrollView.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.addSubview(scrollToTopButton)
         scrollToTopButton.translatesAutoresizingMaskIntoConstraints = false
@@ -1265,6 +1262,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             } else {
                 var newArray = apiClient.chosenFormats
                 newArray.append(choosedFormat)
+                apiClient.changeFormats(to: newArray)
                 self.searchToolsScrollView.addOption(toolType: self.chosenTool!, option: apiClient.chosenFormats)
                 cell.markAsChoosed()
             }

@@ -11,9 +11,9 @@ import YouTubeiOSPlayerHelper
 import SwiftSoup
 
 class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationCollectionViewCellDelegate {
-
     
-
+    
+    
     
     
     //MARK: - Variables
@@ -93,7 +93,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }()
     
     private let descriptionHeader: UILabel = {
-      let label = UILabel()
+        let label = UILabel()
         label.text = "Description"
         label.font = UIFont().JosefinSans(font: .bold, size: 18)
         label.textColor = .white
@@ -101,7 +101,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }()
     
     private let charactersHeader: UILabel = {
-      let label = UILabel()
+        let label = UILabel()
         label.text = "Characters"
         label.font = UIFont().JosefinSans(font: .bold, size: 18)
         label.textColor = .white
@@ -110,14 +110,14 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     
     private let relativeHeader: UILabel = {
         let label = UILabel()
-          label.text = "Relations"
-          label.font = UIFont().JosefinSans(font: .bold, size: 18)
-          label.textColor = .white
-          return label
+        label.text = "Relations"
+        label.font = UIFont().JosefinSans(font: .bold, size: 18)
+        label.textColor = .white
+        return label
     }()
     
     private let trailerHeader: UILabel = {
-      let label = UILabel()
+        let label = UILabel()
         label.text = "Trailer"
         label.font = UIFont().JosefinSans(font: .bold, size: 18)
         label.textColor = .white
@@ -129,14 +129,14 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         button.setImage(UIImage(named: "Arrow")!.resized(to: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .white
         button.imageView?.contentMode = .scaleAspectFill
-//        button.backgroundColor = UIColor(named: "DarkBlack")
-//        button.layer.cornerRadius = 30
+        //        button.backgroundColor = UIColor(named: "DarkBlack")
+        //        button.layer.cornerRadius = 30
         button.imageView!.transform = button.imageView!.transform.rotated(by: .pi / 1)
         return button
     }()
     
     private let ytVideoView: YTPlayerView = {
-      let ytView = YTPlayerView()
+        let ytView = YTPlayerView()
         ytView.backgroundColor = .black
         ytView.clipsToBounds = true
         ytView.layer.cornerRadius = 12
@@ -144,7 +144,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }()
     
     private let animeName: UILabel = {
-      let label = UILabel()
+        let label = UILabel()
         label.text = "Hello"
         label.textAlignment = .left
         label.numberOfLines = 0
@@ -176,7 +176,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }()
     
     private let charactersColl: UICollectionView = {
-      let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor(named: "Black")
@@ -186,7 +186,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
     }()
     
     private let relativeColl: UICollectionView = {
-      let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isScrollEnabled = false
@@ -276,7 +276,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             self.scrollView.heightAnchor.constraint(equalToConstant: contentRectContentView.height + (self.animeDataAsRelative == nil ? 20 : 40)),
         ]
     }
-        
+    
     //MARK: - Setup UI
     private func setupRelative() {
         contentView.addSubview(relativeHeader)
@@ -336,7 +336,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         
         contentView.addSubview(backButton)
         backButton.translatesAutoresizingMaskIntoConstraints = false
-
+        
         
         NSLayoutConstraint.activate([
             
@@ -351,14 +351,14 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-//            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            //            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-//            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            //            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-//            imageView.widthAnchor.constraint(equalToConstant: 300),
+            //            imageView.widthAnchor.constraint(equalToConstant: 300),
             imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-//            imageView.heightAnchor.constraint(equalToConstant: 550),
+            //            imageView.heightAnchor.constraint(equalToConstant: 550),
             imageView.heightAnchor.constraint(equalToConstant: 450),
             
             backButton.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
@@ -395,7 +395,7 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
             charactersColl.topAnchor.constraint(equalTo: charactersHeader.bottomAnchor, constant: 10),
             charactersColl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             charactersColl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-//            charactersColl.heightAnchor.constraint(equalToConstant: 420),
+            //            charactersColl.heightAnchor.constraint(equalToConstant: 420),
             
             
             trailerHeader.topAnchor.constraint(equalTo: charactersColl.bottomAnchor, constant: 20),
@@ -485,12 +485,11 @@ class DetailInfoController: UIViewController, YTPlayerViewDelegate, relationColl
         }
     }
     
-    func onTapGesture(data: GetAnimeByQuery.Data.Page.Medium.Relations.Node) {   
+    func onTapGesture(data: GetAnimeByQuery.Data.Page.Medium.Relations.Node) {
         let vc = DetailInfoController()
         vc.configureAsRelarive(with: data)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    
 }
 
 extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -576,7 +575,7 @@ extension DetailInfoController: UICollectionViewDataSource, UICollectionViewDele
         } else if collectionView == charactersColl {
             //            let size = CGSize(width: collectionView.frame.width * 0.44, height: 290)
             //TODO: - When change iphone to XR. characters coll shows only 2 object from 3. FIX IT!!
-            let size = CGSize(width: collectionView.frame.width * 0.29, height: 190)
+            let size = CGSize(width: collectionView.frame.width * 0.27, height: 190)
             return size
         } else {
             let size = CGSize(width: collectionView.frame.width, height: 180)

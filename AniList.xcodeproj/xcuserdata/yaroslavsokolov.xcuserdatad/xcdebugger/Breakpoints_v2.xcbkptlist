@@ -17,5 +17,213 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "894588DD-E03E-4964-9854-89995AF59099"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AniList/Views/MenuComponents/ToolsOptionsCell.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "optionTapped(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BE1A4549-14C3-41FE-B3B1-1A6F196CFFE8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AniList/Controllers/MenuController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1263"
+            endingLineNumber = "1263"
+            landmarkName = "optionTapped(sender:tool:choosedOption:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BE1A4549-14C3-41FE-B3B1-1A6F196CFFE8 - 11374456d91e5b69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1263"
+                  endingLineNumber = "1263"
+                  offsetFromSymbolStart = "6752">
+               </Location>
+               <Location
+                  uuid = "BE1A4549-14C3-41FE-B3B1-1A6F196CFFE8 - 11374456d91e5b69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1263"
+                  endingLineNumber = "1263"
+                  offsetFromSymbolStart = "6756">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7E7D2814-1738-4144-9D1C-17F9C6A9DF3B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AniList/Controllers/MenuController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1267"
+            endingLineNumber = "1267"
+            landmarkName = "optionTapped(sender:tool:choosedOption:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7E7D2814-1738-4144-9D1C-17F9C6A9DF3B - 11374456d91e5bed"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1267"
+                  endingLineNumber = "1267"
+                  offsetFromSymbolStart = "7128">
+               </Location>
+               <Location
+                  uuid = "7E7D2814-1738-4144-9D1C-17F9C6A9DF3B - 11374456d91e5bed"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1267"
+                  endingLineNumber = "1267"
+                  offsetFromSymbolStart = "7180">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0CC9F987-E98B-4EC6-8127-2BA2B357BD01"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AniList/Controllers/MenuController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1266"
+            endingLineNumber = "1266"
+            landmarkName = "optionTapped(sender:tool:choosedOption:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0CC9F987-E98B-4EC6-8127-2BA2B357BD01 - 11374456d91e5bcc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1266"
+                  endingLineNumber = "1266"
+                  offsetFromSymbolStart = "7104">
+               </Location>
+               <Location
+                  uuid = "0CC9F987-E98B-4EC6-8127-2BA2B357BD01 - 11374456d91e5bcc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1266"
+                  endingLineNumber = "1266"
+                  offsetFromSymbolStart = "6908">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "238406B0-B30F-4FA4-8D7B-E69A367D8136"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AniList/Controllers/MenuController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1264"
+            endingLineNumber = "1264"
+            landmarkName = "optionTapped(sender:tool:choosedOption:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "238406B0-B30F-4FA4-8D7B-E69A367D8136 - 11374456d91e5b8a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1264"
+                  endingLineNumber = "1264"
+                  offsetFromSymbolStart = "6816">
+               </Location>
+               <Location
+                  uuid = "238406B0-B30F-4FA4-8D7B-E69A367D8136 - 11374456d91e5b8a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AniList.MenuController.optionTapped(sender: __C.UIButton, tool: AniList.SearchTool, choosedOption: Any) -&gt; ()"
+                  moduleName = "AniList"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yaroslavsokolov/Developer/AniList/AniList/AniList/Controllers/MenuController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1264"
+                  endingLineNumber = "1264"
+                  offsetFromSymbolStart = "6820">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

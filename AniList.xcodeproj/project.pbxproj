@@ -71,6 +71,7 @@
 		D1CDF75F2B3C5D74001C3668 /* SideInfoViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */; };
 		D1CDF7612B3C71B3001C3668 /* StringToDateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */; };
 		D1CDF7632B3C856D001C3668 /* UIColorLighter&Darker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */; };
+		D1E900AE2BB4BA1100D54353 /* StringHeight+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E900AD2BB4BA1100D54353 /* StringHeight+Extension.swift */; };
 		D1F602BC2B66D9550024128A /* RelationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -152,6 +153,7 @@
 		D1CDF75E2B3C5D74001C3668 /* SideInfoViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideInfoViewCell.swift; sourceTree = "<group>"; };
 		D1CDF7602B3C71B3001C3668 /* StringToDateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringToDateConverter.swift; sourceTree = "<group>"; };
 		D1CDF7622B3C856D001C3668 /* UIColorLighter&Darker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColorLighter&Darker.swift"; sourceTree = "<group>"; };
+		D1E900AD2BB4BA1100D54353 /* StringHeight+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StringHeight+Extension.swift"; sourceTree = "<group>"; };
 		D1F602BB2B66D9550024128A /* RelationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -359,6 +361,7 @@
 				D1502D252B5AC8BA00A902F1 /* ExtensionsForApiClientProp.swift */,
 				D1502D312B616C8800A902F1 /* ExtensionToGetCurrentSeason.swift */,
 				D14630CC2B67F86D00022B4A /* prepareHTMLDescription.swift */,
+				D1E900AD2BB4BA1100D54353 /* StringHeight+Extension.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -510,6 +513,7 @@
 				D1C9C82B2B287F5800E9DE4C /* SectionHeader.swift in Sources */,
 				D16742D72B34898A00C9F033 /* CustomShapeForImage.swift in Sources */,
 				D1C9C83D2B28838D00E9DE4C /* FontExtension.swift in Sources */,
+				D1E900AE2BB4BA1100D54353 /* StringHeight+Extension.swift in Sources */,
 				D1B89D9C2B24C493007447A5 /* AppDelegate.swift in Sources */,
 				D1F602BC2B66D9550024128A /* RelationCollectionViewCell.swift in Sources */,
 				D1C9C8282B2875DA00E9DE4C /* CustomMenuButtonSections.swift in Sources */,

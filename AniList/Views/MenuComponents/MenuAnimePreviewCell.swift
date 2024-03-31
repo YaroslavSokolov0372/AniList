@@ -111,7 +111,6 @@ extension MenuAnimePreviewCell {
         }
         self.coverImage.setImageFromStringrURL(stringUrl: animeData.coverImage?.extraLarge ?? "")
         let textHeight = self.name.text!.height(constraintedWidth: self.frame.width, font: UIFont().JosefinSans(font: .regular, size: 14)!)
-
         let numberOfRows = textHeight / 14
         
         if numberOfRows > 4 {

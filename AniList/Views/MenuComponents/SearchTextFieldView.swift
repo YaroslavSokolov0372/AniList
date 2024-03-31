@@ -8,6 +8,7 @@
 import UIKit
 
 protocol SearchTextFieldProtocol {
+    
     func textFieldDidChange(_ sender: UITextField)
     
     func textFieldRemoveButtonTapped(_ sender: UIButton)

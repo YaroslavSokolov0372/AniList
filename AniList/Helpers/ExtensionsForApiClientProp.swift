@@ -81,7 +81,6 @@ extension [Genre] {
         for genre in self {
             values.append(genre.rawValue)
         }
-        
         return values
     }
 }
