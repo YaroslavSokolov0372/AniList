@@ -251,7 +251,7 @@ class CustomSearchToolView: UIView {
                 self.removeButton.removeFromSuperview()
                 self.shouldHideButtonsLabel(false)
             } else if formatArray.count == 1 {
-                self.choosedFirstOption.text = formatArray.first!.rawValue
+                self.choosedFirstOption.text = formatArray.first!.getName()
                 setupFirstOption(text: formatArray.first!.rawValue)
                 self.choosedMoreOptions.removeFromSuperview()
             }

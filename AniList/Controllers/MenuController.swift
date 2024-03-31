@@ -1257,6 +1257,7 @@ class MenuController: UIViewController, AnimePreviewProtocol, SearchToolButtonPr
             if apiClient.chosenFormats.contains(choosedFormat) {
                 var newArray = apiClient.chosenFormats
                 newArray.remove(at: apiClient.chosenFormats.firstIndex(of: choosedFormat)!)
+                apiClient.changeFormats(to: newArray)
                 self.searchToolsScrollView.removeOption(toolType: self.chosenTool!, tool: tool, option: apiClient.chosenFormats)
                 cell.markAsUnchoosed()
             } else {
