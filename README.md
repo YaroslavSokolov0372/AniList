@@ -6,7 +6,7 @@
 
 ### About
 
-Anilist is an App that gives you access to look for anime through a database from Anilist. You can search by own filter or check by basic filter that was created with 3 columns
+Anilist is an App that gives you access to look for animes with a database from Anilist. You can search with your own filter or check animes by basic filters that are divided into three sections.
 
 ### Stack :
 * MVC
@@ -20,7 +20,7 @@ Anilist is an App that gives you access to look for anime through a database fro
 
 ## Main Features
 
- * Tag tools to search by a filter :
+ * Tag tools to search with a filter :
    * Search by string
    * Year
    * Format
@@ -28,7 +28,7 @@ Anilist is an App that gives you access to look for anime through a database fro
    * Season
 * Information about anime
 
-### Basic interaction and search with tools :
+## Basic interaction and search with tools :
 
 | Video 1  | Video 2 |
 | ------------- | ------------- |
